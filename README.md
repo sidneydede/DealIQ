@@ -75,9 +75,17 @@ Pipeline séquentiel 7 étapes via adaptateurs interchangeables (mode `mock` par
 Toute donnée IA porte un label (« IA — à vérifier », « Inférence IA… », « Déclaré / non audité »).
 Le bandeau d'activité sociale est grisé au-delà de 90 jours.
 
+## Features IA complémentaires (Phase 3)
+- `POST /api/deals/{id}/extract-text` — coller un tweet/post/WhatsApp (≤ 2000 car.) → extraction
+  structurée (label « Extrait de texte collé — non vérifié »), validée champ par champ
+- `POST /api/deals/{id}/deck` — upload d'un deck PDF → extraction par champ (`multipart/form-data`)
+- `GET /api/deals/{id}/guided-questions` — une question contextuelle par champ encore vide
+
+Texte et deck réutilisent la même interface de validation (accept / modify / reject) que l'Agent A.
+
 ## Roadmap
 - **Phase 0** ✅ Fondations : monorepo, docker, FastAPI, auth, Alembic, seed CI/UEMOA
 - **Phase 1** ✅ Module 1 — Sourcing manuel (5 entités, completeness_score, Mode Données Zéro)
 - **Phase 2** ✅ Agent A — enrichissement multi-sources (adaptateurs mock, validation champ par champ)
-- **Phase 3** Features IA (import texte, deck PDF, enrichissement guidé, notes)
+- **Phase 3** ✅ Features IA (import texte, deck PDF, enrichissement guidé ; notes déjà en Phase 1)
 - **Phase 4** Finitions MVP

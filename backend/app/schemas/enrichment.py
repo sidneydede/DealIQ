@@ -46,6 +46,15 @@ class ProposalModify(BaseModel):
     value: str = Field(min_length=1)
 
 
+class TextExtractIn(BaseModel):
+    text: str = Field(max_length=2000)
+
+
+class GuidedQuestion(BaseModel):
+    field: str
+    question: str
+
+
 class ActivityBanner(BaseModel):
     network: str | None
     last_activity_at: datetime | None

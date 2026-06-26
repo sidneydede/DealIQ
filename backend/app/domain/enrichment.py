@@ -25,6 +25,7 @@ class SourceCode(StrEnum):
     CRUNCHBASE = "crunchbase"
     LLM_INFERENCE = "llm_inference"
     PASTED_TEXT = "pasted_text"
+    DECK_PDF = "deck_pdf"
 
 
 class Confidence(StrEnum):
@@ -66,6 +67,15 @@ LABEL_LINKEDIN_FOUNDER_PRIVATE = "Profil LinkedIn privé — données non access
 LABEL_LINKEDIN_COMPANY_PRIVATE = "Page LinkedIn privée — données non accessibles"
 LABEL_SOCIAL_PRIVATE = "Page privée — enrichissement impossible"
 LABEL_CRUNCHBASE_ABSENT = "Données Crunchbase absentes pour cette startup"
+LABEL_PASTED_TEXT = "Extrait de texte collé — non vérifié"
+LABEL_DECK = "Extrait du deck — non vérifié"
+
+# Messages de l'import de texte / deck
+TEXT_TOO_SHORT_MESSAGE = "Colle un texte plus long pour que l'extraction soit possible."
+NO_FIELDS_EXTRACTED_MESSAGE = "Aucune information structurée détectée dans ce texte."
+DECK_NO_TEXT_MESSAGE = "Impossible de lire du texte dans ce PDF (deck scanné ou vide ?)."
+TEXT_MIN_LENGTH = 20
+TEXT_MAX_LENGTH = 2000
 
 # Message de fallback total (étapes 1-6 échouées, LLM insuffisant)
 FALLBACK_TOTAL_MESSAGE = (
