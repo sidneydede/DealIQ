@@ -37,11 +37,26 @@ python -m app.seed.seed
 uvicorn app.main:app --reload
 ```
 
+## Frontend (React + Vite)
+Démo visuelle de bout en bout : connexion, liste/création de deals (avec Mode Données Zéro),
+fiche détaillée (score, bandeau d'activité, réseaux), enrichissement Agent A + validation
+champ par champ, import texte/deck, questions guidées, notes et historique.
+```bash
+cd frontend
+npm install
+npm run dev        # http://localhost:5173 (proxy /api -> http://localhost:8000)
+```
+Le backend doit tourner en parallèle. Connexion avec l'utilisateur de seed
+(`FIRST_USER_EMAIL` / `FIRST_USER_PASSWORD`, pré-rempli sur l'écran de login).
+
 ## Tests & lint
 ```bash
 cd backend
 pytest          # tests sur SQLite en mémoire (aucune dépendance externe)
 ruff check .
+
+cd ../frontend
+npm run build   # vérifie la compilation du front
 ```
 
 ## Auth
