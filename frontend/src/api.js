@@ -83,3 +83,5 @@ export const guidedQuestions = (id) => request(`/deals/${id}/guided-questions`);
 
 // ── Meta ─────────────────────────────────────────────────────────────────────
 export const pedagogicalNotes = () => request("/meta/pedagogical-notes");
+export const getMeta = () => request("/meta");
+export const getScope = () => request("/meta/scope");
