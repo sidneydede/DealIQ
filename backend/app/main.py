@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import auth, deals, enrichment, health, ingest
+from app.api.routes import auth, deals, enrichment, health, ingest, meta
 from app.config import settings
 
 app = FastAPI(
@@ -20,6 +20,7 @@ app.add_middleware(
 )
 
 app.include_router(health.router, prefix="/api")
+app.include_router(meta.router, prefix="/api")
 app.include_router(auth.router, prefix="/api")
 app.include_router(deals.router, prefix="/api")
 app.include_router(enrichment.router, prefix="/api")

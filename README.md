@@ -83,9 +83,21 @@ Le bandeau d'activité sociale est grisé au-delà de 90 jours.
 
 Texte et deck réutilisent la même interface de validation (accept / modify / reject) que l'Agent A.
 
+## Périmètre & critère de succès (MVP)
+**Critère de succès mesurable** : un analyste crée une fiche, lance l'enrichissement et valide
+au moins un champ de bout en bout en **moins de 10 minutes**, sans assistance.
+
+**Dans le périmètre** : sourcing manuel, enrichissement assisté (Agent A) validé champ par champ,
+import texte/deck, notes & historique.
+**Hors périmètre (interdit)** : scoring, pipeline, due diligence, comité d'investissement,
+matching automatique, veille/scraping proactif, suivi post-investissement, recherche par nom
+sur les réseaux. Exposé et testé via `GET /api/meta/scope` (garde-fou automatisé).
+
+Notes pédagogiques par étape : `GET /api/meta/pedagogical-notes`.
+
 ## Roadmap
 - **Phase 0** ✅ Fondations : monorepo, docker, FastAPI, auth, Alembic, seed CI/UEMOA
 - **Phase 1** ✅ Module 1 — Sourcing manuel (5 entités, completeness_score, Mode Données Zéro)
 - **Phase 2** ✅ Agent A — enrichissement multi-sources (adaptateurs mock, validation champ par champ)
 - **Phase 3** ✅ Features IA (import texte, deck PDF, enrichissement guidé ; notes déjà en Phase 1)
-- **Phase 4** Finitions MVP
+- **Phase 4** ✅ Finitions MVP (notes pédagogiques, garde-fous hors-scope, critère de succès)
