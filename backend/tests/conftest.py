@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from app.api.deps import get_current_user  # noqa: F401 (importé pour cohérence)
+import app.models  # noqa: F401 (enregistre toutes les tables pour create_all)
 from app.core.security import hash_password
 from app.database import Base, get_db
 from app.main import app

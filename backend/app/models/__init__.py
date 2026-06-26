@@ -1,5 +1,15 @@
 """Point d'import unique des modèles -> utilisé par Alembic (autogenerate)."""
 
+from app.models.deal import (
+    Deal,
+    DealChangeLog,
+    DealNote,
+    SocialProfile,
+)
+from app.models.enrichment import (
+    EnrichmentProposal,
+    EnrichmentRun,
+)
 from app.models.reference import (
     Accelerator,
     Country,
@@ -16,4 +26,10 @@ __all__ = [
     "Fund",
     "Accelerator",
     "DealSourceType",
+    "Deal",
+    "SocialProfile",
+    "DealNote",
+    "DealChangeLog",
+    "EnrichmentRun",
+    "EnrichmentProposal",
 ]
