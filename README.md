@@ -63,9 +63,21 @@ backend/
 frontend/         React + Vite (scaffold)
 ```
 
+## Agent A — enrichissement (Phase 2)
+Pipeline séquentiel 7 étapes via adaptateurs interchangeables (mode `mock` par défaut,
+`live` à brancher quand les clés seront disponibles — cf. `ENRICHMENT_MODE`).
+- `POST /api/deals/{id}/enrich` — déclenche Agent A (prérequis + anti-rate-limit 30 min)
+- `GET /api/deals/{id}/enrich/status` — prérequis + minutes avant prochain run
+- `GET /api/deals/{id}/proposals` — propositions (filtrable par statut)
+- `POST /api/proposals/{id}/accept|modify|reject` — validation champ par champ (jamais d'écrasement auto)
+- `GET /api/enrichment/fallbacks` — table des fallbacks (source/condition/comportement/label)
+
+Toute donnée IA porte un label (« IA — à vérifier », « Inférence IA… », « Déclaré / non audité »).
+Le bandeau d'activité sociale est grisé au-delà de 90 jours.
+
 ## Roadmap
 - **Phase 0** ✅ Fondations : monorepo, docker, FastAPI, auth, Alembic, seed CI/UEMOA
-- **Phase 1** Module 1 — Sourcing manuel (5 entités, completeness_score, Mode Données Zéro)
-- **Phase 2** Agent A — enrichissement multi-sources (adaptateurs mock)
+- **Phase 1** ✅ Module 1 — Sourcing manuel (5 entités, completeness_score, Mode Données Zéro)
+- **Phase 2** ✅ Agent A — enrichissement multi-sources (adaptateurs mock, validation champ par champ)
 - **Phase 3** Features IA (import texte, deck PDF, enrichissement guidé, notes)
 - **Phase 4** Finitions MVP

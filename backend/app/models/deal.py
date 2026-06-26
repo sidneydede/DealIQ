@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import ForeignKey, Integer, String, Text, func
+from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -32,6 +32,12 @@ class Deal(Base, TimestampMixin):
 
     # ── Traçabilité ──────────────────────────────────────────────────────
     completeness_score: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+
+    # ── Signal d'activité sociale (renseigné par Agent A) ────────────────
+    last_activity_network: Mapped[str | None] = mapped_column(String(30), nullable=True)
+    last_activity_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     # ── Relations ────────────────────────────────────────────────────────
     socials: Mapped[list["SocialProfile"]] = relationship(

@@ -8,6 +8,7 @@ from app.domain.enums import score_band
 from app.models.deal import Deal, DealChangeLog, DealNote
 from app.models.user import User
 from app.schemas.deal import (
+    ActivityBannerOut,
     ChangeLogOut,
     DealCreate,
     DealListItem,
@@ -18,6 +19,7 @@ from app.schemas.deal import (
 )
 from app.services.completeness import DATA_ZERO_HINT, is_data_zero_mode
 from app.services.deals import create_deal, update_deal
+from app.services.enrichment.validation import activity_banner
 
 router = APIRouter(prefix="/deals", tags=["deals"])
 
@@ -28,6 +30,8 @@ def _to_out(deal: Deal) -> DealOut:
     out.score_band = score_band(deal.completeness_score)
     out.data_zero_mode = data_zero
     out.data_zero_hint = DATA_ZERO_HINT if data_zero else None
+    banner = activity_banner(deal)
+    out.activity = ActivityBannerOut(**banner) if banner else None
     return out
 
 

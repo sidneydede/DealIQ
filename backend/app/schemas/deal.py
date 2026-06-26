@@ -70,6 +70,12 @@ class DealUpdate(BaseModel):
         return v.upper() if v else v
 
 
+class ActivityBannerOut(BaseModel):
+    network: str | None = None
+    last_activity_at: datetime | None = None
+    stale: bool = False
+
+
 class DealOut(DealBase):
     model_config = ConfigDict(from_attributes=True, use_enum_values=True)
 
@@ -79,6 +85,7 @@ class DealOut(DealBase):
     score_band: str = ""
     data_zero_mode: bool = False
     data_zero_hint: str | None = None
+    activity: ActivityBannerOut | None = None
     created_at: datetime
     updated_at: datetime
     socials: list[SocialProfileOut] = Field(default_factory=list)
