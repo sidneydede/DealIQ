@@ -1,118 +1,64 @@
 # DealIQ
 
-SaaS de **sourcing manuel** + **enrichissement assisté par IA** de deals VC, pour analyste junior en Côte d'Ivoire / UEMOA.
+Plateforme privée de **qualification, préparation et mise en relation** PME ↔ investisseurs
+qualifiés (UEMOA / CEMAC). Boutique de conseil *tech-enabled* — pas une marketplace, pas
+d'appel public à l'épargne.
 
-Périmètre strict à 2 modules : (1) Sourcing 100 % manuel, (2) Enrichissement assisté (Agent A).
-Hors scope : scoring, pipeline, DD, IC, matching auto, veille/scraping proactif.
+> Cahier des charges de référence : [`Cahier_des_Charges_DealIQ_v1.2.md`](./Cahier_des_Charges_DealIQ_v1.2.md)
+
+## Périmètre MVP (couche 1)
+
+Funnel entrepreneur + cockpit cabinet minimal + reporting sponsor simple :
+M1 (comptes/rôles), M2 (référentiel entreprises), M3 (onboarding/questionnaire),
+M4 (documents/checklist), M5 (readiness interne), M6 (mini-rapport),
+M7 (offres sur devis), M20 (CRM), M21 (reporting), M22 (admin/audit),
+**M24 (type de deal — pivot du parcours)**.
 
 ## Stack
-- **Backend** : FastAPI + SQLAlchemy 2 + PostgreSQL, Alembic, auth JWT
-- **Workers** (Phase 2) : Celery/RQ + Redis pour Agent A
-- **Frontend** : React + Vite
-- **LLM** : Claude API (Anthropic)
 
-> Aucune clé d'API externe n'est requise pour l'instant : les sources d'enrichissement
-> (X, LinkedIn, site, FB/IG, Crunchbase, LLM) seront branchées via des adaptateurs
-> avec un **mode `mock`** (Phase 2).
+- **Backend** : Python / FastAPI · SQLAlchemy 2.0 · PostgreSQL · Alembic · JWT/RBAC
+- **Frontend** : React (Vite) + TypeScript · i18n (FR par défaut) · PWA
+- **Infra** : Docker Compose (Postgres, Redis), worker async (ultérieur)
+- **IA** : LLM en *accélérateur* uniquement (mode mock par défaut, aucune clé requise)
 
-## Démarrage rapide (Docker)
+## Démarrage rapide
+
 ```bash
-cp .env.example .env          # adapter SECRET_KEY, mots de passe...
-docker compose up --build
-# API   : http://localhost:8000
-# Docs  : http://localhost:8000/docs
+cp .env.example .env
+docker compose up --build        # API sur http://localhost:8000, docs /docs
 ```
-Le conteneur applique les migrations, exécute le seed CI/UEMOA puis lance l'API.
 
-## Démarrage local (sans Docker)
+### Backend en local (sans Docker)
+
 ```bash
 cd backend
-python -m venv .venv && source .venv/Scripts/activate   # Windows: .venv\Scripts\activate
+python -m venv .venv && . .venv/Scripts/activate   # Windows PowerShell: .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-
-# Lancer Postgres (ex. via docker compose up db) puis :
-export DATABASE_URL=postgresql+psycopg2://dealiq:dealiq@localhost:5432/dealiq
 alembic upgrade head
 python -m app.seed.seed
 uvicorn app.main:app --reload
+pytest
 ```
 
-## Frontend (React + Vite)
-Démo visuelle de bout en bout : connexion, liste/création de deals (avec Mode Données Zéro),
-fiche détaillée (score, bandeau d'activité, réseaux), enrichissement Agent A + validation
-champ par champ, import texte/deck, questions guidées, notes et historique.
+### Frontend
+
 ```bash
 cd frontend
 npm install
-npm run dev        # http://localhost:5173 (proxy /api -> http://localhost:8000)
-```
-Le backend doit tourner en parallèle. Connexion avec l'utilisateur de seed
-(`FIRST_USER_EMAIL` / `FIRST_USER_PASSWORD`, pré-rempli sur l'écran de login).
-
-## Tests & lint
-```bash
-cd backend
-pytest          # tests sur SQLite en mémoire (aucune dépendance externe)
-ruff check .
-
-cd ../frontend
-npm run build   # vérifie la compilation du front
+npm run dev          # http://localhost:5173
 ```
 
-## Auth
-- Login : `POST /api/auth/login` (form `username`=email, `password`)
-- Profil : `GET /api/auth/me` (Bearer token)
-- Utilisateur initial créé au seed : `FIRST_USER_EMAIL` / `FIRST_USER_PASSWORD` (cf. `.env`).
+## Organisation des lots
 
-## Structure
-```
-backend/
-  app/
-    api/routes/   health, auth (+ deals, enrichment en Phase 1/2)
-    core/         sécurité (JWT, bcrypt)
-    models/       user, reference (+ 5 entités métier en Phase 1)
-    schemas/      Pydantic
-    seed/         données de référence CI/UEMOA
-  alembic/        migrations
-  tests/
-frontend/         React + Vite (scaffold)
-```
+| Lot | Contenu |
+|-----|---------|
+| **0** | Fondations : repo, modèle de données, M1+M22 (auth/RBAC/audit) |
+| 1 | M24 (type de deal) + M2 (référentiel entreprises) |
+| 2 | M3 (onboarding) + M4 (documents/checklist) — funnel entrepreneur |
+| 3 | M5 (readiness) + M6 (mini-rapport) + M7 (offres/devis) |
+| 4 | Cockpit cabinet + M20 (CRM) / M21 (reporting) |
+| 5 | Design system + recette (critères §13) |
 
-## Agent A — enrichissement (Phase 2)
-Pipeline séquentiel 7 étapes via adaptateurs interchangeables (mode `mock` par défaut,
-`live` à brancher quand les clés seront disponibles — cf. `ENRICHMENT_MODE`).
-- `POST /api/deals/{id}/enrich` — déclenche Agent A (prérequis + anti-rate-limit 30 min)
-- `GET /api/deals/{id}/enrich/status` — prérequis + minutes avant prochain run
-- `GET /api/deals/{id}/proposals` — propositions (filtrable par statut)
-- `POST /api/proposals/{id}/accept|modify|reject` — validation champ par champ (jamais d'écrasement auto)
-- `GET /api/enrichment/fallbacks` — table des fallbacks (source/condition/comportement/label)
-
-Toute donnée IA porte un label (« IA — à vérifier », « Inférence IA… », « Déclaré / non audité »).
-Le bandeau d'activité sociale est grisé au-delà de 90 jours.
-
-## Features IA complémentaires (Phase 3)
-- `POST /api/deals/{id}/extract-text` — coller un tweet/post/WhatsApp (≤ 2000 car.) → extraction
-  structurée (label « Extrait de texte collé — non vérifié »), validée champ par champ
-- `POST /api/deals/{id}/deck` — upload d'un deck PDF → extraction par champ (`multipart/form-data`)
-- `GET /api/deals/{id}/guided-questions` — une question contextuelle par champ encore vide
-
-Texte et deck réutilisent la même interface de validation (accept / modify / reject) que l'Agent A.
-
-## Périmètre & critère de succès (MVP)
-**Critère de succès mesurable** : un analyste crée une fiche, lance l'enrichissement et valide
-au moins un champ de bout en bout en **moins de 10 minutes**, sans assistance.
-
-**Dans le périmètre** : sourcing manuel, enrichissement assisté (Agent A) validé champ par champ,
-import texte/deck, notes & historique.
-**Hors périmètre (interdit)** : scoring, pipeline, due diligence, comité d'investissement,
-matching automatique, veille/scraping proactif, suivi post-investissement, recherche par nom
-sur les réseaux. Exposé et testé via `GET /api/meta/scope` (garde-fou automatisé).
-
-Notes pédagogiques par étape : `GET /api/meta/pedagogical-notes`.
-
-## Roadmap
-- **Phase 0** ✅ Fondations : monorepo, docker, FastAPI, auth, Alembic, seed CI/UEMOA
-- **Phase 1** ✅ Module 1 — Sourcing manuel (5 entités, completeness_score, Mode Données Zéro)
-- **Phase 2** ✅ Agent A — enrichissement multi-sources (adaptateurs mock, validation champ par champ)
-- **Phase 3** ✅ Features IA (import texte, deck PDF, enrichissement guidé ; notes déjà en Phase 1)
-- **Phase 4** ✅ Finitions MVP (notes pédagogiques, garde-fous hors-scope, critère de succès)
+**Note conformité** : vocabulaire imposé (§11) — jamais « financement garanti »,
+« marketplace », « rendement ». Tout livrable IA porte un label de fiabilité et requiert
+une validation humaine champ par champ.

@@ -1,61 +1,112 @@
-"""Jeu de données de référence CI/UEMOA (issu du cahier des charges)."""
+"""Données de référence — les 7 types de deal du CDC (M24, §6.24)."""
+from __future__ import annotations
 
-# Pays — UEMOA (8) + autres marchés d'Afrique de l'Ouest fréquents
-COUNTRIES = [
-    # (iso2, nom, is_uemoa)
-    ("CI", "Côte d'Ivoire", True),
-    ("SN", "Sénégal", True),
-    ("BJ", "Bénin", True),
-    ("BF", "Burkina Faso", True),
-    ("ML", "Mali", True),
-    ("NE", "Niger", True),
-    ("TG", "Togo", True),
-    ("GW", "Guinée-Bissau", True),
-    ("GH", "Ghana", False),
-    ("NG", "Nigeria", False),
-    ("GN", "Guinée", False),
-]
+from app.domain.enums import DealTypeCode, Instrument
 
-# Secteurs / verticales courants de l'écosystème early stage CI/UEMOA
-SECTORS = [
-    "Fintech",
-    "Agritech",
-    "E-commerce",
-    "Edtech",
-    "Healthtech",
-    "Logistique / Mobilité",
-    "Energie / Cleantech",
-    "SaaS B2B",
-    "Marketplace",
-    "Médias / Divertissement",
-    "Insurtech",
-    "Autre",
-]
+# Grille de scoring par défaut (Annexe C). Modulée par type de deal (RG-M5-05).
+_BASE_WEIGHTS = {
+    "traction": 0.20,
+    "profitabilite_cashflow": 0.20,
+    "qualite_info_financiere": 0.15,
+    "clarte_besoin": 0.10,
+    "gouvernance": 0.10,
+    "qualite_documentaire": 0.10,
+    "scalabilite_marche": 0.05,
+    "esg": 0.05,
+}
 
-# Fonds VC actifs sur la zone (référence pédagogique — cf. CDC)
-FUNDS = [
-    ("Partech Africa", "Sénégal"),
-    ("Adiwale Fund", "Côte d'Ivoire"),
-    ("Orange Ventures CI", "Côte d'Ivoire"),
-    ("Tiim Group", "Côte d'Ivoire"),
-    ("AFDB Ventures", "Côte d'Ivoire"),
-    ("Cauris Finance", "Togo"),
-]
-
-# Accélérateurs / incubateurs (cf. CDC)
-ACCELERATORS = [
-    ("CTIC Dakar", "Sénégal"),
-    ("Orange Corners", "Côte d'Ivoire"),
-    ("Seedstars West Africa", "Côte d'Ivoire"),
-    ("AFRIC'INNOV", "Côte d'Ivoire"),
-    ("HUB Abidjan", "Côte d'Ivoire"),
-]
-
-# Canaux de sourcing (Module 1 — champ "Source du deal")
-DEAL_SOURCE_TYPES = [
-    ("event", "Événement"),
-    ("whatsapp", "WhatsApp pro"),
-    ("recommendation", "Recommandation directe"),
-    ("cold_inbound", "Cold inbound"),
-    ("other", "Autre"),
+DEAL_TYPES: list[dict] = [
+    {
+        "code": DealTypeCode.ouverture_capital,
+        "label": "Ouverture du capital",
+        "description": "Levée equity, entrée d'un investisseur minoritaire ou majoritaire.",
+        "instruments": [Instrument.equity.value],
+        "target_financiers": "PE, VC, impact, family office",
+        "doc_checklist": ["cap_table", "business_plan", "previsionnels", "pacte_actionnaires"],
+        "teaser_template": "teaser_equity",
+        "scoring_weights": {**_BASE_WEIGHTS, "scalabilite_marche": 0.10, "esg": 0.05,
+                            "profitabilite_cashflow": 0.15},
+        "sort_order": 1,
+    },
+    {
+        "code": DealTypeCode.dette_bancaire,
+        "label": "Dette bancaire",
+        "description": "Crédit d'investissement ou d'exploitation, ligne de financement.",
+        "instruments": [Instrument.dette.value],
+        "target_financiers": "Banques",
+        "doc_checklist": ["releves_bancaires", "garanties", "etats_financiers",
+                          "plan_tresorerie"],
+        "teaser_template": "dossier_credit",
+        "scoring_weights": {**_BASE_WEIGHTS, "profitabilite_cashflow": 0.30,
+                            "qualite_info_financiere": 0.20, "scalabilite_marche": 0.0},
+        "sort_order": 2,
+    },
+    {
+        "code": DealTypeCode.dette_privee,
+        "label": "Dette privée",
+        "description": "Dette non bancaire, mezzanine, dette structurée.",
+        "instruments": [Instrument.dette.value, Instrument.quasi_equity.value],
+        "target_financiers": "Fonds de dette, mezzanine, DFI",
+        "doc_checklist": ["comptes", "suretes", "business_plan", "echeancier"],
+        "teaser_template": "memo_credit",
+        "scoring_weights": {**_BASE_WEIGHTS, "profitabilite_cashflow": 0.25,
+                            "qualite_info_financiere": 0.20},
+        "sort_order": 3,
+    },
+    {
+        "code": DealTypeCode.cession_parts,
+        "label": "Cession de parts / sortie d'actionnaire",
+        "description": "Vente partielle ou totale de titres.",
+        "instruments": [Instrument.equity.value],
+        "target_financiers": "PE, repreneurs, investisseurs",
+        "doc_checklist": ["cap_table", "statuts", "pacte_actionnaires", "valorisation"],
+        "teaser_template": "teaser_cession",
+        "scoring_weights": _BASE_WEIGHTS,
+        "sort_order": 4,
+    },
+    {
+        "code": DealTypeCode.ma,
+        "label": "M&A / Acquisition",
+        "description": "Recherche d'acquéreur, acquisition externe, rapprochement stratégique.",
+        "instruments": [Instrument.equity.value],
+        "target_financiers": "Acquéreurs stratégiques, corporates, PE",
+        "doc_checklist": ["information_memorandum", "data_room_transactionnelle", "cap_table",
+                          "etats_financiers"],
+        "teaser_template": "teaser_ma",
+        "scoring_weights": _BASE_WEIGHTS,
+        "sort_order": 5,
+    },
+    {
+        "code": DealTypeCode.hybride,
+        "label": "Financement hybride",
+        "description": "Equity + dette + quasi-fonds propres, obligations convertibles.",
+        "instruments": [Instrument.hybride.value],
+        "target_financiers": "Financeurs hybrides, DFI, blended",
+        "doc_checklist": ["business_plan", "comptes", "cap_table", "suretes"],
+        "teaser_template": "teaser_structure",
+        "scoring_weights": _BASE_WEIGHTS,
+        "sort_order": 6,
+    },
+    {
+        "code": DealTypeCode.partenariat,
+        "label": "Partenariat stratégique / corporate finance",
+        "description": "Partenaire industriel, commercial ou financier.",
+        "instruments": [Instrument.variable.value],
+        "target_financiers": "Corporates, partenaires",
+        "doc_checklist": ["presentation_strategique", "term_sheet_partenariat"],
+        "teaser_template": "note_partenariat",
+        "scoring_weights": _BASE_WEIGHTS,
+        "sort_order": 7,
+    },
+    {
+        "code": DealTypeCode.indecis,
+        "label": "Je ne sais pas encore",
+        "description": "Orientation par un expert du Cabinet (requalification M24).",
+        "instruments": [],
+        "target_financiers": None,
+        "doc_checklist": [],
+        "teaser_template": None,
+        "scoring_weights": _BASE_WEIGHTS,
+        "sort_order": 99,
+    },
 ]

@@ -1,21 +1,32 @@
-from datetime import datetime
+"""Base déclarative SQLAlchemy + mixins communs (id, horodatage)."""
+from __future__ import annotations
 
-from sqlalchemy import DateTime, func
-from sqlalchemy.orm import Mapped, mapped_column
+import uuid
+from datetime import UTC, datetime
+
+from sqlalchemy import DateTime, String, func
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+
+def _uuid() -> str:
+    return str(uuid.uuid4())
+
+
+class Base(DeclarativeBase):
+    pass
+
+
+class UUIDMixin:
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
 
 
 class TimestampMixin:
-    """Horodatage ISO 8601 (UTC) — création + dernière modification.
-
-    Exigence CDC : traçabilité obligatoire sur toutes les fiches.
-    """
-
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
-        onupdate=func.now(),
+        onupdate=lambda: datetime.now(UTC),
         nullable=False,
     )

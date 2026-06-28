@@ -1,32 +1,35 @@
+"""Point d'entrée FastAPI — DealIQ API."""
+from __future__ import annotations
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import auth, deals, enrichment, health, ingest, meta
+from app.api.routes import api_router
 from app.config import settings
 
 app = FastAPI(
     title=settings.app_name,
-    description="Sourcing manuel + enrichissement assisté de deals VC (CI/UEMOA)",
     version="0.1.0",
+    description=(
+        "API DealIQ — qualification, préparation et mise en relation privée PME ↔ "
+        "investisseurs qualifiés (UEMOA/CEMAC). Aucune offre au public, aucune garantie "
+        "de financement."
+    ),
+    openapi_url=f"{settings.api_v1_prefix}/openapi.json",
+    docs_url="/docs",
 )
 
-# CORS : front Vite en dev
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(health.router, prefix="/api")
-app.include_router(meta.router, prefix="/api")
-app.include_router(auth.router, prefix="/api")
-app.include_router(deals.router, prefix="/api")
-app.include_router(enrichment.router, prefix="/api")
-app.include_router(ingest.router, prefix="/api")
+app.include_router(api_router, prefix=settings.api_v1_prefix)
 
 
 @app.get("/")
 def root() -> dict:
-    return {"app": settings.app_name, "docs": "/docs"}
+    return {"app": settings.app_name, "docs": "/docs", "api": settings.api_v1_prefix}

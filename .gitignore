@@ -5,25 +5,35 @@ __pycache__/
 .venv/
 venv/
 .pytest_cache/
-.ruff_cache/
 .mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
 # Env / secrets
 .env
-*.env
-!*.env.example
+.env.*
+!.env.example
 
 # Node / frontend
 node_modules/
-frontend/dist/
-frontend/.vite/
+dist/
+dist-ssr/
+*.local
+.vite/
+*.tsbuildinfo
 
-# OS / IDE
+# Editors / OS
+.vscode/
+.idea/
 .DS_Store
 Thumbs.db
-.idea/
-.vscode/
+*~$*
+*.tmp
+.~lock.*#
 
-# Docker / data
-docker/pgdata/
-*.sqlite3
+# Docker
+*.pid
+
+# Logs
+*.log

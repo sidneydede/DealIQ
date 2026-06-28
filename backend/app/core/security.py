@@ -1,36 +1,55 @@
-from datetime import UTC, datetime, timedelta
+"""Sécurité : hachage de mot de passe (RG-M1-02) et jetons JWT (RG-M1-03)."""
+from __future__ import annotations
 
-import bcrypt
-import jwt
+from datetime import UTC, datetime, timedelta
+from typing import Any
+
+from jose import JWTError, jwt
+from passlib.context import CryptContext
 
 from app.config import settings
 
+pwd_context = CryptContext(schemes=["argon2", "bcrypt"], deprecated="auto")
+
+ACCESS = "access"
+REFRESH = "refresh"
+
 
 def hash_password(password: str) -> str:
-    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+    return pwd_context.hash(password)
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    try:
-        return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
-    except ValueError:
-        return False
+    return pwd_context.verify(plain, hashed)
 
 
-def create_access_token(subject: str, expires_minutes: int | None = None) -> str:
-    expire = datetime.now(UTC) + timedelta(
-        minutes=expires_minutes or settings.access_token_expire_minutes
+def _create_token(subject: str, role: str, token_type: str, expires: timedelta) -> str:
+    now = datetime.now(UTC)
+    payload: dict[str, Any] = {
+        "sub": subject,
+        "role": role,
+        "type": token_type,
+        "iat": now,
+        "exp": now + expires,
+    }
+    return jwt.encode(payload, settings.secret_key, algorithm=settings.algorithm)
+
+
+def create_access_token(subject: str, role: str) -> str:
+    return _create_token(
+        subject, role, ACCESS, timedelta(minutes=settings.access_token_expire_minutes)
     )
-    payload = {"sub": subject, "exp": expire}
-    return jwt.encode(payload, settings.secret_key, algorithm=settings.jwt_algorithm)
 
 
-def decode_access_token(token: str) -> str | None:
-    """Retourne le `sub` (email) si le token est valide, sinon None."""
+def create_refresh_token(subject: str, role: str) -> str:
+    return _create_token(
+        subject, role, REFRESH, timedelta(days=settings.refresh_token_expire_days)
+    )
+
+
+def decode_token(token: str) -> dict[str, Any] | None:
+    """Décode et valide un JWT ; renvoie None si invalide/expiré."""
     try:
-        payload = jwt.decode(
-            token, settings.secret_key, algorithms=[settings.jwt_algorithm]
-        )
-        return payload.get("sub")
-    except jwt.PyJWTError:
+        return jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
+    except JWTError:
         return None

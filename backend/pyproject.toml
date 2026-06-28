@@ -1,14 +1,12 @@
 [project]
 name = "dealiq-backend"
 version = "0.1.0"
-description = "DealIQ — sourcing + enrichissement de deals VC (CI/UEMOA)"
+description = "DealIQ — API de qualification, préparation et mise en relation PME ↔ investisseurs (UEMOA/CEMAC)"
 requires-python = ">=3.11"
 
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-# Migrations Alembic = code autogénéré, non soumis au lint
-extend-exclude = ["alembic/versions"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
@@ -17,3 +15,4 @@ ignore = ["B008"]  # FastAPI Depends() en valeur par défaut
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning"]

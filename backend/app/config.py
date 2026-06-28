@@ -1,35 +1,40 @@
+"""Configuration applicative (Pydantic settings, chargée depuis l'environnement / .env)."""
+from __future__ import annotations
+
 from functools import lru_cache
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """Configuration applicative chargée depuis l'environnement / .env."""
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
-
-    # Méta
-    app_name: str = "DealIQ"
-    environment: str = "dev"
+    # App
+    app_name: str = "DealIQ API"
+    environment: str = "development"
+    api_v1_prefix: str = "/api/v1"
+    default_locale: str = "fr"
+    default_currency: str = "XOF"
 
     # Base de données
-    database_url: str = "postgresql+psycopg2://dealiq:dealiq@localhost:5432/dealiq"
-    redis_url: str = "redis://localhost:6379/0"
+    database_url: str = "postgresql+psycopg://dealiq:dealiq@localhost:5432/dealiq"
 
-    # Sécurité / Auth
-    secret_key: str = "change-me-in-prod"
-    access_token_expire_minutes: int = 480
-    jwt_algorithm: str = "HS256"
+    # Sécurité / JWT
+    secret_key: str = "change-me-in-prod-please-use-a-long-random-value"
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 30
+    refresh_token_expire_days: int = 14
 
-    # Premier utilisateur (créé au seed)
-    first_user_email: str = "analyste@dealiq.ci"
-    first_user_password: str = "changeme"
+    # CORS (chaîne séparée par des virgules)
+    cors_origins: str = "http://localhost:5173"
 
-    # Enrichissement (Phase 2) — aucune clé pour l'instant
-    enrichment_mode: str = "mock"  # mock | live
-    x_bearer_token: str = ""
-    crunchbase_api_key: str = ""
+    # IA / LLM (accélérateur ; mock par défaut, aucune clé requise)
+    llm_provider: str = "mock"
     anthropic_api_key: str = ""
+
+    @property
+    def cors_origins_list(self) -> list[str]:
+        return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
 
 
 @lru_cache

@@ -1,88 +1,158 @@
-"""Énumérations et barèmes métier (Module 1 — Sourcing manuel).
+"""Énumérations métier DealIQ (CDC v1.2)."""
+from __future__ import annotations
 
-Valeurs alignées sur le cahier des charges. Stockées en base sous forme de
-chaînes (String) ; la validation des valeurs autorisées est faite côté Pydantic.
-"""
-
-from enum import StrEnum
+from enum import Enum
 
 
-class Stage(StrEnum):
-    """Stade de la startup."""
+class Role(str, Enum):
+    """Rôles RBAC (CDC M1 / Annexe B)."""
 
-    IDEE = "idee"
-    MVP = "mvp"
-    TRACTION = "traction"
-    SCALE = "scale"
-
-
-class DeckStatus(StrEnum):
-    """Disponibilité du deck."""
-
-    OUI = "oui"
-    NON = "non"
-    EN_ATTENTE = "en_attente"
+    entrepreneur = "entrepreneur"
+    investisseur = "investisseur"
+    analyste = "analyste"
+    senior = "senior"  # consultant senior
+    conformite = "conformite"
+    admin = "admin"
 
 
-class DealSource(StrEnum):
-    """Canal d'où provient le deal."""
-
-    EVENT = "event"
-    WHATSAPP = "whatsapp"
-    RECOMMENDATION = "recommendation"
-    COLD_INBOUND = "cold_inbound"
-    AUTRE = "autre"
+class Zone(str, Enum):
+    UEMOA = "UEMOA"
+    CEMAC = "CEMAC"
 
 
-class SocialNetwork(StrEnum):
-    """Réseaux sociaux gérés (un champ URL/handle par réseau)."""
+class Country(str, Enum):
+    """Pays cibles UEMOA (devise XOF) + CEMAC (devise XAF)."""
 
-    X_TWITTER = "x_twitter"
-    LINKEDIN_COMPANY = "linkedin_company"
-    LINKEDIN_FOUNDER = "linkedin_founder"
-    FACEBOOK = "facebook"
-    INSTAGRAM = "instagram"
+    # UEMOA
+    BJ = "BJ"  # Bénin
+    BF = "BF"  # Burkina Faso
+    CI = "CI"  # Côte d'Ivoire
+    GW = "GW"  # Guinée-Bissau
+    ML = "ML"  # Mali
+    NE = "NE"  # Niger
+    SN = "SN"  # Sénégal
+    TG = "TG"  # Togo
+    # CEMAC
+    CM = "CM"  # Cameroun
+    CF = "CF"  # Centrafrique
+    CG = "CG"  # Congo
+    GA = "GA"  # Gabon
+    GQ = "GQ"  # Guinée équatoriale
+    TD = "TD"  # Tchad
 
 
-# ── Barème du completeness_score (cf. CDC) ───────────────────────────────────
-# Champs obligatoires : 50 pts
-REQUIRED_FIELD_POINTS = {
-    "name": 15,
-    "sector": 10,
-    "stage": 10,
-    "country": 15,
+class Currency(str, Enum):
+    XOF = "XOF"  # FCFA BCEAO (UEMOA)
+    XAF = "XAF"  # FCFA BEAC (CEMAC)
+    EUR = "EUR"
+    USD = "USD"
+
+
+class Instrument(str, Enum):
+    """Instruments de financement (mapping depuis le type de deal — M24)."""
+
+    equity = "equity"
+    dette = "dette"
+    quasi_equity = "quasi_equity"
+    subvention = "subvention"
+    hybride = "hybride"
+    variable = "variable"
+
+
+class DealTypeCode(str, Enum):
+    """Les 7 types de deal du référentiel (M24, CDC §6.24)."""
+
+    ouverture_capital = "ouverture_capital"
+    dette_bancaire = "dette_bancaire"
+    dette_privee = "dette_privee"
+    cession_parts = "cession_parts"
+    ma = "ma"  # M&A / cession totale
+    hybride = "hybride"
+    partenariat = "partenariat"
+    indecis = "indecis"  # « Je ne sais pas encore » → orientation cabinet
+
+
+class CompanyStatus(str, Enum):
+    """Statut du dossier entreprise (RG-M2-03)."""
+
+    brouillon = "brouillon"
+    qualifie = "qualifie"
+    en_preparation = "en_preparation"
+    investor_ready = "investor_ready"
+    en_deal = "en_deal"
+    clos = "clos"
+    archive = "archive"
+
+
+class CompanyStage(str, Enum):
+    """Stade de maturité de l'entreprise."""
+
+    idee = "idee"
+    amorcage = "amorcage"
+    early = "early"
+    croissance = "croissance"
+    mature = "mature"
+
+
+class ReadinessCategory(str, Enum):
+    """Sortie du Financing Readiness Score (M5) — jamais exposée brute à l'investisseur."""
+
+    investor_ready = "investor_ready"
+    a_preparer = "a_preparer"
+    plutot_dette_banque = "plutot_dette_banque"
+    trop_precoce = "trop_precoce"
+
+
+class DocumentStatus(str, Enum):
+    """Statut de vérification d'une pièce (RG-M4-02)."""
+
+    recu = "recu"
+    verifie = "verifie"
+    rejete = "rejete"
+
+
+class DataReliability(str, Enum):
+    """Label de fiabilité obligatoire sur toute donnée (RG-IA-01, RG-M2-04)."""
+
+    declare_non_audite = "declare_non_audite"
+    verifie = "verifie"
+    ia_a_verifier = "ia_a_verifier"
+    inference = "inference"
+
+
+class AuditAction(str, Enum):
+    """Actions sensibles journalisées (M22)."""
+
+    login = "login"
+    login_failed = "login_failed"
+    logout = "logout"
+    token_refresh = "token_refresh"
+    user_created = "user_created"
+    role_changed = "role_changed"
+    company_created = "company_created"
+    company_status_changed = "company_status_changed"
+    deal_type_changed = "deal_type_changed"
+    document_uploaded = "document_uploaded"
+    document_status_changed = "document_status_changed"
+    score_computed = "score_computed"
+    export = "export"
+
+
+# --- Tables de correspondance utiles ---
+
+UEMOA_COUNTRIES = {
+    Country.BJ, Country.BF, Country.CI, Country.GW,
+    Country.ML, Country.NE, Country.SN, Country.TG,
+}
+CEMAC_COUNTRIES = {
+    Country.CM, Country.CF, Country.CG, Country.GA, Country.GQ, Country.TD,
 }
 
-# Champs optionnels hors réseaux sociaux : 30 pts
-OPTIONAL_FIELD_POINTS = {
-    "founders": 10,
-    "description": 5,
-    "deal_source": 5,
-    "website_url": 5,
-    "deck_status": 5,
-}
 
-# Réseaux sociaux : 20 pts répartis
-SOCIAL_NETWORK_POINTS = {
-    SocialNetwork.X_TWITTER: 6,
-    SocialNetwork.LINKEDIN_COMPANY: 5,
-    SocialNetwork.LINKEDIN_FOUNDER: 5,
-    SocialNetwork.FACEBOOK: 2,
-    SocialNetwork.INSTAGRAM: 2,
-}
-
-assert sum(REQUIRED_FIELD_POINTS.values()) == 50
-assert (
-    sum(OPTIONAL_FIELD_POINTS.values()) + sum(SOCIAL_NETWORK_POINTS.values()) == 50
-)
+def currency_for_country(country: Country) -> Currency:
+    """Devise par défaut selon la zone (FCFA BCEAO vs BEAC)."""
+    return Currency.XOF if country in UEMOA_COUNTRIES else Currency.XAF
 
 
-def score_band(score: int) -> str:
-    """Interprétation textuelle du score (cf. CDC)."""
-    if score <= 30:
-        return "Fiche très incomplète — enrichissement quasi-impossible"
-    if score <= 60:
-        return "Fiche partielle — enrichissement limité"
-    if score <= 85:
-        return "Fiche correcte — enrichissement possible"
-    return "Fiche complète"
+def zone_for_country(country: Country) -> Zone:
+    return Zone.UEMOA if country in UEMOA_COUNTRIES else Zone.CEMAC

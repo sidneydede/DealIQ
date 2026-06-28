@@ -1,60 +1,40 @@
-"""Données de référence CI/UEMOA (tables de lookup, remplies au seed).
+"""Référentiels paramétrables (Admin) — notamment les types de deal (M24)."""
+from __future__ import annotations
 
-Ces tables servent à alimenter les listes déroulantes du Module 1 et à
-documenter l'écosystème cible. Elles ne contiennent aucune logique métier.
-"""
-
-from sqlalchemy import String
+from sqlalchemy import JSON, Integer, String, Text
+from sqlalchemy import Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.database import Base
+from app.domain.enums import DealTypeCode, Instrument
+from app.models.base import Base, TimestampMixin, UUIDMixin
 
 
-class Country(Base):
-    """Pays / zone géographique (UEMOA + Afrique de l'Ouest)."""
+class DealType(UUIDMixin, TimestampMixin, Base):
+    """Référentiel des types de deal (M24).
 
-    __tablename__ = "ref_countries"
+    Donnée structurante : pilote checklist documentaire, branches de questionnaire,
+    gabarit de teaser et grille de scoring. Paramétrable sans redéploiement (NFR).
+    """
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    iso2: Mapped[str] = mapped_column(String(2), unique=True, nullable=False)
-    name: Mapped[str] = mapped_column(String(100), nullable=False)
-    is_uemoa: Mapped[bool] = mapped_column(default=False, nullable=False)
+    __tablename__ = "deal_types"
 
+    code: Mapped[DealTypeCode] = mapped_column(
+        SAEnum(DealTypeCode, name="deal_type_code"), unique=True, nullable=False
+    )
+    label: Mapped[str] = mapped_column(String(120), nullable=False)
+    description: Mapped[str | None] = mapped_column(Text)
+    instruments: Mapped[list] = mapped_column(JSON, default=list)  # list[Instrument]
+    target_financiers: Mapped[str | None] = mapped_column(Text)
 
-class Sector(Base):
-    """Secteur / verticale."""
+    # Pilotage du parcours (paramétrable) — listes/structures JSON
+    doc_checklist: Mapped[list] = mapped_column(JSON, default=list)
+    questionnaire_branch: Mapped[dict] = mapped_column(JSON, default=dict)
+    teaser_template: Mapped[str | None] = mapped_column(String(120))
+    scoring_weights: Mapped[dict] = mapped_column(JSON, default=dict)
 
-    __tablename__ = "ref_sectors"
+    sort_order: Mapped[int] = mapped_column(Integer, default=0)
+    is_active: Mapped[bool] = mapped_column(default=True)
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
-
-
-class Fund(Base):
-    """Fonds VC actif sur la zone (référence pédagogique)."""
-
-    __tablename__ = "ref_funds"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
-    country: Mapped[str | None] = mapped_column(String(100), nullable=True)
-
-
-class Accelerator(Base):
-    """Accélérateur / incubateur de l'écosystème."""
-
-    __tablename__ = "ref_accelerators"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
-    country: Mapped[str | None] = mapped_column(String(100), nullable=True)
-
-
-class DealSourceType(Base):
-    """Canaux de sourcing (événement / WhatsApp / recommandation / ...)."""
-
-    __tablename__ = "ref_deal_source_types"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    code: Mapped[str] = mapped_column(String(40), unique=True, nullable=False)
-    label: Mapped[str] = mapped_column(String(100), nullable=False)
+    @property
+    def primary_instrument(self) -> Instrument | None:
+        return Instrument(self.instruments[0]) if self.instruments else None

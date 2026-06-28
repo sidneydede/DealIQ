@@ -1,16 +1,22 @@
-def test_root(client):
-    resp = client.get("/")
-    assert resp.status_code == 200
-    assert resp.json()["app"] == "DealIQ"
-
-
 def test_health(client):
-    resp = client.get("/api/health")
-    assert resp.status_code == 200
-    assert resp.json()["status"] == "ok"
+    r = client.get("/api/v1/health")
+    assert r.status_code == 200
+    assert r.json()["status"] == "ok"
 
 
-def test_health_db(client):
-    resp = client.get("/api/health/db")
-    assert resp.status_code == 200
-    assert resp.json()["db"] == "reachable"
+def test_meta_deal_types_seeded(client):
+    r = client.get("/api/v1/meta/deal-types")
+    assert r.status_code == 200
+    codes = {d["code"] for d in r.json()}
+    assert "ouverture_capital" in codes
+    assert "dette_bancaire" in codes
+
+
+def test_meta_countries(client):
+    r = client.get("/api/v1/meta/countries")
+    assert r.status_code == 200
+    data = {c["code"]: c for c in r.json()}
+    assert data["CI"]["zone"] == "UEMOA"
+    assert data["CI"]["currency"] == "XOF"
+    assert data["CM"]["zone"] == "CEMAC"
+    assert data["CM"]["currency"] == "XAF"
