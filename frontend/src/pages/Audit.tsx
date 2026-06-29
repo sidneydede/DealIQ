@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import { admin } from "../api/dealiq";
 import Pager from "../components/Pager";
+import { SortHeader, useSort } from "../components/SortHeader";
 import type { AuditLogEntry } from "../api/types";
 
 const LIMIT = 50;
@@ -12,13 +13,20 @@ export default function Audit() {
   const [logs, setLogs] = useState<AuditLogEntry[]>([]);
   const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
+  const { sort, order, toggle, state: sortState } = useSort("created_at", "desc");
 
   useEffect(() => {
-    void admin.audit({ limit: LIMIT, offset }).then((p) => {
-      setLogs(p.items);
-      setTotal(p.total);
-    });
-  }, [offset]);
+    setOffset(0);
+  }, [sort, order]);
+
+  useEffect(() => {
+    void admin
+      .audit({ sort: sort || undefined, order, limit: LIMIT, offset })
+      .then((p) => {
+        setLogs(p.items);
+        setTotal(p.total);
+      });
+  }, [sort, order, offset]);
 
   return (
     <>
@@ -27,9 +35,9 @@ export default function Audit() {
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
           <thead>
             <tr style={{ textAlign: "left", color: "var(--c-slate-2)" }}>
-              <th style={{ padding: 10 }}>{t("audit.when")}</th>
+              <SortHeader field="created_at" label={t("audit.when")} state={sortState} onSort={toggle} style={{ padding: 10 }} />
               <th style={{ padding: 10 }}>{t("audit.actor")}</th>
-              <th style={{ padding: 10 }}>{t("audit.action")}</th>
+              <SortHeader field="action" label={t("audit.action")} state={sortState} onSort={toggle} style={{ padding: 10 }} />
               <th style={{ padding: 10 }}>{t("audit.object")}</th>
             </tr>
           </thead>

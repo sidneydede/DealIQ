@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user, require_cabinet
-from app.api.pagination import Page, Pagination, pagination
+from app.api.pagination import Page, Pagination, SortParams, pagination, sorting
 from app.database import get_db
 from app.domain.enums import InvestorQualifStatus, InvestorType
 from app.models.investor import Investor
@@ -59,13 +59,14 @@ def list_investors(
     q: str | None = None,
     type_filter: InvestorType | None = None,
     qualif_status: InvestorQualifStatus | None = None,
+    sort: SortParams = Depends(sorting),
     page: Pagination = Depends(pagination),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ) -> Page[InvestorOut]:
     items, total = svc.paginate_for_user(
         db, user, q=q, type_filter=type_filter, qualif_status=qualif_status,
-        limit=page.limit, offset=page.offset,
+        sort=sort, limit=page.limit, offset=page.offset,
     )
     return Page.build(items, total, page)
 

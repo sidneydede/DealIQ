@@ -114,6 +114,8 @@ export const cockpit = {
       country?: string;
       only?: string;
       q?: string;
+      sort?: string;
+      order?: string;
       limit?: number;
       offset?: number;
     } = {},
@@ -131,6 +133,8 @@ export const cockpit = {
       country?: string;
       only?: string;
       q?: string;
+      sort?: string;
+      order?: string;
     } = {},
   ) => {
     const clean = Object.fromEntries(
@@ -150,7 +154,14 @@ export const reporting = {
 
 export const admin = {
   audit: (
-    params: { action?: string; object_id?: string; limit?: number; offset?: number } = {},
+    params: {
+      action?: string;
+      object_id?: string;
+      sort?: string;
+      order?: string;
+      limit?: number;
+      offset?: number;
+    } = {},
   ) => {
     const clean = Object.fromEntries(
       Object.entries(params).filter(([, v]) => v !== undefined && v !== ""),

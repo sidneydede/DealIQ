@@ -2,15 +2,30 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from enum import Enum
 
 from sqlalchemy.orm import Session
 
+from app.api.pagination import SortParams
 from app.domain.enums import CompanyStatus, Country, DealTypeCode, ReadinessCategory
 from app.models.company import Company
 from app.models.quote import QuoteRequest
 
 # Seuil SLA indicatif : un dossier en brouillon non traité au-delà de N jours est signalé.
 SLA_DAYS = 2
+
+# Colonnes triables (clés des items renvoyés).
+_SORTABLE = {
+    "name", "country", "sector", "status", "deal_type_primary",
+    "readiness_category", "score_total", "quote_requests", "days_open",
+}
+
+
+def _sort_key(value: object):
+    """Clé de tri robuste : enum→valeur, None déjà géré en amont, sinon valeur brute."""
+    if isinstance(value, Enum):
+        return value.value
+    return value
 
 
 def _days_open(company: Company) -> int:
@@ -28,6 +43,7 @@ def cockpit_items(
     country: Country | None = None,
     only: str | None = None,
     q: str | None = None,
+    sort: SortParams | None = None,
     limit: int | None = None,
     offset: int = 0,
 ) -> tuple[list[dict], int]:
@@ -83,6 +99,13 @@ def cockpit_items(
             "days_open": days,
             "sla_breach": sla_breach,
         })
+
+    if sort and sort.field in _SORTABLE:
+        field = sort.field
+        items.sort(
+            key=lambda it: (it.get(field) is None, _sort_key(it.get(field))),
+            reverse=sort.desc,
+        )
 
     total = len(items)
     if limit is None:

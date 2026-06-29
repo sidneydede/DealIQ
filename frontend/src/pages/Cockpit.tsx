@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import { cockpit, meta } from "../api/dealiq";
 import Pager from "../components/Pager";
+import { SortHeader, useSort } from "../components/SortHeader";
 import type { CockpitItem, CountryMeta } from "../api/types";
 
 const FILTERS = ["all", "a_traiter", "investor_ready", "sla"] as const;
@@ -30,6 +31,7 @@ export default function Cockpit() {
   const [dealType, setDealType] = useState("");
   const [query, setQuery] = useState(""); // saisie
   const [search, setSearch] = useState(""); // terme appliqué (debounce)
+  const { sort, order, toggle, state: sortState } = useSort();
 
   useEffect(() => {
     void meta.dealTypes().then((d) =>
@@ -46,7 +48,7 @@ export default function Cockpit() {
 
   useEffect(() => {
     setOffset(0);
-  }, [filter, search, country, statusFilter, dealType]);
+  }, [filter, search, country, statusFilter, dealType, sort, order]);
 
   const filterParams = {
     only: filter === "all" ? undefined : filter,
@@ -54,6 +56,8 @@ export default function Cockpit() {
     country: country || undefined,
     status_filter: statusFilter || undefined,
     deal_type: dealType || undefined,
+    sort: sort || undefined,
+    order,
   };
 
   useEffect(() => {
@@ -64,7 +68,7 @@ export default function Cockpit() {
         setTotal(p.total);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter, search, country, statusFilter, dealType, offset]);
+  }, [filter, search, country, statusFilter, dealType, sort, order, offset]);
 
   return (
     <>
@@ -147,12 +151,12 @@ export default function Cockpit() {
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
           <thead>
             <tr style={{ textAlign: "left", color: "var(--c-slate-2)" }}>
-              <th style={{ padding: 12 }}>{t("cockpit.cols.company")}</th>
-              <th style={{ padding: 12 }}>{t("cockpit.cols.dealType")}</th>
-              <th style={{ padding: 12 }}>{t("cockpit.cols.readiness")}</th>
-              <th style={{ padding: 12 }}>{t("cockpit.cols.status")}</th>
-              <th style={{ padding: 12 }}>{t("cockpit.cols.quotes")}</th>
-              <th style={{ padding: 12 }}>{t("cockpit.cols.age")}</th>
+              <SortHeader field="name" label={t("cockpit.cols.company")} state={sortState} onSort={toggle} style={{ padding: 12 }} />
+              <SortHeader field="deal_type_primary" label={t("cockpit.cols.dealType")} state={sortState} onSort={toggle} style={{ padding: 12 }} />
+              <SortHeader field="readiness_category" label={t("cockpit.cols.readiness")} state={sortState} onSort={toggle} style={{ padding: 12 }} />
+              <SortHeader field="status" label={t("cockpit.cols.status")} state={sortState} onSort={toggle} style={{ padding: 12 }} />
+              <SortHeader field="quote_requests" label={t("cockpit.cols.quotes")} state={sortState} onSort={toggle} style={{ padding: 12 }} />
+              <SortHeader field="days_open" label={t("cockpit.cols.age")} state={sortState} onSort={toggle} style={{ padding: 12 }} />
             </tr>
           </thead>
           <tbody>

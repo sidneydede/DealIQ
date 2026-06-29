@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import require_cabinet
-from app.api.pagination import Page, Pagination, pagination
+from app.api.pagination import Page, Pagination, SortParams, pagination, sorting
 from app.database import get_db
 from app.domain import deal as domain
 from app.domain.enums import DealStage, DealTypeCode
@@ -56,13 +56,14 @@ def create_deal(
 def list_deals(
     stage: DealStage | None = None,
     deal_type: DealTypeCode | None = None,
+    sort: SortParams = Depends(sorting),
     page: Pagination = Depends(pagination),
     db: Session = Depends(get_db),
     _: User = Depends(require_cabinet),
 ) -> Page[DealOut]:
     items, total = svc.list_deals(
         db, stage=stage, deal_type=deal_type.value if deal_type else None,
-        limit=page.limit, offset=page.offset,
+        sort=sort, limit=page.limit, offset=page.offset,
     )
     return Page.build(items, total, page)
 

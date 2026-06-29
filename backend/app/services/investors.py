@@ -5,6 +5,7 @@ import secrets
 
 from sqlalchemy.orm import Session
 
+from app.api.pagination import SortParams, apply_sql_sort
 from app.core.security import hash_password
 from app.domain.enums import (
     AuditAction,
@@ -135,15 +136,23 @@ def can_access(user: User, investor: Investor) -> bool:
     return investor.user_id == user.id
 
 
+_SORT_COLUMNS = {
+    "name": Investor.name,
+    "type": Investor.type,
+    "qualif_status": Investor.qualif_status,
+    "created_at": Investor.created_at,
+}
+
+
 def _list_query(db: Session, user: User):
-    q = db.query(Investor).order_by(Investor.created_at.desc())
+    q = db.query(Investor)
     if user.role in CABINET_ROLES or user.role == Role.conformite:
         return q
     return q.filter(Investor.user_id == user.id)
 
 
 def list_for_user(db: Session, user: User) -> list[Investor]:
-    return _list_query(db, user).all()
+    return _list_query(db, user).order_by(Investor.created_at.desc()).all()
 
 
 def paginate_for_user(
@@ -153,6 +162,7 @@ def paginate_for_user(
     q: str | None = None,
     type_filter: InvestorType | None = None,
     qualif_status: InvestorQualifStatus | None = None,
+    sort: SortParams | None = None,
     limit: int,
     offset: int = 0,
 ) -> tuple[list[Investor], int]:
@@ -164,6 +174,9 @@ def paginate_for_user(
     if qualif_status:
         query = query.filter(Investor.qualif_status == qualif_status)
     total = query.count()
+    query = apply_sql_sort(
+        query, sort or SortParams(None, False), _SORT_COLUMNS, default=Investor.created_at
+    )
     items = query.offset(offset).limit(limit).all()
     return items, total
 

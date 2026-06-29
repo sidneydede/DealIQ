@@ -27,6 +27,28 @@ def pagination(
     return Pagination(limit=limit, offset=offset)
 
 
+@dataclass
+class SortParams:
+    field: str | None
+    desc: bool
+
+
+def sorting(
+    sort: str | None = Query(default=None),
+    order: str = Query(default="asc"),
+) -> SortParams:
+    """Dépendance FastAPI : `?sort=<colonne>&order=asc|desc`."""
+    return SortParams(field=sort, desc=order.lower() == "desc")
+
+
+def apply_sql_sort(query, sort: SortParams, allowed: dict, *, default, default_desc: bool = True):
+    """Trie une requête SQLAlchemy sur une colonne whitelistée, sinon ordre par défaut."""
+    col = allowed.get(sort.field) if sort.field else None
+    if col is not None:
+        return query.order_by(col.desc() if sort.desc else col.asc())
+    return query.order_by(default.desc() if default_desc else default.asc())
+
+
 class Page(BaseModel, Generic[T]):
     """Enveloppe standard d'une liste paginée."""
 

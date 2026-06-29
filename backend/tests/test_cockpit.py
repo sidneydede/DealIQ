@@ -80,6 +80,16 @@ def test_cockpit_enriched_and_filters(client, db_session):
     sn = client.get("/api/v1/cockpit/companies", params={"country": "SN"}).json()
     assert sn["total"] == 0
 
+    # tri serveur par nom (Dette Co < Equity Co)
+    asc = client.get(
+        "/api/v1/cockpit/companies", params={"sort": "name", "order": "asc"}
+    ).json()["items"]
+    assert [it["name"] for it in asc] == ["Dette Co", "Equity Co"]
+    desc = client.get(
+        "/api/v1/cockpit/companies", params={"sort": "name", "order": "desc"}
+    ).json()["items"]
+    assert [it["name"] for it in desc] == ["Equity Co", "Dette Co"]
+
     # pagination
     paged = client.get("/api/v1/cockpit/companies", params={"limit": 1, "offset": 0}).json()
     assert paged["total"] == 2 and len(paged["items"]) == 1 and paged["limit"] == 1

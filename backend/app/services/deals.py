@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from sqlalchemy.orm import Session
 
+from app.api.pagination import SortParams, apply_sql_sort
 from app.domain import deal as domain
 from app.domain.enums import AuditAction, DealStage, InteractionStatus
 from app.models.company import Company
@@ -92,20 +93,29 @@ def to_dict(db: Session, deal: Deal) -> dict:
     }
 
 
+_DEAL_SORT = {
+    "created_at": Deal.created_at,
+    "stage": Deal.stage,
+    "deal_type": Deal.deal_type,
+}
+
+
 def list_deals(
     db: Session,
     *,
     stage: DealStage | None = None,
     deal_type: str | None = None,
+    sort: SortParams | None = None,
     limit: int | None = None,
     offset: int = 0,
 ) -> tuple[list[dict], int]:
-    q = db.query(Deal).order_by(Deal.created_at.desc())
+    q = db.query(Deal)
     if stage:
         q = q.filter(Deal.stage == stage)
     if deal_type:
         q = q.filter(Deal.deal_type == deal_type)
     total = q.count()
+    q = apply_sql_sort(q, sort or SortParams(None, False), _DEAL_SORT, default=Deal.created_at)
     if limit is not None:
         q = q.offset(offset).limit(limit)
     return [to_dict(db, d) for d in q.all()], total

@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import require_cabinet
-from app.api.pagination import Page, Pagination, pagination
+from app.api.pagination import Page, Pagination, SortParams, pagination, sorting
 from app.database import get_db
 from app.domain.enums import CompanyStatus, Country, DealTypeCode
 from app.models.quote import QuoteRequest
@@ -40,13 +40,14 @@ def cockpit_companies(
     country: Country | None = None,
     only: str | None = None,
     q: str | None = None,
+    sort: SortParams = Depends(sorting),
     page: Pagination = Depends(pagination),
     db: Session = Depends(get_db),
     _: User = Depends(require_cabinet),
 ) -> Page[CockpitItem]:
     items, total = svc.cockpit_items(
         db, status=status_filter, deal_type=deal_type, country=country, only=only,
-        q=q, limit=page.limit, offset=page.offset,
+        q=q, sort=sort, limit=page.limit, offset=page.offset,
     )
     return Page.build(items, total, page)
 
