@@ -41,8 +41,14 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
 
     # E-mail (notifications). Mock par défaut : aucun envoi réseau, juste journalisé.
-    email_provider: str = "mock"
+    # Passer à "smtp" + renseigner smtp_* pour un envoi réel (SES SMTP, Resend, Mailgun, …).
+    email_provider: str = "mock"  # mock | smtp
     email_from: str = "noreply@dealiq.com"
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_use_tls: bool = True
 
     @property
     def cors_origins_list(self) -> list[str]:
