@@ -333,6 +333,7 @@ const fr = {
       interestSent: "Intérêt transmis. Le Cabinet revient vers vous pour la suite (NDA).",
       ndaNote: "L'accès au dossier complet requiert un accord de confidentialité et de non-circonvention.",
       filterInstrument: "Instrument",
+      filterDealType: "Type de deal",
       all: "Tous",
     },
     teaserAdmin: {
@@ -698,6 +699,7 @@ const en = {
       interestSent: "Interest sent. The Firm will get back to you for the next steps (NDA).",
       ndaNote: "Full access requires a confidentiality and non-circumvention agreement.",
       filterInstrument: "Instrument",
+      filterDealType: "Deal type",
       all: "All",
     },
     qa: {

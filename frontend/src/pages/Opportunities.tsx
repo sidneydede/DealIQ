@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { ApiError } from "../api/client";
-import { teasers } from "../api/dealiq";
+import { meta, teasers } from "../api/dealiq";
 import type { TeaserPublic } from "../api/types";
 
 const INSTRUMENTS = ["", "equity", "dette", "quasi_equity", "hybride"];
@@ -11,12 +11,23 @@ export default function Opportunities() {
   const { t } = useTranslation();
   const [list, setList] = useState<TeaserPublic[]>([]);
   const [instrument, setInstrument] = useState("");
+  const [dealType, setDealType] = useState("");
+  const [dealTypeLabels, setDealTypeLabels] = useState<Record<string, string>>({});
   const [sentId, setSentId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    teasers.catalog(instrument ? { instrument } : {}).then(setList);
-  }, [instrument]);
+    void meta.dealTypes().then((d) =>
+      setDealTypeLabels(Object.fromEntries(d.map((x) => [x.code, x.label]))),
+    );
+  }, []);
+
+  useEffect(() => {
+    const params: { instrument?: string; deal_type?: string } = {};
+    if (instrument) params.instrument = instrument;
+    if (dealType) params.deal_type = dealType;
+    teasers.catalog(params).then(setList);
+  }, [instrument, dealType]);
 
   async function express(id: string) {
     setError(null);
@@ -33,7 +44,10 @@ export default function Opportunities() {
       <h1>{t("opportunities.title")}</h1>
       <p className="muted">{t("opportunities.intro")}</p>
 
-      <div className="card" style={{ display: "flex", gap: 12, alignItems: "center" }}>
+      <div
+        style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}
+        className="card"
+      >
         <label>
           {t("opportunities.filterInstrument")} :{" "}
           <select
@@ -44,6 +58,21 @@ export default function Opportunities() {
             {INSTRUMENTS.map((i) => (
               <option key={i} value={i}>
                 {i || t("opportunities.all")}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          {t("opportunities.filterDealType")} :{" "}
+          <select
+            value={dealType}
+            onChange={(e) => setDealType(e.target.value)}
+            style={{ padding: 8, borderRadius: 8, border: "1px solid var(--c-border)" }}
+          >
+            <option value="">{t("opportunities.all")}</option>
+            {Object.entries(dealTypeLabels).map(([code, label]) => (
+              <option key={code} value={code}>
+                {label}
               </option>
             ))}
           </select>
