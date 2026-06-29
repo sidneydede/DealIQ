@@ -310,6 +310,40 @@ export interface DocumentView {
   note: string;
 }
 
+export interface Deal {
+  id: string;
+  company_id: string;
+  company_name: string | null;
+  investor_id: string;
+  investor_name: string | null;
+  interaction_id: string | null;
+  deal_type: string | null;
+  stage: string;
+  owner_id: string | null;
+  created_at: string;
+}
+
+export interface DealMilestone {
+  id: string;
+  label: string;
+  position: number;
+  done: boolean;
+}
+
+export interface DealStageHistory {
+  id: string;
+  old_stage: string | null;
+  new_stage: string;
+  actor_id: string | null;
+  note: string | null;
+  created_at: string;
+}
+
+export interface DealDetail extends Deal {
+  milestones: DealMilestone[];
+  history: DealStageHistory[];
+}
+
 export interface DealTypeHistoryEntry {
   id: string;
   old_primary: string | null;

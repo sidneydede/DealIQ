@@ -7,6 +7,7 @@ from app.api.routes import (
     cockpit,
     companies,
     dataroom,
+    deals,
     documents,
     health,
     investors,
@@ -43,3 +44,4 @@ api_router.include_router(teasers.router, tags=["teasers"])
 api_router.include_router(qa.router, tags=["qa"])
 api_router.include_router(kyc.router, tags=["kyc"])
 api_router.include_router(dataroom.router, tags=["dataroom"])
+api_router.include_router(deals.router, tags=["deals"])

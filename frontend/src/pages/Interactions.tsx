@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { interactions as api } from "../api/dealiq";
+import { deals, interactions as api } from "../api/dealiq";
 import type { Interaction } from "../api/types";
 import QAThread from "../components/QAThread";
 
@@ -63,6 +63,13 @@ export default function Interactions() {
             onClick={() => setOpen(open === it.id ? null : it.id)}
           >
             {t("qa.thread")}
+          </button>{" "}
+          <button
+            className="btn btn--ghost"
+            style={{ marginTop: 8 }}
+            onClick={() => deals.createFromInteraction(it.id)}
+          >
+            {t("dealPipeline.track")}
           </button>
           {open === it.id && <QAThread interactionId={it.id} canAnswer={true} />}
         </div>

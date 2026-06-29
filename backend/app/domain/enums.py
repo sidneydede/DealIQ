@@ -183,6 +183,18 @@ class KycStatus(str, Enum):
     hit = "hit"  # correspondance sanctions/PEP → bloque + alerte conformité
 
 
+class DealStage(str, Enum):
+    """Étapes du pipeline de deal execution (M16)."""
+
+    interesse = "interesse"
+    nda = "nda"
+    data_room = "data_room"
+    due_diligence = "due_diligence"
+    term_sheet = "term_sheet"
+    closing = "closing"
+    abandonne = "abandonne"
+
+
 class DataRoomStatus(str, Enum):
     ouverte = "ouverte"
     fermee = "fermee"
@@ -224,6 +236,8 @@ class AuditAction(str, Enum):
     dataroom_access_granted = "dataroom_access_granted"
     dataroom_access_revoked = "dataroom_access_revoked"
     dataroom_document_viewed = "dataroom_document_viewed"
+    deal_created = "deal_created"
+    deal_stage_changed = "deal_stage_changed"
     export = "export"
 
 

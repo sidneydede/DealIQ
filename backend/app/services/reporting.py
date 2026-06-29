@@ -5,6 +5,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.models.company import Company, FinancingNeed
+from app.models.deal import Deal
 from app.models.onboarding import OnboardingSession
 from app.models.quote import QuoteRequest
 from app.models.score import Score
@@ -42,6 +43,11 @@ def dashboard(db: Session) -> dict:
         (st.value if hasattr(st, "value") else st): count
         for st, count in db.query(Company.status, func.count(Company.id)).group_by(Company.status)
     }
+    deals_total = db.query(func.count(Deal.id)).scalar() or 0
+    deals_by_stage = {
+        (st.value if hasattr(st, "value") else st): count
+        for st, count in db.query(Deal.stage, func.count(Deal.id)).group_by(Deal.stage)
+    }
 
     return {
         # O1 — complétion du diagnostic
@@ -57,4 +63,7 @@ def dashboard(db: Session) -> dict:
         "by_deal_type": by_deal_type,
         "by_readiness_category": by_readiness,
         "companies_by_status": by_status,
+        # Deals (M16) — KPI ventilés par étape de pipeline
+        "deals_total": deals_total,
+        "deals_by_stage": deals_by_stage,
     }

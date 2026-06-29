@@ -8,6 +8,7 @@ from app.models.dataroom import (
     DataRoomDocument,
     DataRoomLog,
 )
+from app.models.deal import Deal, DealMilestone, DealStageHistory
 from app.models.dealtype_history import DealTypeHistory
 from app.models.document import Document
 from app.models.investor import InvestmentCriteria, Investor
@@ -38,6 +39,9 @@ __all__ = [
     "DataRoomDocument",
     "DataRoomAccess",
     "DataRoomLog",
+    "Deal",
+    "DealStageHistory",
+    "DealMilestone",
     "Score",
     "Document",
     "OnboardingSession",

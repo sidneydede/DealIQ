@@ -12,6 +12,9 @@ import type {
   DataRoomAccess,
   DataRoomDocument,
   DataRoomLog,
+  Deal,
+  DealDetail,
+  DealMilestone,
   DocumentView,
   DealTypeHistoryEntry,
   DealTypeMeta,
@@ -143,6 +146,20 @@ export const kyc = {
     api.post<KycCheck>("/kyc/checks", { subject_type, subject_id, check_type }),
   update: (id: string, status: string, notes?: string) =>
     api.patch<KycCheck>(`/kyc/checks/${id}`, { status, notes }),
+};
+
+export const deals = {
+  list: (params: { stage?: string; deal_type?: string } = {}) => {
+    const qs = new URLSearchParams(params as Record<string, string>).toString();
+    return api.get<Deal[]>(`/deals${qs ? `?${qs}` : ""}`);
+  },
+  get: (id: string) => api.get<DealDetail>(`/deals/${id}`),
+  createFromInteraction: (interactionId: string) =>
+    api.post<Deal>(`/interactions/${interactionId}/deal`),
+  advance: (id: string, stage: string, note?: string) =>
+    api.patch<Deal>(`/deals/${id}/stage`, { stage, note }),
+  toggleMilestone: (milestoneId: string, done: boolean) =>
+    api.patch<DealMilestone>(`/deal-milestones/${milestoneId}`, { done }),
 };
 
 export const dataroom = {

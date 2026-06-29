@@ -19,6 +19,7 @@ import MyDataRooms from "./pages/MyDataRooms";
 import MyInteractions from "./pages/MyInteractions";
 import Offers from "./pages/Offers";
 import Opportunities from "./pages/Opportunities";
+import Pipeline from "./pages/Pipeline";
 import Questionnaire from "./pages/Questionnaire";
 import Readiness from "./pages/Readiness";
 import Reporting from "./pages/Reporting";
@@ -65,6 +66,7 @@ export default function App() {
           <Route path="/interactions" element={<Interactions />} />
           <Route path="/datarooms" element={<DataRoomAdmin />} />
           <Route path="/my-datarooms" element={<MyDataRooms />} />
+          <Route path="/pipeline" element={<Pipeline />} />
           <Route path="/kyc" element={<Kyc />} />
           <Route path="/users" element={<Placeholder title="Utilisateurs" />} />
           <Route path="/audit" element={<Audit />} />
