@@ -315,6 +315,13 @@ class AuditAction(str, Enum):
     export = "export"
 
 
+class TaskStatus(str, Enum):
+    """Statut d'une tâche / relance CRM (M20)."""
+
+    a_faire = "a_faire"
+    fait = "fait"
+
+
 class NotificationType(str, Enum):
     """Catégories de notifications in-app (et e-mail mock)."""
 

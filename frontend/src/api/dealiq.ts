@@ -48,6 +48,7 @@ import type {
   Report,
   ScoringConfig,
   SimulateResult,
+  Task,
   Teaser,
   TeaserPublic,
   UserCreated,
@@ -176,6 +177,30 @@ export const security = {
   mfaSetup: () => api.post<{ secret: string; otpauth_uri: string }>("/auth/mfa/setup"),
   mfaEnable: (code: string) => api.post<{ mfa_enabled: boolean }>("/auth/mfa/enable", { code }),
   mfaDisable: (code: string) => api.post<{ mfa_enabled: boolean }>("/auth/mfa/disable", { code }),
+};
+
+export const tasks = {
+  list: (
+    params: { status_filter?: string; overdue?: boolean; company_id?: string; mine?: boolean } = {},
+  ) => {
+    const clean: Record<string, string> = {};
+    if (params.status_filter) clean.status_filter = params.status_filter;
+    if (params.overdue) clean.overdue = "true";
+    if (params.company_id) clean.company_id = params.company_id;
+    if (params.mine) clean.mine = "true";
+    const qs = new URLSearchParams(clean).toString();
+    return api.get<Task[]>(`/tasks${qs ? `?${qs}` : ""}`);
+  },
+  create: (body: {
+    title: string;
+    due_date?: string;
+    company_id?: string;
+    assignee_id?: string;
+    note?: string;
+  }) => api.post<Task>("/tasks", body),
+  update: (id: string, body: { status?: string; title?: string; due_date?: string }) =>
+    api.patch<Task>(`/tasks/${id}`, body),
+  remove: (id: string) => api.del<{ deleted: boolean }>(`/tasks/${id}`),
 };
 
 export const notifications = {

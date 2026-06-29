@@ -86,6 +86,7 @@ const NAV: NavItem[] = [
   { to: "/readiness", key: "nav.readiness", roles: ["entrepreneur"] },
   { to: "/offers", key: "nav.offers", roles: ["entrepreneur"] },
   { to: "/cockpit", key: "nav.cockpit", roles: ["analyste", "senior"] },
+  { to: "/tasks", key: "nav.tasks", roles: ["analyste", "senior", "admin"] },
   { to: "/missions", key: "nav.missions", roles: ["analyste", "senior"] },
   { to: "/investors", key: "nav.investors", roles: ["analyste", "senior", "admin"] },
   { to: "/matching", key: "nav.matching", roles: ["analyste", "senior"] },

@@ -30,6 +30,20 @@ export interface Page<T> {
   offset: number;
 }
 
+export interface Task {
+  id: string;
+  title: string;
+  note: string | null;
+  due_date: string | null;
+  status: string;
+  company_id: string | null;
+  company_name: string | null;
+  assignee_id: string | null;
+  assignee_email: string | null;
+  overdue: boolean;
+  created_at: string;
+}
+
 export interface NotificationItem {
   id: string;
   type: string;

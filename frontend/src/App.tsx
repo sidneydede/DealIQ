@@ -36,6 +36,7 @@ import Reporting from "./pages/Reporting";
 import ReportView from "./pages/ReportView";
 import ScoringCalibration from "./pages/ScoringCalibration";
 import Security from "./pages/Security";
+import Tasks from "./pages/Tasks";
 import TeaserAdmin from "./pages/TeaserAdmin";
 import Users from "./pages/Users";
 
@@ -68,6 +69,7 @@ export default function App() {
           <Route path="/report" element={<ReportView />} />
           <Route path="/offers" element={<Offers />} />
           <Route path="/cockpit" element={<Cockpit />} />
+          <Route path="/tasks" element={<Tasks />} />
           <Route path="/reporting" element={<Reporting />} />
           <Route path="/my-criteria" element={<MyCriteria />} />
           <Route path="/opportunities" element={<Opportunities />} />
