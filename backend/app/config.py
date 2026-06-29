@@ -39,9 +39,13 @@ class Settings(BaseSettings):
     s3_endpoint_url: str = ""  # vide = AWS ; sinon endpoint S3-compatible
     s3_sse: str = "AES256"  # chiffrement côté serveur ("" pour désactiver)
 
-    # Rate limiting (appliqué aux endpoints sensibles ; actif en production)
+    # Rate limiting (appliqué aux endpoints sensibles ; actif en production).
+    # Backend "memory" (mono-instance) par défaut ; "redis" pour un compteur
+    # partagé entre instances (déploiement multi-process / multi-pod).
     rate_limit_max: int = 10
     rate_limit_window_seconds: int = 60
+    rate_limit_backend: str = "memory"  # memory | redis
+    redis_url: str = "redis://localhost:6379/0"
 
     # IA / LLM (accélérateur ; mock par défaut, aucune clé requise)
     llm_provider: str = "mock"

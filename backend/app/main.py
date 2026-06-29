@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 
 from app.api.routes import api_router
 from app.config import settings
-from app.core.ratelimit import RateLimiter
+from app.core.ratelimit import build_limiter
 
 _DEFAULT_SECRET = "change-me-in-prod-please-use-a-long-random-value"
 
@@ -38,7 +38,7 @@ app.add_middleware(
 )
 
 # Rate limiting sur les endpoints d'authentification (anti brute-force), actif en production.
-_auth_limiter = RateLimiter(settings.rate_limit_max, settings.rate_limit_window_seconds)
+_auth_limiter = build_limiter()
 _RATE_LIMITED_PATHS = {
     f"{settings.api_v1_prefix}/auth/login",
     f"{settings.api_v1_prefix}/auth/register",

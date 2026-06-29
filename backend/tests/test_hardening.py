@@ -2,7 +2,7 @@
 import pytest
 
 from app.api.deps import get_current_user
-from app.core.ratelimit import RateLimiter
+from app.core.ratelimit import RateLimiter, RedisRateLimiter, build_limiter
 from app.core.security import hash_password
 from app.domain.enums import Role
 from app.main import app
@@ -23,6 +23,45 @@ def test_rate_limiter_window():
     assert rl.allow("k") is False  # 3e refusée dans la fenêtre
     t["v"] = 11  # fenêtre écoulée
     assert rl.allow("k") is True
+
+
+class _FakeRedis:
+    """Faux Redis en mémoire (INCR/EXPIRE) pour tester le limiteur distribué."""
+
+    def __init__(self) -> None:
+        self.store: dict[str, int] = {}
+
+    def incr(self, key):
+        self.store[key] = self.store.get(key, 0) + 1
+        return self.store[key]
+
+    def expire(self, key, seconds):  # noqa: D401 - no-op (TTL non simulé)
+        return True
+
+
+def test_redis_rate_limiter_window():
+    t = {"v": 1000.0}
+    rl = RedisRateLimiter(_FakeRedis(), max_requests=2, window_seconds=10, clock=lambda: t["v"])
+    assert rl.allow("k") is True
+    assert rl.allow("k") is True
+    assert rl.allow("k") is False  # 3e refusée dans la même fenêtre fixe
+    t["v"] += 10  # tranche de fenêtre suivante
+    assert rl.allow("k") is True
+
+
+def test_build_limiter_selects_backend(monkeypatch):
+    import redis
+
+    from app.config import settings
+
+    monkeypatch.setattr(settings, "rate_limit_backend", "memory")
+    assert isinstance(build_limiter(), RateLimiter)
+
+    fake = _FakeRedis()
+    monkeypatch.setattr(settings, "rate_limit_backend", "redis")
+    monkeypatch.setattr(redis.Redis, "from_url", lambda url, **kw: fake)
+    lim = build_limiter()
+    assert isinstance(lim, RedisRateLimiter) and lim.client is fake
 
 
 def test_security_headers_present(client):
