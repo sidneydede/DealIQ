@@ -15,6 +15,7 @@ import type {
   GatingResult,
   Interaction,
   Investor,
+  KycCheck,
   MatchResult,
   OffersResponse,
   OnboardingSession,
@@ -126,6 +127,17 @@ export const interactions = {
   list: () => api.get<Interaction[]>("/interactions"),
   setStatus: (id: string, statusValue: string) =>
     api.patch<Interaction>(`/interactions/${id}/status`, { status: statusValue }),
+};
+
+export const kyc = {
+  list: (params: { status_filter?: string } = {}) => {
+    const qs = new URLSearchParams(params as Record<string, string>).toString();
+    return api.get<KycCheck[]>(`/kyc/checks${qs ? `?${qs}` : ""}`);
+  },
+  run: (subject_type: string, subject_id: string, check_type: string) =>
+    api.post<KycCheck>("/kyc/checks", { subject_type, subject_id, check_type }),
+  update: (id: string, status: string, notes?: string) =>
+    api.patch<KycCheck>(`/kyc/checks/${id}`, { status, notes }),
 };
 
 export const qa = {

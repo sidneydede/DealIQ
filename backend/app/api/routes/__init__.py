@@ -9,6 +9,7 @@ from app.api.routes import (
     documents,
     health,
     investors,
+    kyc,
     matching,
     meta,
     offers,
@@ -39,3 +40,4 @@ api_router.include_router(investors.router, prefix="/investors", tags=["investor
 api_router.include_router(matching.router, tags=["matching"])
 api_router.include_router(teasers.router, tags=["teasers"])
 api_router.include_router(qa.router, tags=["qa"])
+api_router.include_router(kyc.router, tags=["kyc"])

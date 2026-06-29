@@ -253,6 +253,20 @@ export interface QAItem {
   updated_at: string;
 }
 
+export interface KycCheck {
+  id: string;
+  subject_type: string;
+  subject_id: string;
+  subject_label: string | null;
+  check_type: string;
+  status: string;
+  provider: string | null;
+  result: Record<string, unknown>;
+  notes: string | null;
+  checked_by: string | null;
+  created_at: string;
+}
+
 export interface DealTypeHistoryEntry {
   id: string;
   old_primary: string | null;

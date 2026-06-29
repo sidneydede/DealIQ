@@ -163,6 +163,26 @@ class QAStatus(str, Enum):
     cloturee = "cloturee"
 
 
+class KycSubjectType(str, Enum):
+    company = "company"
+    investor = "investor"
+
+
+class KycCheckType(str, Enum):
+    """Type de contrôle (M15). RG-M15-01 : API achetée, ici en mode mock."""
+
+    kyb = "kyb"  # identité légale, actionnariat, bénéficiaires effectifs
+    aml_screening = "aml_screening"  # sanctions, PEP, adverse media
+    manuelle = "manuelle"  # checklist KYC manuelle (M15-03)
+
+
+class KycStatus(str, Enum):
+    en_attente = "en_attente"
+    valide = "valide"
+    rejete = "rejete"
+    hit = "hit"  # correspondance sanctions/PEP → bloque + alerte conformité
+
+
 class DealTypeChangeSource(str, Enum):
     """Origine d'un changement de type de deal (historisation M24)."""
 
@@ -188,6 +208,9 @@ class AuditAction(str, Enum):
     teaser_published = "teaser_published"
     interaction_created = "interaction_created"
     interaction_status_changed = "interaction_status_changed"
+    kyc_check_created = "kyc_check_created"
+    kyc_status_changed = "kyc_status_changed"
+    kyc_hit_alert = "kyc_hit_alert"
     export = "export"
 
 

@@ -9,6 +9,7 @@ import DealTypeSelect from "./pages/DealTypeSelect";
 import Documents from "./pages/Documents";
 import Interactions from "./pages/Interactions";
 import Investors from "./pages/Investors";
+import Kyc from "./pages/Kyc";
 import Login from "./pages/Login";
 import Matching from "./pages/Matching";
 import MyCompany from "./pages/MyCompany";
@@ -60,6 +61,7 @@ export default function App() {
           <Route path="/matching" element={<Matching />} />
           <Route path="/teasers" element={<TeaserAdmin />} />
           <Route path="/interactions" element={<Interactions />} />
+          <Route path="/kyc" element={<Kyc />} />
           <Route path="/users" element={<Placeholder title="Utilisateurs" />} />
           <Route path="/audit" element={<Audit />} />
           <Route path="*" element={<Navigate to="/" replace />} />
