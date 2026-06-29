@@ -24,14 +24,20 @@ export default function Pipeline() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [detail, setDetail] = useState<DealDetail | null>(null);
   const [note, setNote] = useState("");
+  const [stageFilter, setStageFilter] = useState("");
 
   const reload = useCallback(() => {
-    void deals.list({ limit: LIMIT, offset }).then((p) => {
+    void deals.list({ stage: stageFilter || undefined, limit: LIMIT, offset }).then((p) => {
       setList(p.items);
       setTotal(p.total);
     });
-  }, [offset]);
+  }, [stageFilter, offset]);
   useEffect(() => reload(), [reload]);
+
+  // Retour page 1 au changement de filtre.
+  useEffect(() => {
+    setOffset(0);
+  }, [stageFilter]);
 
   async function openDeal(id: string) {
     if (openId === id) {
@@ -58,11 +64,37 @@ export default function Pipeline() {
 
   return (
     <>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 8,
+          flexWrap: "wrap",
+        }}
+      >
         <h1>{t("dealPipeline.title")}</h1>
-        <button className="btn btn--ghost" onClick={() => void deals.exportCsv()}>
-          {t("dealPipeline.exportCsv")}
-        </button>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <select
+            value={stageFilter}
+            onChange={(e) => setStageFilter(e.target.value)}
+            aria-label={t("dealPipeline.stage")}
+            style={{ padding: 8, borderRadius: 8, border: "1px solid var(--c-border)" }}
+          >
+            <option value="">{t("dealPipeline.allStages")}</option>
+            {STAGES.map((s) => (
+              <option key={s} value={s}>
+                {t(`dealPipeline.stages.${s}`)}
+              </option>
+            ))}
+          </select>
+          <button
+            className="btn btn--ghost"
+            onClick={() => void deals.exportCsv({ stage: stageFilter || undefined })}
+          >
+            {t("dealPipeline.exportCsv")}
+          </button>
+        </div>
       </div>
       {list.length === 0 && <p className="muted">{t("dealPipeline.empty")}</p>}
 
