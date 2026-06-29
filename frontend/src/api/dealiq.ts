@@ -31,6 +31,9 @@ import type {
   MatchResult,
   MissionDetail,
   OffersResponse,
+  Program,
+  ProgramMember,
+  ProgramReport,
   OnboardingSession,
   QAItem,
   Question,
@@ -151,6 +154,16 @@ export const kyc = {
     api.post<KycCheck>("/kyc/checks", { subject_type, subject_id, check_type }),
   update: (id: string, status: string, notes?: string) =>
     api.patch<KycCheck>(`/kyc/checks/${id}`, { status, notes }),
+};
+
+export const programs = {
+  list: () => api.get<Program[]>("/programs"),
+  create: (body: { name: string; sponsor_name: string; sponsor_email?: string }) =>
+    api.post<Program>("/programs", body),
+  addMember: (programId: string, company_id: string) =>
+    api.post<ProgramMember>(`/programs/${programId}/members`, { company_id }),
+  members: (programId: string) => api.get<ProgramMember[]>(`/programs/${programId}/members`),
+  report: (programId: string) => api.get<ProgramReport>(`/programs/${programId}/report`),
 };
 
 export const esg = {

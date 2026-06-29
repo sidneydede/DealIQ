@@ -430,6 +430,32 @@ export interface EsgProfile {
   incomplete_for_dfi: boolean;
 }
 
+export interface Program {
+  id: string;
+  name: string;
+  sponsor_name: string;
+  sponsor_user_id: string | null;
+  scope: string | null;
+  deliverables: string | null;
+  status: string;
+  created_at: string;
+}
+
+export interface ProgramMember {
+  id: string;
+  company_id: string;
+  company_name: string | null;
+}
+
+export interface ProgramReport {
+  cohort_size: number;
+  by_readiness_category: Record<string, number>;
+  by_status: Record<string, number>;
+  esg: Record<string, number>;
+  deals_total: number;
+  closings: number;
+}
+
 export interface DealTypeHistoryEntry {
   id: string;
   old_primary: string | null;

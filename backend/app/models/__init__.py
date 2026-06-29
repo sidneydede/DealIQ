@@ -17,6 +17,7 @@ from app.models.kyc import KycCheck
 from app.models.mandate import Fee, Mandate
 from app.models.mission import Deliverable, Mission, MissionReview, MissionTask
 from app.models.onboarding import OnboardingSession
+from app.models.program import Program, ProgramMember
 from app.models.qa import QAItem
 from app.models.quote import QuoteRequest
 from app.models.reference import DealType
@@ -52,6 +53,8 @@ __all__ = [
     "Deliverable",
     "MissionReview",
     "EsgProfile",
+    "Program",
+    "ProgramMember",
     "Score",
     "Document",
     "OnboardingSession",

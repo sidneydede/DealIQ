@@ -25,6 +25,7 @@ import MyMission from "./pages/MyMission";
 import Offers from "./pages/Offers";
 import Opportunities from "./pages/Opportunities";
 import Pipeline from "./pages/Pipeline";
+import Programs from "./pages/Programs";
 import Questionnaire from "./pages/Questionnaire";
 import Readiness from "./pages/Readiness";
 import Reporting from "./pages/Reporting";
@@ -76,6 +77,7 @@ export default function App() {
           <Route path="/pipeline" element={<Pipeline />} />
           <Route path="/mandates" element={<MandatesPage />} />
           <Route path="/esg" element={<Esg />} />
+          <Route path="/programs" element={<Programs />} />
           <Route path="/conflicts" element={<Conflicts />} />
           <Route path="/kyc" element={<Kyc />} />
           <Route path="/users" element={<Placeholder title="Utilisateurs" />} />

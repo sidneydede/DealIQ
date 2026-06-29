@@ -14,7 +14,7 @@ const NAV: NavItem[] = [
   {
     to: "/",
     key: "nav.dashboard",
-    roles: ["entrepreneur", "investisseur", "analyste", "senior", "admin"],
+    roles: ["entrepreneur", "investisseur", "analyste", "senior", "admin", "sponsor"],
   },
   { to: "/company", key: "nav.company", roles: ["entrepreneur"] },
   { to: "/my-mission", key: "nav.myMission", roles: ["entrepreneur"] },
@@ -37,6 +37,7 @@ const NAV: NavItem[] = [
   { to: "/pipeline", key: "nav.dealPipeline", roles: ["analyste", "senior"] },
   { to: "/mandates", key: "nav.mandates", roles: ["senior", "admin"] },
   { to: "/esg", key: "nav.esg", roles: ["analyste", "senior"] },
+  { to: "/programs", key: "nav.programs", roles: ["senior", "admin", "sponsor"] },
   { to: "/conflicts", key: "nav.conflicts", roles: ["conformite", "senior", "admin"] },
   { to: "/reporting", key: "nav.reporting", roles: ["analyste", "senior", "admin"] },
   { to: "/kyc", key: "nav.kyc", roles: ["conformite", "admin"] },

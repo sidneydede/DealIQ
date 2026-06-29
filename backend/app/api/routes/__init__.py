@@ -19,6 +19,7 @@ from app.api.routes import (
     missions,
     offers,
     onboarding,
+    programs,
     qa,
     reporting,
     reports,
@@ -51,3 +52,4 @@ api_router.include_router(deals.router, tags=["deals"])
 api_router.include_router(mandates.router, tags=["mandates"])
 api_router.include_router(missions.router, tags=["missions"])
 api_router.include_router(esg.router, tags=["esg"])
+api_router.include_router(programs.router, tags=["programs"])

@@ -8,6 +8,7 @@ export type Role =
   | "analyste"
   | "senior"
   | "conformite"
+  | "sponsor"
   | "admin";
 
 export interface User {

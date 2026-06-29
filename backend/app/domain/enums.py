@@ -12,6 +12,7 @@ class Role(str, Enum):
     analyste = "analyste"
     senior = "senior"  # consultant senior
     conformite = "conformite"
+    sponsor = "sponsor"  # DFI / banque finançant une cohorte (M23)
     admin = "admin"
 
 
@@ -195,6 +196,11 @@ class DealStage(str, Enum):
     abandonne = "abandonne"
 
 
+class ProgramStatus(str, Enum):
+    actif = "actif"
+    clos = "clos"
+
+
 class MissionStatus(str, Enum):
     en_cours = "en_cours"
     livre = "livre"
@@ -299,6 +305,8 @@ class AuditAction(str, Enum):
     fee_added = "fee_added"
     mission_reviewed = "mission_reviewed"
     mission_promoted = "mission_promoted"
+    program_created = "program_created"
+    program_member_added = "program_member_added"
     export = "export"
 
 
