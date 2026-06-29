@@ -211,6 +211,36 @@ export interface MatchResult {
   reasons: string[];
 }
 
+export interface TeaserPublic {
+  id: string;
+  deal_type: string | null;
+  title: string;
+  sector: string;
+  zone: string | null;
+  revenue_band: string | null;
+  amount_band: string | null;
+  instrument: string | null;
+  strengths: string[];
+  summary: string | null;
+}
+
+export interface Teaser extends TeaserPublic {
+  company_id: string;
+  version: number;
+  status: string;
+  created_at: string;
+}
+
+export interface Interaction {
+  id: string;
+  teaser_id: string;
+  company_id: string;
+  investor_id: string;
+  status: string;
+  note: string | null;
+  created_at: string;
+}
+
 export interface DealTypeHistoryEntry {
   id: string;
   old_primary: string | null;

@@ -9,6 +9,7 @@ from app.models.onboarding import OnboardingSession
 from app.models.quote import QuoteRequest
 from app.models.reference import DealType
 from app.models.score import Score
+from app.models.teaser import Interaction, Teaser
 from app.models.user import User
 
 __all__ = [
@@ -21,6 +22,8 @@ __all__ = [
     "DealTypeHistory",
     "Investor",
     "InvestmentCriteria",
+    "Teaser",
+    "Interaction",
     "Score",
     "Document",
     "OnboardingSession",

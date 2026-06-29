@@ -7,16 +7,19 @@ import Cockpit from "./pages/Cockpit";
 import Dashboard from "./pages/Dashboard";
 import DealTypeSelect from "./pages/DealTypeSelect";
 import Documents from "./pages/Documents";
+import Interactions from "./pages/Interactions";
 import Investors from "./pages/Investors";
 import Login from "./pages/Login";
 import Matching from "./pages/Matching";
 import MyCompany from "./pages/MyCompany";
 import MyCriteria from "./pages/MyCriteria";
 import Offers from "./pages/Offers";
+import Opportunities from "./pages/Opportunities";
 import Questionnaire from "./pages/Questionnaire";
 import Readiness from "./pages/Readiness";
 import Reporting from "./pages/Reporting";
 import ReportView from "./pages/ReportView";
+import TeaserAdmin from "./pages/TeaserAdmin";
 
 function Placeholder({ title }: { title: string }) {
   return (
@@ -50,8 +53,11 @@ export default function App() {
           <Route path="/cockpit" element={<Cockpit />} />
           <Route path="/reporting" element={<Reporting />} />
           <Route path="/my-criteria" element={<MyCriteria />} />
+          <Route path="/opportunities" element={<Opportunities />} />
           <Route path="/investors" element={<Investors />} />
           <Route path="/matching" element={<Matching />} />
+          <Route path="/teasers" element={<TeaserAdmin />} />
+          <Route path="/interactions" element={<Interactions />} />
           <Route path="/users" element={<Placeholder title="Utilisateurs" />} />
           <Route path="/audit" element={<Audit />} />
           <Route path="*" element={<Navigate to="/" replace />} />

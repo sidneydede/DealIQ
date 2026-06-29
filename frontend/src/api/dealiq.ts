@@ -13,6 +13,7 @@ import type {
   DocumentOut,
   FinancingNeed,
   GatingResult,
+  Interaction,
   Investor,
   MatchResult,
   OffersResponse,
@@ -21,6 +22,8 @@ import type {
   QuoteRequest,
   ReadinessScore,
   Report,
+  Teaser,
+  TeaserPublic,
 } from "./types";
 
 export const meta = {
@@ -102,6 +105,26 @@ export const matching = {
     api.get<MatchResult[]>(
       `/companies/${companyId}/matches${includeNonEligible ? "?include_non_eligible=true" : ""}`,
     ),
+};
+
+export const teasers = {
+  // Cabinet
+  generate: (companyId: string) => api.post<Teaser>(`/companies/${companyId}/teaser`),
+  forCompany: (companyId: string) => api.get<Teaser>(`/companies/${companyId}/teaser`),
+  publish: (teaserId: string) => api.post<Teaser>(`/teasers/${teaserId}/publish`),
+  // Investisseur (anonymisé)
+  catalog: (params: { instrument?: string; deal_type?: string; sector?: string } = {}) => {
+    const qs = new URLSearchParams(params as Record<string, string>).toString();
+    return api.get<TeaserPublic[]>(`/teasers${qs ? `?${qs}` : ""}`);
+  },
+  interest: (teaserId: string, note?: string) =>
+    api.post<Interaction>(`/teasers/${teaserId}/interest`, { note }),
+};
+
+export const interactions = {
+  list: () => api.get<Interaction[]>("/interactions"),
+  setStatus: (id: string, statusValue: string) =>
+    api.patch<Interaction>(`/interactions/${id}/status`, { status: statusValue }),
 };
 
 export interface CompanyCreateInput {

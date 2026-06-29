@@ -138,6 +138,14 @@ class InvestorQualifStatus(str, Enum):
     inactif = "inactif"
 
 
+class TeaserStatus(str, Enum):
+    """Statut d'un teaser (M11). Publié = visible au catalogue investisseur."""
+
+    brouillon = "brouillon"
+    publie = "publie"
+    retire = "retire"
+
+
 class InteractionStatus(str, Enum):
     """Statut d'un intérêt investisseur / mise en relation (M12, amorce)."""
 
@@ -169,6 +177,9 @@ class AuditAction(str, Enum):
     document_uploaded = "document_uploaded"
     document_status_changed = "document_status_changed"
     score_computed = "score_computed"
+    teaser_published = "teaser_published"
+    interaction_created = "interaction_created"
+    interaction_status_changed = "interaction_status_changed"
     export = "export"
 
 
