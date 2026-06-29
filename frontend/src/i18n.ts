@@ -484,11 +484,130 @@ const fr = {
   },
 };
 
+// EN — portail investisseur (CDC §7.12). Les écrans cabinet (non vus par l'investisseur)
+// retombent automatiquement sur le FR via fallbackLng.
+const en = {
+  translation: {
+    app: {
+      name: "DealIQ",
+      tagline: "Investment readiness and private dealflow introductions",
+    },
+    nav: {
+      dashboard: "Dashboard",
+      diagnostic: "My diagnostic",
+      dealType: "My deal type",
+      company: "My company",
+      myMission: "My engagement",
+      missions: "Engagement spaces",
+      documents: "Documents",
+      readiness: "My readiness",
+      offers: "Advisory",
+      cockpit: "Cockpit",
+      pipeline: "Entrepreneur pipeline",
+      reporting: "Dashboard",
+      myCriteria: "My criteria",
+      opportunities: "Opportunities",
+      myInteractions: "My exchanges",
+      investors: "Investors",
+      matching: "Matching",
+      teasers: "Teasers",
+      interactions: "Introductions",
+      datarooms: "Data rooms",
+      myDatarooms: "Data rooms",
+      dealPipeline: "Deal pipeline",
+      mandates: "Mandates & fees",
+      esg: "ESG / impact",
+      dd: "OHADA/SYSCOHADA DD",
+      scoring: "Scoring calibration",
+      programs: "Programs",
+      conflicts: "Conflicts of interest",
+      kyc: "Compliance (KYC)",
+      users: "Users",
+      audit: "Audit log",
+      logout: "Sign out",
+    },
+    auth: {
+      loginTitle: "Sign in",
+      email: "Email address",
+      password: "Password",
+      login: "Sign in",
+      register: "Create an account",
+      noAccount: "No account yet?",
+      haveAccount: "Already registered?",
+      fullName: "Full name",
+      invalid: "Incorrect email or password",
+    },
+    criteria: {
+      title: "My investment criteria",
+      none: "No investor profile is linked to you. Please contact the Firm.",
+      intro: "Set your thesis: only matching opportunities will be presented to you.",
+      countries: "Countries (comma-separated codes, e.g. CI, SN)",
+      sectors: "Sectors",
+      instruments: "Instruments (equity, debt, …)",
+      dealTypes: "Accepted deal types",
+      stages: "Stages",
+      exclusions: "Exclusions (sectors/countries)",
+      ticketMin: "Min ticket",
+      ticketMax: "Max ticket",
+      esg: "ESG requirement",
+      save: "Save my criteria",
+      saved: "Criteria saved.",
+    },
+    opportunities: {
+      title: "Opportunities",
+      intro: "Qualified, anonymized opportunities matching your thesis.",
+      empty: "No published opportunity at the moment.",
+      strengths: "Strengths",
+      revenue: "Revenue",
+      amount: "Amount sought",
+      interest: "Express my interest",
+      interestSent: "Interest sent. The Firm will get back to you for the next steps (NDA).",
+      ndaNote: "Full access requires a confidentiality and non-circumvention agreement.",
+      filterInstrument: "Instrument",
+      all: "All",
+    },
+    qa: {
+      title: "My exchanges",
+      empty: "No introduction yet.",
+      thread: "Q&A",
+      ask: "Ask a question",
+      askPlaceholder: "Your question…",
+      send: "Send",
+      answer: "Answer",
+      answerPlaceholder: "Your answer…",
+      close: "Close",
+      noQuestions: "No question yet.",
+      awaiting: "Awaiting answer",
+      traced: "All exchanges are logged and timestamped. No side email.",
+    },
+    dataroom: {
+      myTitle: "Data rooms",
+      myEmpty: "No accessible data room. Access is granted after NDA and KYC.",
+      view: "View",
+      download: "Download",
+      watermark: "Watermark",
+    },
+    disclaimer:
+      "DealIQ privately prepares and introduces companies and qualified investors. No financing guarantee. No public offering.",
+  },
+};
+
+const SAVED_LANG = typeof localStorage !== "undefined" ? localStorage.getItem("dealiq.lang") : null;
+
 i18n.use(initReactI18next).init({
-  resources: { fr },
-  lng: "fr",
+  resources: { fr, en },
+  lng: SAVED_LANG || "fr",
   fallbackLng: "fr",
   interpolation: { escapeValue: false },
 });
+
+export function setLanguage(lng: "fr" | "en") {
+  void i18n.changeLanguage(lng);
+  try {
+    localStorage.setItem("dealiq.lang", lng);
+  } catch {
+    /* localStorage indisponible */
+  }
+}
 
 export default i18n;

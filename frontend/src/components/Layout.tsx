@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { useAuth, type Role } from "../auth/AuthContext";
+import { setLanguage } from "../i18n";
 
 interface NavItem {
   to: string;
@@ -48,7 +49,7 @@ const NAV: NavItem[] = [
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user, logout } = useAuth();
   const items = NAV.filter((n) => user && n.roles.includes(user.role));
 
@@ -71,9 +72,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className="main">
         <header className="topbar">
           <span className="muted">{user?.email}</span>
-          <button className="btn btn--ghost" onClick={logout} aria-label={t("nav.logout")}>
-            {t("nav.logout")}
-          </button>
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            <div role="group" aria-label="Langue" style={{ fontSize: 13 }}>
+              <button
+                className="btn btn--ghost"
+                style={{ padding: "4px 8px", fontWeight: i18n.language === "fr" ? 700 : 400 }}
+                onClick={() => setLanguage("fr")}
+              >
+                FR
+              </button>
+              <button
+                className="btn btn--ghost"
+                style={{ padding: "4px 8px", fontWeight: i18n.language === "en" ? 700 : 400 }}
+                onClick={() => setLanguage("en")}
+              >
+                EN
+              </button>
+            </div>
+            <button className="btn btn--ghost" onClick={logout} aria-label={t("nav.logout")}>
+              {t("nav.logout")}
+            </button>
+          </div>
         </header>
         <main className="content" id="main-content">
           {children}

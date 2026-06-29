@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import Layout from "./components/Layout";
@@ -47,6 +49,14 @@ function Placeholder({ title }: { title: string }) {
 
 export default function App() {
   const { user, loading } = useAuth();
+  const { i18n } = useTranslation();
+
+  // Langue par défaut selon le rôle (investisseur → EN, CDC §7.12), sauf choix explicite.
+  useEffect(() => {
+    if (!user) return;
+    const saved = localStorage.getItem("dealiq.lang");
+    if (!saved) void i18n.changeLanguage(user.role === "investisseur" ? "en" : "fr");
+  }, [user, i18n]);
 
   if (loading) return <div className="center-screen muted">Chargement…</div>;
   if (!user) return <Login />;
