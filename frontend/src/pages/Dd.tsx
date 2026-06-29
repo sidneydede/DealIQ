@@ -3,7 +3,9 @@ import { useTranslation } from "react-i18next";
 
 import { ApiError } from "../api/client";
 import { companies as companiesApi, dd } from "../api/dealiq";
+import { useToast } from "../components/Toast";
 import type { Company, DdAnalysis } from "../api/types";
+import { formatMoney } from "../utils/format";
 
 const SAMPLE = `701000;Ventes;1000000
 601000;Achats;400000
@@ -28,7 +30,8 @@ function parseLines(text: string) {
 }
 
 export default function Dd() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const toast = useToast();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyId, setCompanyId] = useState("");
   const [text, setText] = useState(SAMPLE);
@@ -44,15 +47,22 @@ export default function Dd() {
 
   async function importBalance() {
     setMsg(null);
-    const r = (await dd.importBalance(companyId, parseLines(text))) as { version: number };
-    setMsg(`${t("dd.imported")} ${r.version})`);
+    try {
+      const r = (await dd.importBalance(companyId, parseLines(text))) as { version: number };
+      setMsg(`${t("dd.imported")} ${r.version})`);
+      toast.success(t("dd.importedOk"));
+    } catch (e) {
+      toast.error(e instanceof ApiError ? e.message : t("security.error"));
+    }
   }
   async function compute() {
     setMsg(null);
     try {
       setAnalysis(await dd.compute(companyId));
+      toast.success(t("dd.computedOk"));
     } catch (e) {
       setMsg(e instanceof ApiError ? e.message : "Erreur");
+      toast.error(e instanceof ApiError ? e.message : t("security.error"));
     }
   }
 
@@ -111,7 +121,7 @@ export default function Dd() {
             {Object.entries(analysis.retraitements).map(([key, r]) => (
               <div key={key} style={{ marginBottom: 8 }}>
                 <strong>{t(`dd.labels.${key}`)}</strong> :{" "}
-                <span className="num">{r.value.toLocaleString("fr")}</span>
+                <span className="num">{formatMoney(r.value, "XOF", i18n.language)}</span>
                 <div className="muted" style={{ fontSize: 12 }}>
                   {t("dd.rule")} : {r.rule} · {t("dd.sources")} : {r.sources.join(", ")}
                 </div>

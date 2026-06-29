@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.api.pagination import SortParams, apply_sql_sort
 from app.core.security import hash_password
+from app.domain import email_template
 from app.domain.enums import (
     AuditAction,
     InvestorQualifStatus,
@@ -106,7 +107,10 @@ def invite_investor(
             f"Bonjour, votre accès à l'espace investisseur DealIQ pour « {investor.name} » "
             f"est confirmé. Identifiant : {target_email}."
         )
-    email_adapter.send_email(target_email, "Invitation DealIQ", body)
+    email_adapter.send_email(
+        target_email, "Invitation DealIQ", body,
+        html=email_template.render("Invitation DealIQ", body),
+    )
 
     notif.notify(
         db,

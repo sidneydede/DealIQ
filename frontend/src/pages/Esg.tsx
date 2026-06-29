@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import { ApiError } from "../api/client";
 import { companies as companiesApi, esg } from "../api/dealiq";
+import { useToast } from "../components/Toast";
 import type { Company, EsgProfile } from "../api/types";
 
 const NUM_FIELDS = ["jobs_total", "jobs_female", "jobs_youth"] as const;
@@ -18,6 +19,7 @@ type Form = Record<string, number | boolean | string | null>;
 
 export default function Esg() {
   const { t } = useTranslation();
+  const toast = useToast();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyId, setCompanyId] = useState("");
   const [profile, setProfile] = useState<EsgProfile | null>(null);
@@ -49,9 +51,14 @@ export default function Esg() {
     const body: Record<string, unknown> = { evidence_note: form.evidence_note ?? null };
     for (const f of NUM_FIELDS) body[f] = form[f] === "" || form[f] == null ? null : Number(form[f]);
     for (const f of BOOL_FIELDS) body[f] = form[f] === undefined ? null : form[f];
-    const p = await esg.upsert(companyId, body);
-    setProfile(p);
-    setForm({ ...p, evidence_note: p.evidence_note ?? "" });
+    try {
+      const p = await esg.upsert(companyId, body);
+      setProfile(p);
+      setForm({ ...p, evidence_note: p.evidence_note ?? "" });
+      toast.success(t("esg.savedOk"));
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : t("security.error"));
+    }
   }
 
   async function toggleRequired() {

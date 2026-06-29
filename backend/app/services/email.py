@@ -18,20 +18,20 @@ logger = logging.getLogger("dealiq.email")
 SENT: list[dict] = []
 
 
-def send_email(to: str, subject: str, body: str) -> None:
-    """Envoie (ou simule) un e-mail. Ne lève jamais : un échec d'e-mail ne doit
-    pas casser l'action métier qui l'a déclenché."""
+def send_email(to: str, subject: str, body: str, html: str | None = None) -> None:
+    """Envoie (ou simule) un e-mail (texte + alternative HTML optionnelle). Ne lève
+    jamais : un échec d'e-mail ne doit pas casser l'action métier qui l'a déclenché."""
     if settings.email_provider == "mock":
-        SENT.append({"to": to, "subject": subject, "body": body})
+        SENT.append({"to": to, "subject": subject, "body": body, "html": html})
         logger.info("[email mock] to=%s subject=%s", to, subject)
         return
     try:
-        _send_real(to, subject, body)
+        _send_real(to, subject, body, html)
     except Exception:  # noqa: BLE001
         logger.exception("Échec d'envoi e-mail vers %s", to)
 
 
-def _send_real(to: str, subject: str, body: str) -> None:
+def _send_real(to: str, subject: str, body: str, html: str | None = None) -> None:
     """Envoi SMTP réel. Lève en cas d'échec (capté par send_email)."""
     if not settings.smtp_host:
         raise RuntimeError("SMTP non configuré (smtp_host vide).")
@@ -40,6 +40,8 @@ def _send_real(to: str, subject: str, body: str) -> None:
     msg["To"] = to
     msg["Subject"] = subject
     msg.set_content(body)
+    if html:
+        msg.add_alternative(html, subtype="html")
     with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=10) as smtp:
         if settings.smtp_use_tls:
             smtp.starttls()

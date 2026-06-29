@@ -2,11 +2,14 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { companies as companiesApi, programs } from "../api/dealiq";
+import { ApiError } from "../api/client";
+import { useToast } from "../components/Toast";
 import { useAuth } from "../auth/AuthContext";
 import type { Company, Program, ProgramMember, ProgramReport } from "../api/types";
 
 export default function Programs() {
   const { t } = useTranslation();
+  const toast = useToast();
   const { user } = useAuth();
   const isCabinet = user && ["analyste", "senior", "admin"].includes(user.role);
 
@@ -39,18 +42,32 @@ export default function Programs() {
   }
 
   async function create() {
-    await programs.create({ name, sponsor_name: sponsorName, sponsor_email: sponsorEmail || undefined });
-    setName("");
-    setSponsorName("");
-    setSponsorEmail("");
-    await reload();
+    try {
+      await programs.create({
+        name,
+        sponsor_name: sponsorName,
+        sponsor_email: sponsorEmail || undefined,
+      });
+      setName("");
+      setSponsorName("");
+      setSponsorEmail("");
+      await reload();
+      toast.success(t("programs.createdOk"));
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : t("security.error"));
+    }
   }
 
   async function addCompany() {
     if (!selected || !companyId) return;
-    await programs.addMember(selected.id, companyId);
-    setMembers(await programs.members(selected.id));
-    setReport(await programs.report(selected.id));
+    try {
+      await programs.addMember(selected.id, companyId);
+      setMembers(await programs.members(selected.id));
+      setReport(await programs.report(selected.id));
+      toast.success(t("programs.addedOk"));
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : t("security.error"));
+    }
   }
 
   return (

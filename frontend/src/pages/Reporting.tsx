@@ -18,14 +18,34 @@ function Kpi({ label, value, hint }: { label: string; value: string; hint?: stri
 }
 
 function Breakdown({ title, data }: { title: string; data: Record<string, number> }) {
+  const entries = Object.entries(data);
+  const max = Math.max(1, ...entries.map(([, v]) => v));
   return (
-    <div className="card" style={{ flex: 1, minWidth: 220 }}>
+    <div className="card" style={{ flex: 1, minWidth: 240 }}>
       <h3 style={{ marginTop: 0 }}>{title}</h3>
-      {Object.keys(data).length === 0 && <p className="muted">—</p>}
-      {Object.entries(data).map(([k, v]) => (
-        <div key={k} style={{ display: "flex", justifyContent: "space-between" }}>
-          <span className="muted">{k}</span>
-          <span className="num">{v}</span>
+      {entries.length === 0 && <p className="muted">—</p>}
+      {entries.map(([k, v]) => (
+        <div key={k} style={{ marginBottom: 8 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
+            <span className="muted">{k}</span>
+            <span className="num">{v}</span>
+          </div>
+          <div
+            style={{
+              height: 8,
+              background: "var(--c-bg-soft, #eef1f5)",
+              borderRadius: 4,
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                width: `${(v / max) * 100}%`,
+                height: "100%",
+                background: "var(--c-primary, #2d6cdf)",
+              }}
+            />
+          </div>
         </div>
       ))}
     </div>

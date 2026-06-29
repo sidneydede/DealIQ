@@ -6,6 +6,7 @@ from datetime import UTC, datetime
 
 from sqlalchemy.orm import Session
 
+from app.domain import email_template
 from app.domain.enums import NotificationType, Role
 from app.models.notification import Notification
 from app.models.user import User
@@ -40,7 +41,9 @@ def notify(
         db.commit()
         db.refresh(notif)
     if send_email and recipient.email:
-        email_adapter.send_email(recipient.email, title, body)
+        email_adapter.send_email(
+            recipient.email, title, body, html=email_template.render(title, body)
+        )
     return notif
 
 

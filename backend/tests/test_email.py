@@ -3,7 +3,22 @@ from __future__ import annotations
 
 import smtplib
 
+from app.domain import email_template
 from app.services import email as email_adapter
+
+
+def test_email_template_renders_and_escapes():
+    html = email_template.render("Bonjour <b>", "Ligne 1\nLigne 2 & fin")
+    assert html.startswith("<!doctype html>")
+    assert "DealIQ" in html
+    assert "Bonjour &lt;b&gt;" in html  # titre échappé
+    assert "Ligne 1<br>Ligne 2 &amp; fin" in html  # newline → <br>, & échappé
+
+
+def test_send_email_records_html_in_mock(monkeypatch):
+    monkeypatch.setattr(email_adapter.settings, "email_provider", "mock")
+    email_adapter.send_email("a@dealiq.com", "S", "B", html="<p>hi</p>")
+    assert email_adapter.SENT[-1]["html"] == "<p>hi</p>"
 
 
 class _FakeSMTP:

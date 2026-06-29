@@ -6,12 +6,13 @@ import { ApiError } from "../api/client";
 import { useConfirm } from "../components/Confirm";
 import { useToast } from "../components/Toast";
 import type { Company, Fee, Mandate } from "../api/types";
+import { formatMoney } from "../utils/format";
 
 const PARTIES = ["entreprise", "investisseur", "les_deux"];
 const TYPES = ["levee", "cession", "sourcing", "arrangement_dette", "conseil", "autre"];
 
 export default function MandatesPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const toast = useToast();
   const confirm = useConfirm();
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -158,7 +159,8 @@ export default function MandatesPage() {
               {fees[m.id].map((f) => (
                 <div key={f.id} style={{ display: "flex", justifyContent: "space-between" }}>
                   <span className="num">
-                    {t(`mandates.feeTypes.${f.fee_type}`)} · {f.amount ?? "—"} {f.currency} ·{" "}
+                    {t(`mandates.feeTypes.${f.fee_type}`)} ·{" "}
+                    {formatMoney(f.amount, f.currency, i18n.language)} ·{" "}
                     <span className="badge badge--info">{f.status}</span>
                   </span>
                   {f.status !== "paye" && (

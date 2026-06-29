@@ -2,11 +2,15 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { companies, meta } from "../api/dealiq";
+import { ApiError } from "../api/client";
+import Loading from "../components/Loading";
+import { useToast } from "../components/Toast";
 import type { DealTypeHistoryEntry, DealTypeMeta } from "../api/types";
 import { useMyCompany } from "../hooks/useMyCompany";
 
 export default function DealTypeSelect() {
   const { t } = useTranslation();
+  const toast = useToast();
   const { company, loading, reload } = useMyCompany();
   const [types, setTypes] = useState<DealTypeMeta[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
@@ -31,12 +35,15 @@ export default function DealTypeSelect() {
       await companies.setDealType(company.id, { deal_type_primary: selected });
       await reload();
       setHistory(await companies.dealTypeHistory(company.id));
+      toast.success(t("dealType.savedOk"));
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : t("security.error"));
     } finally {
       setBusy(false);
     }
   }
 
-  if (loading) return <p className="muted">Chargement…</p>;
+  if (loading) return <Loading />;
   if (!company)
     return (
       <>

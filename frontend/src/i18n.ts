@@ -112,6 +112,7 @@ const fr = {
       needCompany: "Créez d'abord votre fiche entreprise pour choisir un type de deal.",
       history: "Historique des changements",
       bySource: { entrepreneur: "Vous", cabinet: "Cabinet (requalification)" },
+      savedOk: "Type de deal enregistré.",
     },
     questionnaire: {
       title: "Mon diagnostic",
@@ -545,6 +546,7 @@ const fr = {
       yes: "Oui",
       no: "Non",
       unknown: "—",
+      savedOk: "Profil ESG enregistré.",
     },
     programs: {
       title: "Programmes sponsorisés",
@@ -566,6 +568,8 @@ const fr = {
       femaleRatio: "Part femmes",
       empty: "Aucun programme.",
       anonNote: "Reporting agrégé et anonymisé — aucune identité d'entreprise.",
+      createdOk: "Programme créé.",
+      addedOk: "Entreprise ajoutée à la cohorte.",
     },
     dd: {
       title: "Due diligence OHADA / SYSCOHADA",
@@ -588,6 +592,8 @@ const fr = {
         dette_nette: "Dette nette",
         bfr: "BFR",
       },
+      importedOk: "Balance importée.",
+      computedOk: "Retraitements calculés.",
     },
     scoring: {
       title: "Calibrage de la grille de readiness",
@@ -814,6 +820,7 @@ const en = {
       needCompany: "Create your company profile first to choose a deal type.",
       history: "Change history",
       bySource: { entrepreneur: "You", cabinet: "Firm (requalification)" },
+      savedOk: "Deal type saved.",
     },
     questionnaire: {
       title: "My diagnostic",
@@ -1161,6 +1168,7 @@ const en = {
       yes: "Yes",
       no: "No",
       unknown: "—",
+      savedOk: "ESG profile saved.",
     },
     programs: {
       title: "Sponsored programs",
@@ -1182,6 +1190,8 @@ const en = {
       femaleRatio: "Women share",
       empty: "No program.",
       anonNote: "Aggregated, anonymized reporting — no company identity.",
+      createdOk: "Program created.",
+      addedOk: "Company added to the cohort.",
     },
     dd: {
       title: "OHADA / SYSCOHADA due diligence",
@@ -1204,6 +1214,8 @@ const en = {
         dette_nette: "Net debt",
         bfr: "Working capital",
       },
+      importedOk: "Trial balance imported.",
+      computedOk: "Adjustments computed.",
     },
     scoring: {
       title: "Readiness grid calibration",

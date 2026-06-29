@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { scoringAdmin } from "../api/dealiq";
+import { ApiError } from "../api/client";
+import { useToast } from "../components/Toast";
 import type { ScoringConfig, SimulateResult } from "../api/types";
 
 const DIMENSIONS = [
@@ -19,6 +21,7 @@ const STAGES = ["", "idee", "amorcage", "early", "croissance", "mature"];
 
 export default function ScoringCalibration() {
   const { t } = useTranslation();
+  const toast = useToast();
   const [config, setConfig] = useState<ScoringConfig | null>(null);
   const [thresholds, setThresholds] = useState<Record<string, number>>({});
   const [version, setVersion] = useState("");
@@ -40,9 +43,14 @@ export default function ScoringCalibration() {
   }, []);
 
   async function save() {
-    const c = await scoringAdmin.updateConfig({ thresholds, version });
-    setConfig(c);
-    setSaved(true);
+    try {
+      const c = await scoringAdmin.updateConfig({ thresholds, version });
+      setConfig(c);
+      setSaved(true);
+      toast.success(t("scoring.saved"));
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : t("security.error"));
+    }
   }
 
   async function simulate() {

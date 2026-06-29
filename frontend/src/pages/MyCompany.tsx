@@ -2,11 +2,14 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 
 import { companies, meta } from "../api/dealiq";
+import Loading from "../components/Loading";
+import { useToast } from "../components/Toast";
 import type { CountryMeta, DuplicateMatch } from "../api/types";
 import { useMyCompany } from "../hooks/useMyCompany";
 
 export default function MyCompany() {
   const { t } = useTranslation();
+  const toast = useToast();
   const { company, loading, reload } = useMyCompany();
   const [countries, setCountries] = useState<CountryMeta[]>([]);
   const [name, setName] = useState("");
@@ -29,14 +32,17 @@ export default function MyCompany() {
       const res = await companies.create({ name, country, sector, rccm: rccm || null });
       setWarnings(res.duplicate_warnings);
       await reload();
+      toast.success(t("company.saved"));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur");
+      const m = err instanceof Error ? err.message : "Erreur";
+      setError(m);
+      toast.error(m);
     } finally {
       setBusy(false);
     }
   }
 
-  if (loading) return <p className="muted">Chargement…</p>;
+  if (loading) return <Loading />;
 
   if (company) {
     const fn = company.financing_need;
