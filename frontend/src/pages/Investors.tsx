@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 
 import { investors } from "../api/dealiq";
+import { ApiError } from "../api/client";
 import type { Investor } from "../api/types";
 
 const TYPES = [
@@ -12,6 +13,52 @@ const TYPES = [
   "corporate",
   "banque",
 ];
+
+function InviteRow({ inv, onDone }: { inv: Investor; onDone: () => void }) {
+  const { t } = useTranslation();
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [temp, setTemp] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
+
+  async function onInvite(e: FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setTemp(null);
+    try {
+      const res = await investors.invite(inv.id, email || undefined);
+      setDone(true);
+      if (res.temporary_password) setTemp(res.temporary_password);
+      onDone();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t("investors.inviteError"));
+    }
+  }
+
+  return (
+    <form onSubmit={onInvite} style={{ marginTop: 8, display: "flex", gap: 8, flexWrap: "wrap" }}>
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder={t("investors.inviteEmail")}
+        // Optionnel si un compte est déjà rattaché (ré-invitation).
+        required={!inv.user_id}
+        style={{ padding: 8, borderRadius: 8, border: "1px solid var(--c-border)", minWidth: 220 }}
+      />
+      <button className="btn btn--ghost" type="submit">
+        {inv.user_id ? t("investors.reinvite") : t("investors.invite")}
+      </button>
+      {done && !temp && <span className="badge badge--success">{t("investors.inviteSent")}</span>}
+      {error && <span className="badge badge--warning">{error}</span>}
+      {temp && (
+        <span className="muted" style={{ width: "100%" }}>
+          {t("investors.tempPassword")} : <code style={{ fontWeight: 700 }}>{temp}</code>
+        </span>
+      )}
+    </form>
+  );
+}
 
 export default function Investors() {
   const { t } = useTranslation();
@@ -73,11 +120,17 @@ export default function Investors() {
           <strong>{inv.name}</strong>{" "}
           <span className="badge badge--info">{inv.type}</span>{" "}
           <span className="badge badge--info">{inv.qualif_status}</span>{" "}
+          {inv.user_id ? (
+            <span className="badge badge--success">{t("investors.linked")}</span>
+          ) : (
+            <span className="badge badge--warning">{t("investors.notLinked")}</span>
+          )}{" "}
           {inv.criteria ? (
             <span className="badge badge--success">{t("investors.criteriaSet")}</span>
           ) : (
             <span className="badge badge--warning">{t("investors.noCriteria")}</span>
           )}
+          <InviteRow inv={inv} onDone={() => void reload()} />
         </div>
       ))}
     </>

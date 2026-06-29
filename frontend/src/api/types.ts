@@ -233,6 +233,12 @@ export interface Investor {
   criteria: Criteria | null;
 }
 
+export interface InviteResult {
+  investor: Investor;
+  temporary_password: string | null;
+  new_account: boolean;
+}
+
 export interface MatchResult {
   investor_id: string;
   investor_name: string;

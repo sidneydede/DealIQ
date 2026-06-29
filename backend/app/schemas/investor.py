@@ -1,7 +1,7 @@
 """Schémas Pydantic — investisseurs, critères (M9) et matching (M10)."""
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from app.domain.enums import Currency, InvestorQualifStatus, InvestorType
 
@@ -50,6 +50,18 @@ class InvestorOut(BaseModel):
     qualif_status: InvestorQualifStatus
     user_id: str | None
     criteria: CriteriaOut | None = None
+
+
+class InviteIn(BaseModel):
+    # E-mail à inviter ; si absent, on réutilise celui du compte déjà rattaché.
+    email: EmailStr | None = None
+
+
+class InviteResult(BaseModel):
+    investor: InvestorOut
+    # Mot de passe temporaire renvoyé une seule fois quand un compte est créé.
+    temporary_password: str | None = None
+    new_account: bool
 
 
 class MatchResult(BaseModel):

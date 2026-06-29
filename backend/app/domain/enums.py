@@ -284,6 +284,7 @@ class AuditAction(str, Enum):
     user_created = "user_created"
     role_changed = "role_changed"
     account_status_changed = "account_status_changed"
+    investor_invited = "investor_invited"
     company_created = "company_created"
     company_status_changed = "company_status_changed"
     deal_type_changed = "deal_type_changed"
@@ -320,6 +321,7 @@ class NotificationType(str, Enum):
     qa_answered = "qa_answered"
     dataroom_access_granted = "dataroom_access_granted"
     kyc_hit = "kyc_hit"
+    account_invited = "account_invited"
 
 
 # --- Tables de correspondance utiles ---

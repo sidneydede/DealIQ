@@ -82,6 +82,76 @@ def test_criteria_set_by_owner(client, db_session):
     _clear()
 
 
+# --- Invitation investisseur ---
+def test_invite_creates_account_and_login(client, db_session):
+    from app.services import email as email_adapter
+
+    _auth(_user(db_session, "a@dealiq.com", Role.analyste))
+    inv_id = client.post(
+        "/api/v1/investors", json={"name": "Sahel", "type": "equity_pe_vc"}
+    ).json()["id"]
+    before = len(email_adapter.SENT)
+    r = client.post(f"/api/v1/investors/{inv_id}/invite", json={"email": "new-inv@dealiq.com"})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["new_account"] is True and body["temporary_password"]
+    assert body["investor"]["user_id"]
+    assert len(email_adapter.SENT) == before + 1
+
+    login = client.post(
+        "/api/v1/auth/login",
+        json={"email": "new-inv@dealiq.com", "password": body["temporary_password"]},
+    )
+    assert login.status_code == 200
+    u = db_session.query(User).filter(User.email == "new-inv@dealiq.com").one()
+    assert u.role == Role.investisseur
+    _clear()
+
+
+def test_invite_existing_account_no_password(client, db_session):
+    inv_user = _user(db_session, "fund@dealiq.com", Role.investisseur)
+    _auth(_user(db_session, "a@dealiq.com", Role.analyste))
+    inv_id = client.post(
+        "/api/v1/investors", json={"name": "Sahel", "type": "equity_pe_vc"}
+    ).json()["id"]
+    r = client.post(f"/api/v1/investors/{inv_id}/invite", json={"email": "fund@dealiq.com"})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["new_account"] is False and body["temporary_password"] is None
+    assert body["investor"]["user_id"] == inv_user.id
+    _clear()
+
+
+def test_invite_conflicts_with_non_investor(client, db_session):
+    _user(db_session, "boss@dealiq.com", Role.senior)
+    _auth(_user(db_session, "a@dealiq.com", Role.analyste))
+    inv_id = client.post("/api/v1/investors", json={"name": "X", "type": "banque"}).json()["id"]
+    r = client.post(f"/api/v1/investors/{inv_id}/invite", json={"email": "boss@dealiq.com"})
+    assert r.status_code == 409
+    _clear()
+
+
+def test_invite_without_email_requires_one(client, db_session):
+    _auth(_user(db_session, "a@dealiq.com", Role.analyste))
+    inv_id = client.post("/api/v1/investors", json={"name": "X", "type": "banque"}).json()["id"]
+    assert client.post(f"/api/v1/investors/{inv_id}/invite", json={}).status_code == 400
+    _clear()
+
+
+def test_invite_requires_cabinet(client, db_session):
+    from app.domain.enums import InvestorType
+    from app.models.investor import Investor
+
+    inv = Investor(name="X", type=InvestorType.banque)
+    db_session.add(inv)
+    db_session.commit()
+    db_session.refresh(inv)
+    _auth(_user(db_session, "e@dealiq.com"))
+    r = client.post(f"/api/v1/investors/{inv.id}/invite", json={"email": "x@dealiq.com"})
+    assert r.status_code == 403
+    _clear()
+
+
 # --- M10 ---
 def _ready_company(client):
     cid = client.post(

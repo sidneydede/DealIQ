@@ -14,6 +14,8 @@ from app.schemas.investor import (
     InvestorCreate,
     InvestorOut,
     InvestorUpdate,
+    InviteIn,
+    InviteResult,
 )
 from app.services import investors as svc
 
@@ -83,6 +85,29 @@ def update_investor(
     db.commit()
     db.refresh(inv)
     return inv
+
+
+@router.post("/{investor_id}/invite", response_model=InviteResult)
+def invite_investor(
+    investor_id: str,
+    payload: InviteIn,
+    db: Session = Depends(get_db),
+    actor: User = Depends(require_cabinet),
+) -> InviteResult:
+    inv = db.get(Investor, investor_id)
+    if inv is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Investisseur introuvable"
+        )
+    try:
+        investor, temp = svc.invite_investor(db, inv, payload.email, actor)
+    except svc.InviteError as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail) from e
+    return InviteResult(
+        investor=InvestorOut.model_validate(investor),
+        temporary_password=temp,
+        new_account=temp is not None,
+    )
 
 
 @router.get("/{investor_id}/criteria", response_model=CriteriaOut)

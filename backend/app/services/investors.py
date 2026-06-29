@@ -1,13 +1,28 @@
 """Service investisseurs & critères (M9)."""
 from __future__ import annotations
 
+import secrets
+
 from sqlalchemy.orm import Session
 
-from app.domain.enums import Role
+from app.core.security import hash_password
+from app.domain.enums import AuditAction, NotificationType, Role
 from app.models.investor import InvestmentCriteria, Investor
 from app.models.user import User
+from app.services import audit
+from app.services import email as email_adapter
+from app.services import notifications as notif
 
 CABINET_ROLES = {Role.analyste, Role.senior, Role.admin}
+
+
+class InviteError(Exception):
+    """Invitation impossible (e-mail manquant ou compte conflictuel)."""
+
+    def __init__(self, detail: str, status_code: int = 400) -> None:
+        self.detail = detail
+        self.status_code = status_code
+        super().__init__(detail)
 
 
 def create_investor(db: Session, data) -> Investor:
@@ -30,6 +45,82 @@ def create_investor(db: Session, data) -> Investor:
     db.commit()
     db.refresh(investor)
     return investor
+
+
+def invite_investor(
+    db: Session, investor: Investor, email: str | None, actor: User
+) -> tuple[Investor, str | None]:
+    """Invite (ou ré-invite) le compte investisseur rattaché à une fiche.
+
+    Crée le compte (rôle investisseur) s'il n'existe pas, le lie à la fiche,
+    envoie un e-mail d'invitation (mock) + une notification de bienvenue.
+    Renvoie (fiche, mot de passe temporaire | None). Le mot de passe n'est
+    généré (et renvoyé) que lorsqu'un compte est créé.
+    """
+    target_email = (email or "").strip().lower() or None
+    if target_email is None and investor.user_id:
+        linked = db.get(User, investor.user_id)
+        target_email = linked.email if linked else None
+    if not target_email:
+        raise InviteError("Aucune adresse e-mail fournie pour l'invitation.")
+
+    existing = db.query(User).filter(User.email == target_email).first()
+    temp: str | None = None
+    if existing is not None:
+        if existing.role != Role.investisseur:
+            raise InviteError(
+                "Un compte non-investisseur utilise déjà cette adresse.", status_code=409
+            )
+        user = existing
+    else:
+        temp = secrets.token_urlsafe(9)
+        user = User(
+            email=target_email,
+            hashed_password=hash_password(temp),
+            role=Role.investisseur,
+            full_name=investor.name,
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
+    investor.user_id = user.id
+    db.commit()
+    db.refresh(investor)
+
+    if temp:
+        body = (
+            f"Bonjour, un espace investisseur DealIQ a été créé pour « {investor.name} ». "
+            f"Identifiant : {target_email}. Mot de passe temporaire : {temp}. "
+            "Merci de le modifier à la première connexion."
+        )
+    else:
+        body = (
+            f"Bonjour, votre accès à l'espace investisseur DealIQ pour « {investor.name} » "
+            f"est confirmé. Identifiant : {target_email}."
+        )
+    email_adapter.send_email(target_email, "Invitation DealIQ", body)
+
+    notif.notify(
+        db,
+        recipient=user,
+        type=NotificationType.account_invited,
+        title="Bienvenue sur DealIQ",
+        body=f"Votre espace investisseur « {investor.name} » est prêt.",
+        link="/my-criteria",
+        object_type="Investor",
+        object_id=investor.id,
+        send_email=False,  # l'e-mail d'invitation a déjà été envoyé ci-dessus
+    )
+    audit.record(
+        db,
+        AuditAction.investor_invited,
+        actor=actor,
+        object_type="Investor",
+        object_id=investor.id,
+        meta={"email": target_email, "new_account": temp is not None},
+    )
+    return investor, temp
 
 
 def can_access(user: User, investor: Investor) -> bool:

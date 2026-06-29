@@ -28,6 +28,7 @@ import type {
   Interaction,
   Fee,
   Investor,
+  InviteResult,
   KycCheck,
   Mandate,
   MatchResult,
@@ -165,6 +166,8 @@ export const investors = {
   me: () => api.get<Investor>("/investors/me"),
   create: (body: { name: string; type: string; user_email?: string }) =>
     api.post<Investor>("/investors", body),
+  invite: (id: string, email?: string) =>
+    api.post<InviteResult>(`/investors/${id}/invite`, { email: email || null }),
   setCriteria: (id: string, body: Criteria) =>
     api.put<Criteria>(`/investors/${id}/criteria`, body),
 };
