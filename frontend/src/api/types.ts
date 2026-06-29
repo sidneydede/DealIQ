@@ -377,6 +377,41 @@ export interface ConflictItem {
   disclosure: string | null;
 }
 
+export interface MissionTask {
+  id: string;
+  label: string;
+  position: number;
+  done: boolean;
+}
+
+export interface Deliverable {
+  id: string;
+  kind: string;
+  version: number;
+  status: string;
+  note: string | null;
+}
+
+export interface MissionReview {
+  id: string;
+  role: string;
+  reviewer_id: string | null;
+  note: string | null;
+  created_at: string;
+}
+
+export interface MissionDetail {
+  id: string;
+  company_id: string;
+  status: string;
+  owner_id: string | null;
+  tasks: MissionTask[];
+  deliverables: Deliverable[];
+  reviews: MissionReview[];
+  can_promote: boolean;
+  blockers: string[];
+}
+
 export interface DealTypeHistoryEntry {
   id: string;
   old_primary: string | null;

@@ -195,6 +195,27 @@ class DealStage(str, Enum):
     abandonne = "abandonne"
 
 
+class MissionStatus(str, Enum):
+    en_cours = "en_cours"
+    livre = "livre"
+
+
+class DeliverableKind(str, Enum):
+    """Livrables standardisés (RG-M8-03), déclinés par type de deal."""
+
+    business_plan = "business_plan"
+    modele_financier = "modele_financier"
+    valorisation = "valorisation"
+    teaser = "teaser"
+    data_room_init = "data_room_init"
+
+
+class DeliverableStatus(str, Enum):
+    brouillon = "brouillon"
+    soumis = "soumis"
+    valide = "valide"
+
+
 class RepresentedParty(str, Enum):
     """Partie dont le Cabinet est mandataire (RG-M17-01, gouvernance des conflits)."""
 
@@ -276,6 +297,8 @@ class AuditAction(str, Enum):
     mandate_created = "mandate_created"
     mandate_status_changed = "mandate_status_changed"
     fee_added = "fee_added"
+    mission_reviewed = "mission_reviewed"
+    mission_promoted = "mission_promoted"
     export = "export"
 
 

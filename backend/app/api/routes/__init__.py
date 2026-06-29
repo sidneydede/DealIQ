@@ -15,6 +15,7 @@ from app.api.routes import (
     mandates,
     matching,
     meta,
+    missions,
     offers,
     onboarding,
     qa,
@@ -47,3 +48,4 @@ api_router.include_router(kyc.router, tags=["kyc"])
 api_router.include_router(dataroom.router, tags=["dataroom"])
 api_router.include_router(deals.router, tags=["deals"])
 api_router.include_router(mandates.router, tags=["mandates"])
+api_router.include_router(missions.router, tags=["missions"])

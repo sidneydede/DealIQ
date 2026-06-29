@@ -14,6 +14,7 @@ from app.models.document import Document
 from app.models.investor import InvestmentCriteria, Investor
 from app.models.kyc import KycCheck
 from app.models.mandate import Fee, Mandate
+from app.models.mission import Deliverable, Mission, MissionReview, MissionTask
 from app.models.onboarding import OnboardingSession
 from app.models.qa import QAItem
 from app.models.quote import QuoteRequest
@@ -45,6 +46,10 @@ __all__ = [
     "DealMilestone",
     "Mandate",
     "Fee",
+    "Mission",
+    "MissionTask",
+    "Deliverable",
+    "MissionReview",
     "Score",
     "Document",
     "OnboardingSession",

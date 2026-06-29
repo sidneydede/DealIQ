@@ -28,6 +28,7 @@ import type {
   KycCheck,
   Mandate,
   MatchResult,
+  MissionDetail,
   OffersResponse,
   OnboardingSession,
   QAItem,
@@ -149,6 +150,19 @@ export const kyc = {
     api.post<KycCheck>("/kyc/checks", { subject_type, subject_id, check_type }),
   update: (id: string, status: string, notes?: string) =>
     api.patch<KycCheck>(`/kyc/checks/${id}`, { status, notes }),
+};
+
+export const missions = {
+  create: (companyId: string) => api.post<MissionDetail>(`/companies/${companyId}/mission`),
+  get: (companyId: string) => api.get<MissionDetail>(`/companies/${companyId}/mission`),
+  toggleTask: (taskId: string, done: boolean) =>
+    api.patch(`/mission-tasks/${taskId}`, { done }),
+  addDeliverable: (missionId: string, kind: string) =>
+    api.post(`/missions/${missionId}/deliverables`, { kind }),
+  updateDeliverable: (deliverableId: string, statusValue: string) =>
+    api.patch(`/deliverables/${deliverableId}`, { status: statusValue }),
+  review: (missionId: string) => api.post(`/missions/${missionId}/review`),
+  promote: (missionId: string) => api.post<Company>(`/missions/${missionId}/promote`),
 };
 
 export const mandates = {

@@ -15,10 +15,12 @@ import Kyc from "./pages/Kyc";
 import Login from "./pages/Login";
 import MandatesPage from "./pages/Mandates";
 import Matching from "./pages/Matching";
+import MissionAdmin from "./pages/MissionAdmin";
 import MyCompany from "./pages/MyCompany";
 import MyCriteria from "./pages/MyCriteria";
 import MyDataRooms from "./pages/MyDataRooms";
 import MyInteractions from "./pages/MyInteractions";
+import MyMission from "./pages/MyMission";
 import Offers from "./pages/Offers";
 import Opportunities from "./pages/Opportunities";
 import Pipeline from "./pages/Pipeline";
@@ -51,6 +53,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/company" element={<MyCompany />} />
+          <Route path="/my-mission" element={<MyMission />} />
+          <Route path="/missions" element={<MissionAdmin />} />
           <Route path="/diagnostic" element={<Questionnaire />} />
           <Route path="/deal-type" element={<DealTypeSelect />} />
           <Route path="/documents" element={<Documents />} />
