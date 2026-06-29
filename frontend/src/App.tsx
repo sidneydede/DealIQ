@@ -5,6 +5,7 @@ import { useAuth } from "./auth/AuthContext";
 import Audit from "./pages/Audit";
 import Cockpit from "./pages/Cockpit";
 import Dashboard from "./pages/Dashboard";
+import DataRoomAdmin from "./pages/DataRoomAdmin";
 import DealTypeSelect from "./pages/DealTypeSelect";
 import Documents from "./pages/Documents";
 import Interactions from "./pages/Interactions";
@@ -14,6 +15,7 @@ import Login from "./pages/Login";
 import Matching from "./pages/Matching";
 import MyCompany from "./pages/MyCompany";
 import MyCriteria from "./pages/MyCriteria";
+import MyDataRooms from "./pages/MyDataRooms";
 import MyInteractions from "./pages/MyInteractions";
 import Offers from "./pages/Offers";
 import Opportunities from "./pages/Opportunities";
@@ -61,6 +63,8 @@ export default function App() {
           <Route path="/matching" element={<Matching />} />
           <Route path="/teasers" element={<TeaserAdmin />} />
           <Route path="/interactions" element={<Interactions />} />
+          <Route path="/datarooms" element={<DataRoomAdmin />} />
+          <Route path="/my-datarooms" element={<MyDataRooms />} />
           <Route path="/kyc" element={<Kyc />} />
           <Route path="/users" element={<Placeholder title="Utilisateurs" />} />
           <Route path="/audit" element={<Audit />} />

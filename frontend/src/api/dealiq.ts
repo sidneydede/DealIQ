@@ -8,6 +8,11 @@ import type {
   CountryMeta,
   Criteria,
   DashboardData,
+  DataRoom,
+  DataRoomAccess,
+  DataRoomDocument,
+  DataRoomLog,
+  DocumentView,
   DealTypeHistoryEntry,
   DealTypeMeta,
   DocumentOut,
@@ -138,6 +143,23 @@ export const kyc = {
     api.post<KycCheck>("/kyc/checks", { subject_type, subject_id, check_type }),
   update: (id: string, status: string, notes?: string) =>
     api.patch<KycCheck>(`/kyc/checks/${id}`, { status, notes }),
+};
+
+export const dataroom = {
+  open: (companyId: string) => api.post<DataRoom>(`/companies/${companyId}/dataroom`),
+  addDocument: (roomId: string, document_id: string) =>
+    api.post<DataRoomDocument>(`/dataroom/${roomId}/documents`, { document_id }),
+  documents: (roomId: string) => api.get<DataRoomDocument[]>(`/dataroom/${roomId}/documents`),
+  grant: (roomId: string, investor_id: string) =>
+    api.post<DataRoomAccess>(`/dataroom/${roomId}/access`, { investor_id }),
+  access: (roomId: string) => api.get<DataRoomAccess[]>(`/dataroom/${roomId}/access`),
+  revoke: (accessId: string) => api.post<{ revoked: boolean }>(`/dataroom/access/${accessId}/revoke`),
+  logs: (roomId: string) => api.get<DataRoomLog[]>(`/dataroom/${roomId}/logs`),
+  accessible: () => api.get<DataRoom[]>("/dataroom/accessible"),
+  view: (roomId: string, documentId: string, download = false) =>
+    api.post<DocumentView>(
+      `/dataroom/${roomId}/documents/${documentId}/view${download ? "?download=true" : ""}`,
+    ),
 };
 
 export const qa = {

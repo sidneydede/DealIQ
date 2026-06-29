@@ -183,6 +183,16 @@ class KycStatus(str, Enum):
     hit = "hit"  # correspondance sanctions/PEP → bloque + alerte conformité
 
 
+class DataRoomStatus(str, Enum):
+    ouverte = "ouverte"
+    fermee = "fermee"
+
+
+class DataRoomLogAction(str, Enum):
+    consultation = "consultation"
+    telechargement = "telechargement"
+
+
 class DealTypeChangeSource(str, Enum):
     """Origine d'un changement de type de deal (historisation M24)."""
 
@@ -211,6 +221,9 @@ class AuditAction(str, Enum):
     kyc_check_created = "kyc_check_created"
     kyc_status_changed = "kyc_status_changed"
     kyc_hit_alert = "kyc_hit_alert"
+    dataroom_access_granted = "dataroom_access_granted"
+    dataroom_access_revoked = "dataroom_access_revoked"
+    dataroom_document_viewed = "dataroom_document_viewed"
     export = "export"
 
 

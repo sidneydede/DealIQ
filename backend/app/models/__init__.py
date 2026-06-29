@@ -2,6 +2,12 @@
 from app.models.audit import AuditLog
 from app.models.base import Base
 from app.models.company import Company, Contact, FinancingNeed
+from app.models.dataroom import (
+    DataRoom,
+    DataRoomAccess,
+    DataRoomDocument,
+    DataRoomLog,
+)
 from app.models.dealtype_history import DealTypeHistory
 from app.models.document import Document
 from app.models.investor import InvestmentCriteria, Investor
@@ -28,6 +34,10 @@ __all__ = [
     "Interaction",
     "QAItem",
     "KycCheck",
+    "DataRoom",
+    "DataRoomDocument",
+    "DataRoomAccess",
+    "DataRoomLog",
     "Score",
     "Document",
     "OnboardingSession",

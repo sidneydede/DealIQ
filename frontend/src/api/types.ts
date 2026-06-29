@@ -267,6 +267,49 @@ export interface KycCheck {
   created_at: string;
 }
 
+export interface DataRoom {
+  id: string;
+  company_id: string;
+  provider_ref: string | null;
+  status: string;
+  created_at: string;
+}
+
+export interface DataRoomDocument {
+  id: string;
+  document_id: string;
+  filename: string;
+  doc_type: string;
+  status: string;
+}
+
+export interface DataRoomAccess {
+  id: string;
+  investor_id: string;
+  investor_name: string | null;
+  granted_by: string | null;
+  expires_at: string | null;
+  revoked: boolean;
+  created_at: string;
+}
+
+export interface DataRoomLog {
+  id: string;
+  document_id: string | null;
+  investor_id: string | null;
+  actor_id: string | null;
+  action: string;
+  created_at: string;
+}
+
+export interface DocumentView {
+  document_id: string;
+  filename: string;
+  watermark: string;
+  view_url: string;
+  note: string;
+}
+
 export interface DealTypeHistoryEntry {
   id: string;
   old_primary: string | null;
