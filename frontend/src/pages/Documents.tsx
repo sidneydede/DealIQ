@@ -37,6 +37,14 @@ export default function Documents() {
     setPreview(null);
   }
 
+  async function onDownload(d: { id: string; filename: string }) {
+    try {
+      await documents.download(d.id, d.filename);
+    } catch (e) {
+      toast.error(e instanceof ApiError ? e.message : t("documents.previewError"));
+    }
+  }
+
   const reload = useCallback(async () => {
     if (company) setItems(await documents.checklist(company.id));
   }, [company]);
@@ -132,7 +140,7 @@ export default function Documents() {
                     <button
                       className="btn btn--ghost"
                       style={{ padding: "4px 10px" }}
-                      onClick={() => void documents.download(d.id, d.filename)}
+                      onClick={() => void onDownload(d)}
                     >
                       {t("documents.download")}
                     </button>
@@ -168,7 +176,10 @@ export default function Documents() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
               <strong>{preview.name}</strong>
               <span style={{ display: "flex", gap: 8 }}>
-                <button className="btn btn--ghost" onClick={() => void documents.download(preview.id, preview.name)}>
+                <button
+                  className="btn btn--ghost"
+                  onClick={() => void onDownload({ id: preview.id, filename: preview.name })}
+                >
                   {t("documents.download")}
                 </button>
                 <button className="btn" onClick={closePreview}>
