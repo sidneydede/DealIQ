@@ -32,9 +32,14 @@ export default function ReportView() {
     <>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h1>{t("report.title")}</h1>
-        <button className="btn btn--ghost" onClick={() => window.print()}>
-          {t("report.print")}
-        </button>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button className="btn" onClick={() => void reportApi.downloadPdf(company.id)}>
+            {t("report.downloadPdf")}
+          </button>
+          <button className="btn btn--ghost" onClick={() => window.print()}>
+            {t("report.print")}
+          </button>
+        </div>
       </div>
 
       <div className="card">

@@ -140,7 +140,8 @@ const fr = {
       path: "Vers un dossier bancable",
       alternative: "Suggestion",
       services: "Accompagnements recommandés",
-      print: "Imprimer / Télécharger (PDF)",
+      print: "Imprimer",
+      downloadPdf: "Télécharger le PDF",
       empty: "Sélectionnez d'abord un type de deal.",
     },
     offers: {

@@ -92,6 +92,8 @@ export const scoringAdmin = {
 
 export const report = {
   get: (id: string) => api.get<Report>(`/companies/${id}/report`),
+  downloadPdf: (id: string) =>
+    api.download(`/companies/${id}/report.pdf`, `rapport-readiness-${id.slice(0, 8)}.pdf`),
 };
 
 export const offers = {

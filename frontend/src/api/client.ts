@@ -48,6 +48,30 @@ async function request<T>(path: string, options: RequestInit = {}, auth = true):
   return res.status === 204 ? (undefined as T) : ((await res.json()) as T);
 }
 
+async function download(path: string, filename: string): Promise<void> {
+  const headers: Record<string, string> = {};
+  if (tokens.access) headers.Authorization = `Bearer ${tokens.access}`;
+  const res = await fetch(`${BASE_URL}${path}`, { headers });
+  if (!res.ok) {
+    let detail = res.statusText;
+    try {
+      detail = (await res.json()).detail ?? detail;
+    } catch {
+      /* corps non-JSON */
+    }
+    throw new ApiError(res.status, detail);
+  }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 async function upload<T>(path: string, form: FormData): Promise<T> {
   const headers: Record<string, string> = {};
   if (tokens.access) headers.Authorization = `Bearer ${tokens.access}`;
@@ -73,4 +97,5 @@ export const api = {
   patch: <T>(p: string, body?: unknown) =>
     request<T>(p, { method: "PATCH", body: JSON.stringify(body) }),
   upload,
+  download,
 };
