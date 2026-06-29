@@ -32,6 +32,10 @@ class Settings(BaseSettings):
     storage_dir: str = "storage"
     max_upload_mb: int = 10
 
+    # Rate limiting (appliqué aux endpoints sensibles ; actif en production)
+    rate_limit_max: int = 10
+    rate_limit_window_seconds: int = 60
+
     # IA / LLM (accélérateur ; mock par défaut, aucune clé requise)
     llm_provider: str = "mock"
     anthropic_api_key: str = ""

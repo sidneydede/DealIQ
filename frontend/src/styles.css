@@ -81,8 +81,59 @@ a { color: var(--c-info); text-decoration: none; }
 .badge--warning { background: #fdf2e1; color: var(--c-warning); }
 .badge--info { background: #e6f0fb; color: var(--c-info); }
 
-.center-screen { display: grid; place-items: center; min-height: 100vh; }
-.auth-card { width: 360px; }
+.center-screen { display: grid; place-items: center; min-height: 100vh; padding: 16px; }
+.auth-card { width: 360px; max-width: 100%; }
 .error { color: var(--c-risk); font-size: 14px; }
 .muted { color: var(--c-slate-2); font-size: 14px; }
 .disclaimer { font-size: 12px; color: var(--c-slate-2); margin-top: 18px; line-height: 1.5; }
+
+/* Accessibilité : focus visible net (WCAG AA) */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--c-info);
+  outline-offset: 2px;
+}
+.sidebar a[aria-current="page"] { background: rgba(255, 255, 255, 0.16); color: #fff; }
+
+/* Lien d'évitement (skip link) */
+.skip-link {
+  position: absolute; left: -999px; top: 0; z-index: 100;
+  background: var(--c-gold); color: #fff; padding: 8px 14px; border-radius: 0 0 8px 0;
+}
+.skip-link:focus { left: 0; }
+
+/* Navigation mobile (barre inférieure) — masquée en desktop */
+.bottom-nav { display: none; }
+
+/* Mobile-first : sous 720px, sidebar → barre inférieure, cibles tactiles ≥ 44px */
+@media (max-width: 720px) {
+  .sidebar { display: none; }
+  .content { padding: 16px; }
+  .main { padding-bottom: 68px; }
+  .btn, .field input, .field select { min-height: 44px; }
+
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--c-ink);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 50;
+  }
+  .bottom-nav a {
+    flex: 1;
+    text-align: center;
+    color: #cfd9e6;
+    padding: 10px 4px;
+    font-size: 11px;
+    line-height: 1.2;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .bottom-nav a[aria-current="page"] { color: #fff; background: rgba(255, 255, 255, 0.12); }
+  .auth-card { width: 100%; }
+}

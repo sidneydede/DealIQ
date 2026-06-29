@@ -29,9 +29,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
   const items = NAV.filter((n) => user && n.roles.includes(user.role));
 
+  // Barre inférieure mobile : on garde les 5 premières entrées (parcours essentiel).
+  const mobileItems = items.slice(0, 5);
+
   return (
     <div className="app-shell">
-      <aside className="sidebar">
+      <a className="skip-link" href="#main-content">
+        Aller au contenu
+      </a>
+      <aside className="sidebar" aria-label="Navigation principale">
         <div className="brand">{t("app.name")}</div>
         {items.map((n) => (
           <NavLink key={n.to} to={n.to} end={n.to === "/"}>
@@ -42,12 +48,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className="main">
         <header className="topbar">
           <span className="muted">{user?.email}</span>
-          <button className="btn btn--ghost" onClick={logout}>
+          <button className="btn btn--ghost" onClick={logout} aria-label={t("nav.logout")}>
             {t("nav.logout")}
           </button>
         </header>
-        <main className="content">{children}</main>
+        <main className="content" id="main-content">
+          {children}
+        </main>
       </div>
+      <nav className="bottom-nav" aria-label="Navigation mobile">
+        {mobileItems.map((n) => (
+          <NavLink key={n.to} to={n.to} end={n.to === "/"}>
+            {t(n.key)}
+          </NavLink>
+        ))}
+      </nav>
     </div>
   );
 }

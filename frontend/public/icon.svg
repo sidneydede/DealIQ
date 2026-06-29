@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="DealIQ">
+  <rect width="512" height="512" rx="96" fill="#102A43"/>
+  <text x="50%" y="50%" dy="0.35em" text-anchor="middle"
+        font-family="Inter, IBM Plex Sans, system-ui, sans-serif"
+        font-size="220" font-weight="700" fill="#B08D4C">Dq</text>
+</svg>

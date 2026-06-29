@@ -23,9 +23,26 @@ ALLOWED_CONTENT_TYPES = {
     "application/vnd.ms-excel",  # xls
 }
 
+# Signatures (magic bytes) attendues par type — défense contre le contenu falsifié.
+_MAGIC = {
+    "application/pdf": [b"%PDF"],
+    "image/png": [b"\x89PNG\r\n\x1a\n"],
+    "image/jpeg": [b"\xff\xd8\xff"],
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [b"PK\x03\x04"],
+    "application/vnd.ms-excel": [b"PK\x03\x04", b"\xd0\xcf\x11\xe0"],
+}
+
 
 class UploadError(ValueError):
-    """Erreur de validation d'upload (type ou taille)."""
+    """Erreur de validation d'upload (type, taille ou contenu)."""
+
+
+def _content_matches(content_type: str | None, data: bytes) -> bool:
+    """Vérifie que les premiers octets correspondent au type MIME déclaré."""
+    signatures = _MAGIC.get(content_type or "")
+    if not signatures:
+        return False
+    return any(data.startswith(sig) for sig in signatures)
 
 
 def _storage_path(company_id: str, doc_id: str, filename: str) -> Path:
@@ -47,6 +64,8 @@ def save_upload(
 ) -> Document:
     if content_type not in ALLOWED_CONTENT_TYPES:
         raise UploadError(f"Type de fichier non autorisé : {content_type}")
+    if not _content_matches(content_type, data):
+        raise UploadError("Le contenu du fichier ne correspond pas au type déclaré.")
     max_bytes = settings.max_upload_mb * 1024 * 1024
     if len(data) > max_bytes:
         raise UploadError(f"Fichier trop volumineux (max {settings.max_upload_mb} Mo)")
