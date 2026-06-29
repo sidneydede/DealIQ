@@ -1,7 +1,7 @@
 """Routes pipeline deal (M16) — outil cabinet."""
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import require_cabinet
@@ -19,9 +19,18 @@ from app.schemas.deal import (
     MilestoneToggle,
     StageUpdate,
 )
+from app.services import csv_export
 from app.services import deals as svc
 
 router = APIRouter()
+
+_DEAL_CSV_COLUMNS = [
+    ("company_name", "Entreprise"),
+    ("investor_name", "Investisseur"),
+    ("deal_type", "Type de deal"),
+    ("stage", "Étape"),
+    ("created_at", "Créé le"),
+]
 
 
 def _ip(request: Request) -> str | None:
@@ -56,6 +65,24 @@ def list_deals(
         limit=page.limit, offset=page.offset,
     )
     return Page.build(items, total, page)
+
+
+@router.get("/deals.csv")
+def export_deals_csv(
+    stage: DealStage | None = None,
+    deal_type: DealTypeCode | None = None,
+    db: Session = Depends(get_db),
+    _: User = Depends(require_cabinet),
+) -> Response:
+    items, _total = svc.list_deals(
+        db, stage=stage, deal_type=deal_type.value if deal_type else None, limit=None
+    )
+    content = csv_export.to_csv(items, _DEAL_CSV_COLUMNS)
+    return Response(
+        content=content,
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": 'attachment; filename="deals.csv"'},
+    )
 
 
 @router.get("/deals/meta/milestones/{deal_type}", response_model=list[str], tags=["meta"])

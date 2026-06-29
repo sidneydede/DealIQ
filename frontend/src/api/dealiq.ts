@@ -310,6 +310,13 @@ export const deals = {
     return api.get<Page<Deal>>(`/deals${qs ? `?${qs}` : ""}`);
   },
   get: (id: string) => api.get<DealDetail>(`/deals/${id}`),
+  exportCsv: (params: { stage?: string; deal_type?: string } = {}) => {
+    const clean = Object.fromEntries(
+      Object.entries(params).filter(([, v]) => v !== undefined && v !== ""),
+    ) as Record<string, string>;
+    const qs = new URLSearchParams(clean).toString();
+    return api.download(`/deals.csv${qs ? `?${qs}` : ""}`, "deals.csv");
+  },
   createFromInteraction: (interactionId: string) =>
     api.post<Deal>(`/interactions/${interactionId}/deal`),
   advance: (id: string, stage: string, note?: string) =>

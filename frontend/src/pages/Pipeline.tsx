@@ -58,7 +58,12 @@ export default function Pipeline() {
 
   return (
     <>
-      <h1>{t("dealPipeline.title")}</h1>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <h1>{t("dealPipeline.title")}</h1>
+        <button className="btn btn--ghost" onClick={() => void deals.exportCsv()}>
+          {t("dealPipeline.exportCsv")}
+        </button>
+      </div>
       {list.length === 0 && <p className="muted">{t("dealPipeline.empty")}</p>}
 
       {list.map((d) => (

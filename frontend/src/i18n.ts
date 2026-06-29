@@ -401,6 +401,7 @@ const fr = {
     },
     dealPipeline: {
       title: "Pipeline deals",
+      exportCsv: "Exporter CSV",
       empty: "Aucun deal en cours. Démarrez-en un depuis une mise en relation.",
       track: "Suivre en deal",
       stage: "Étape",
@@ -966,6 +967,7 @@ const en = {
     },
     dealPipeline: {
       title: "Deal pipeline",
+      exportCsv: "Export CSV",
       empty: "No deal in progress. Start one from an introduction.",
       track: "Track as deal",
       stage: "Stage",

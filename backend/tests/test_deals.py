@@ -141,6 +141,25 @@ def test_pipeline_filters_and_rbac(client, db_session):
     _clear()
 
 
+def test_deals_csv_export(client, db_session):
+    _, iid = _interaction(client, db_session)
+    _cabinet(db_session)
+    client.post(f"/api/v1/interactions/{iid}/deal")
+
+    r = client.get("/api/v1/deals.csv")
+    assert r.status_code == 200
+    assert r.headers["content-type"].startswith("text/csv")
+    assert "attachment" in r.headers["content-disposition"]
+    assert r.text.startswith("﻿")
+    assert "Entreprise;Investisseur;Type de deal" in r.text
+    assert "Acme" in r.text and "Fund" in r.text
+
+    # entrepreneur interdit
+    _auth(_user(db_session, "e@dealiq.com"))
+    assert client.get("/api/v1/deals.csv").status_code == 403
+    _clear()
+
+
 def test_dashboard_includes_deals(client, db_session):
     _, iid = _interaction(client, db_session)
     _cabinet(db_session)
