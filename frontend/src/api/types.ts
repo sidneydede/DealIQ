@@ -95,6 +95,50 @@ export interface ChecklistItem {
   documents: DocumentOut[];
 }
 
+export interface ReadinessScore {
+  category: string | null;
+  confidence: number | null;
+  gaps: string[];
+  provisional?: boolean;
+}
+
+export interface Report {
+  company_name: string;
+  category: string | null;
+  category_label: string;
+  confidence: number | null;
+  deal_type: string | null;
+  recommended_instrument: string;
+  blockers: string[];
+  path_to_bankable: string[];
+  alternative_suggestion: string | null;
+  recommended_services: string[];
+  disclaimers: string[];
+}
+
+export interface Offer {
+  key: string;
+  label: string;
+  pricing: "gratuit" | "ticket_engagement" | "sur_devis";
+  deliverables: string[];
+}
+
+export interface OffersResponse {
+  offers: Offer[];
+  anti_pay_to_play: string;
+}
+
+export interface QuoteRequest {
+  id: string;
+  company_id: string;
+  offer_key: string | null;
+  deal_type: string | null;
+  message: string | null;
+  contact_phone: string | null;
+  status: string;
+  created_at: string;
+}
+
 export interface DealTypeHistoryEntry {
   id: string;
   old_primary: string | null;

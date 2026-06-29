@@ -9,8 +9,12 @@ import type {
   DocumentOut,
   FinancingNeed,
   GatingResult,
+  OffersResponse,
   OnboardingSession,
   Question,
+  QuoteRequest,
+  ReadinessScore,
+  Report,
 } from "./types";
 
 export const meta = {
@@ -38,6 +42,23 @@ export const documents = {
     form.append("file", file);
     return api.upload<DocumentOut>(`/companies/${id}/documents`, form);
   },
+};
+
+export const readiness = {
+  compute: (id: string) => api.post<ReadinessScore>(`/companies/${id}/score`),
+  get: (id: string) => api.get<ReadinessScore>(`/companies/${id}/score`),
+};
+
+export const report = {
+  get: (id: string) => api.get<Report>(`/companies/${id}/report`),
+};
+
+export const offers = {
+  list: () => api.get<OffersResponse>("/meta/offers"),
+  requestQuote: (
+    id: string,
+    body: { offer_key?: string | null; message?: string; contact_phone?: string },
+  ) => api.post<QuoteRequest>(`/companies/${id}/quote-request`, body),
 };
 
 export interface CompanyCreateInput {
