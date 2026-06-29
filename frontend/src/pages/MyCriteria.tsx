@@ -3,6 +3,8 @@ import { useTranslation } from "react-i18next";
 
 import { investors } from "../api/dealiq";
 import { ApiError } from "../api/client";
+import Loading from "../components/Loading";
+import { useToast } from "../components/Toast";
 import type { Criteria, Investor } from "../api/types";
 
 const EMPTY: Criteria = {
@@ -15,6 +17,7 @@ const toStr = (l: string[]) => l.join(", ");
 
 export default function MyCriteria() {
   const { t } = useTranslation();
+  const toast = useToast();
   const [investor, setInvestor] = useState<Investor | null>(null);
   const [loading, setLoading] = useState(true);
   const [c, setC] = useState<Criteria>(EMPTY);
@@ -36,11 +39,16 @@ export default function MyCriteria() {
   async function onSave(e: FormEvent) {
     e.preventDefault();
     if (!investor) return;
-    await investors.setCriteria(investor.id, c);
-    setSaved(true);
+    try {
+      await investors.setCriteria(investor.id, c);
+      setSaved(true);
+      toast.success(t("criteria.saved"));
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : t("security.error"));
+    }
   }
 
-  if (loading) return <p className="muted">Chargement…</p>;
+  if (loading) return <Loading />;
   if (!investor)
     return (
       <>

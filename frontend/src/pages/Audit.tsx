@@ -5,11 +5,12 @@ import { admin } from "../api/dealiq";
 import Pager from "../components/Pager";
 import { SortHeader, useSort } from "../components/SortHeader";
 import type { AuditLogEntry } from "../api/types";
+import { formatDateTime, formatRelative } from "../utils/format";
 
 const LIMIT = 50;
 
 export default function Audit() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [logs, setLogs] = useState<AuditLogEntry[]>([]);
   const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
@@ -51,8 +52,12 @@ export default function Audit() {
             )}
             {logs.map((l) => (
               <tr key={l.id} style={{ borderTop: "1px solid var(--c-border)" }}>
-                <td style={{ padding: 10 }} className="muted">
-                  {new Date(l.created_at).toLocaleString("fr")}
+                <td
+                  style={{ padding: 10 }}
+                  className="muted"
+                  title={formatDateTime(l.created_at, i18n.language)}
+                >
+                  {formatRelative(l.created_at, i18n.language)}
                 </td>
                 <td style={{ padding: 10 }}>{l.actor_email ?? l.actor_id ?? "—"}</td>
                 <td style={{ padding: 10 }}>

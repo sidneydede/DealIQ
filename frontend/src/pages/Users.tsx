@@ -5,6 +5,8 @@ import { users as usersApi } from "../api/dealiq";
 import { ApiError } from "../api/client";
 import type { AdminUser } from "../api/types";
 import { useAuth } from "../auth/AuthContext";
+import { useConfirm } from "../components/Confirm";
+import { useToast } from "../components/Toast";
 
 const ROLES = [
   "entrepreneur",
@@ -19,6 +21,8 @@ const ROLES = [
 export default function Users() {
   const { t } = useTranslation();
   const { user: me } = useAuth();
+  const toast = useToast();
+  const confirm = useConfirm();
   const [list, setList] = useState<AdminUser[]>([]);
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
@@ -35,7 +39,9 @@ export default function Users() {
   }, []);
 
   function fail(e: unknown) {
-    setError(e instanceof ApiError ? e.message : t("users.error"));
+    const msg = e instanceof ApiError ? e.message : t("users.error");
+    setError(msg);
+    toast.error(msg);
   }
 
   async function onCreate(e: FormEvent) {
@@ -57,6 +63,7 @@ export default function Users() {
       setPassword("");
       setRole("entrepreneur");
       await reload();
+      toast.success(t("users.createdOk"));
     } catch (err) {
       fail(err);
     }
@@ -67,6 +74,7 @@ export default function Users() {
     try {
       await usersApi.changeRole(u.id, newRole);
       await reload();
+      toast.success(t("users.savedOk"));
     } catch (err) {
       fail(err);
     }
@@ -74,9 +82,20 @@ export default function Users() {
 
   async function onToggleActive(u: AdminUser) {
     setError(null);
+    // Confirmation uniquement pour la désactivation (action sensible).
+    if (
+      u.is_active &&
+      !(await confirm({
+        message: t("users.deactivateConfirm", { email: u.email }),
+        danger: true,
+      }))
+    ) {
+      return;
+    }
     try {
       await usersApi.setActive(u.id, !u.is_active);
       await reload();
+      toast.success(t("users.savedOk"));
     } catch (err) {
       fail(err);
     }

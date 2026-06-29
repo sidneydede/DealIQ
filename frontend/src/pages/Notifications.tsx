@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { notifications as notifApi } from "../api/dealiq";
 import Pager from "../components/Pager";
 import type { NotificationItem } from "../api/types";
+import { formatDateTime, formatRelative } from "../utils/format";
 
 const LIMIT = 25;
 
@@ -41,7 +42,7 @@ export default function Notifications() {
     await reload();
   }
 
-  const fmt = (iso: string) => new Date(iso).toLocaleString(i18n.language);
+  const lang = i18n.language;
 
   return (
     <>
@@ -77,8 +78,8 @@ export default function Notifications() {
             {!n.read_at && <span className="badge badge--info">{t("notifications.new")}</span>}
           </div>
           <p style={{ margin: "4px 0" }}>{n.body}</p>
-          <span className="muted" style={{ fontSize: 12 }}>
-            {fmt(n.created_at)}
+          <span className="muted" style={{ fontSize: 12 }} title={formatDateTime(n.created_at, lang)}>
+            {formatRelative(n.created_at, lang)}
           </span>
         </button>
       ))}

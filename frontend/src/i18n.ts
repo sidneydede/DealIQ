@@ -8,6 +8,11 @@ const fr = {
       name: "DealIQ",
       tagline: "Préparation au financement et mise en relation privée",
     },
+    common: {
+      loading: "Chargement…",
+      cancel: "Annuler",
+      confirm: "Confirmer",
+    },
     nav: {
       dashboard: "Tableau de bord",
       diagnostic: "Mon diagnostic",
@@ -77,6 +82,9 @@ const fr = {
       disable: "Désactiver la 2FA",
       disableHint: "Saisissez un code valide pour désactiver la 2FA.",
       error: "Une erreur est survenue.",
+      enabledOk: "Authentification à deux facteurs activée.",
+      disabledOk: "Authentification à deux facteurs désactivée.",
+      disableConfirm: "Désactiver la double authentification pour votre compte ?",
     },
     company: {
       title: "Mon entreprise",
@@ -260,6 +268,9 @@ const fr = {
       you: "vous",
       empty: "Aucun utilisateur.",
       error: "Une erreur est survenue.",
+      createdOk: "Utilisateur créé.",
+      savedOk: "Modification enregistrée.",
+      deactivateConfirm: "Désactiver le compte {{email}} ?",
       tempPasswordTitle: "Mot de passe temporaire généré",
       tempPasswordHint:
         "Communiquez ce mot de passe à {{email}} de façon sécurisée. Il ne sera plus affiché.",
@@ -410,6 +421,8 @@ const fr = {
       accessList: "Accès accordés",
       revoke: "Révoquer",
       revoked: "Révoqué",
+      revokeConfirm: "Révoquer l'accès de cet investisseur à la data room ?",
+      revokedOk: "Accès révoqué.",
       logs: "Journal d'accès",
       noLogs: "Aucun accès enregistré.",
       // investisseur
@@ -595,6 +608,11 @@ const en = {
       name: "DealIQ",
       tagline: "Investment readiness and private dealflow introductions",
     },
+    common: {
+      loading: "Loading…",
+      cancel: "Cancel",
+      confirm: "Confirm",
+    },
     nav: {
       dashboard: "Dashboard",
       diagnostic: "My diagnostic",
@@ -680,6 +698,9 @@ const en = {
       disable: "Disable 2FA",
       disableHint: "Enter a valid code to disable 2FA.",
       error: "Something went wrong.",
+      enabledOk: "Two-factor authentication enabled.",
+      disabledOk: "Two-factor authentication disabled.",
+      disableConfirm: "Disable two-factor authentication for your account?",
     },
     criteria: {
       title: "My investment criteria",
@@ -740,6 +761,8 @@ const en = {
       accessList: "Granted access",
       revoke: "Revoke",
       revoked: "Revoked",
+      revokeConfirm: "Revoke this investor's data room access?",
+      revokedOk: "Access revoked.",
       logs: "Access log",
       noLogs: "No access recorded.",
       myTitle: "Data rooms",
@@ -922,6 +945,9 @@ const en = {
       you: "you",
       empty: "No user.",
       error: "Something went wrong.",
+      createdOk: "User created.",
+      savedOk: "Change saved.",
+      deactivateConfirm: "Disable account {{email}}?",
       tempPasswordTitle: "Temporary password generated",
       tempPasswordHint:
         "Share this password with {{email}} securely. It will not be shown again.",

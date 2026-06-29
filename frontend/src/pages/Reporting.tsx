@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { reporting } from "../api/dealiq";
+import Loading from "../components/Loading";
 import type { DashboardData } from "../api/types";
 
 function Kpi({ label, value, hint }: { label: string; value: string; hint?: string }) {
@@ -39,7 +40,7 @@ export default function Reporting() {
     void reporting.dashboard().then(setD);
   }, []);
 
-  if (!d) return <p className="muted">Chargement…</p>;
+  if (!d) return <Loading />;
   const pct = (x: number) => `${Math.round(x * 100)}%`;
 
   return (

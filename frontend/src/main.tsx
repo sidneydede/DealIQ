@@ -3,14 +3,20 @@ import { createRoot } from "react-dom/client";
 
 import App from "./App";
 import { AuthProvider } from "./auth/AuthContext";
+import { ConfirmProvider } from "./components/Confirm";
+import { ToastProvider } from "./components/Toast";
 import "./i18n";
 import "./styles.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
+    <ToastProvider>
+      <ConfirmProvider>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </ConfirmProvider>
+    </ToastProvider>
   </StrictMode>,
 );
 

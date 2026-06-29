@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { report as reportApi } from "../api/dealiq";
+import Loading from "../components/Loading";
 import type { Report } from "../api/types";
 import { useMyCompany } from "../hooks/useMyCompany";
 
@@ -16,7 +17,7 @@ export default function ReportView() {
     if (company && hasType) reportApi.get(company.id).then(setData).catch(() => setData(null));
   }, [company, hasType]);
 
-  if (loading) return <p className="muted">Chargement…</p>;
+  if (loading) return <Loading />;
   if (!company || !hasType)
     return (
       <>
@@ -26,7 +27,7 @@ export default function ReportView() {
         </div>
       </>
     );
-  if (!data) return <p className="muted">Chargement…</p>;
+  if (!data) return <Loading />;
 
   return (
     <>

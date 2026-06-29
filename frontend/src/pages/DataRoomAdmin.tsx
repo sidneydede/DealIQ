@@ -8,6 +8,8 @@ import {
   documents as docsApi,
   investors as investorsApi,
 } from "../api/dealiq";
+import { useConfirm } from "../components/Confirm";
+import { useToast } from "../components/Toast";
 import type {
   CockpitItem,
   DataRoom,
@@ -20,6 +22,8 @@ import type {
 
 export default function DataRoomAdmin() {
   const { t } = useTranslation();
+  const toast = useToast();
+  const confirm = useConfirm();
   const [companies, setCompanies] = useState<CockpitItem[]>([]);
   const [companyId, setCompanyId] = useState("");
   const [room, setRoom] = useState<DataRoom | null>(null);
@@ -72,8 +76,14 @@ export default function DataRoomAdmin() {
 
   async function revoke(accessId: string) {
     if (!room) return;
-    await dataroom.revoke(accessId);
-    await refreshRoom(room);
+    if (!(await confirm({ message: t("dataroom.revokeConfirm"), danger: true }))) return;
+    try {
+      await dataroom.revoke(accessId);
+      await refreshRoom(room);
+      toast.success(t("dataroom.revokedOk"));
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : t("security.error"));
+    }
   }
 
   const inRoom = new Set(roomDocs.map((d) => d.document_id));

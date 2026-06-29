@@ -4,10 +4,14 @@ import { useTranslation } from "react-i18next";
 import { security } from "../api/dealiq";
 import { ApiError } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
+import { useConfirm } from "../components/Confirm";
+import { useToast } from "../components/Toast";
 
 export default function Security() {
   const { t } = useTranslation();
   const { user, refreshUser } = useAuth();
+  const toast = useToast();
+  const confirm = useConfirm();
   const [setup, setSetup] = useState<{ secret: string; otpauth_uri: string } | null>(null);
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -16,7 +20,9 @@ export default function Security() {
   const enabled = user?.mfa_enabled;
 
   function fail(e: unknown) {
-    setError(e instanceof ApiError ? e.message : t("security.error"));
+    const msg = e instanceof ApiError ? e.message : t("security.error");
+    setError(msg);
+    toast.error(msg);
   }
 
   async function startSetup() {
@@ -37,6 +43,7 @@ export default function Security() {
       setSetup(null);
       setCode("");
       await refreshUser();
+      toast.success(t("security.enabledOk"));
     } catch (err) {
       fail(err);
     } finally {
@@ -46,12 +53,14 @@ export default function Security() {
 
   async function onDisable(e: FormEvent) {
     e.preventDefault();
+    if (!(await confirm({ message: t("security.disableConfirm"), danger: true }))) return;
     setError(null);
     setBusy(true);
     try {
       await security.mfaDisable(code);
       setCode("");
       await refreshUser();
+      toast.success(t("security.disabledOk"));
     } catch (err) {
       fail(err);
     } finally {
