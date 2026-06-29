@@ -2,15 +2,21 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { cockpit, meta } from "../api/dealiq";
+import Pager from "../components/Pager";
 import type { CockpitItem } from "../api/types";
 
 const FILTERS = ["all", "a_traiter", "investor_ready", "sla"] as const;
+const LIMIT = 25;
 
 export default function Cockpit() {
   const { t } = useTranslation();
   const [items, setItems] = useState<CockpitItem[]>([]);
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
   const [labels, setLabels] = useState<Record<string, string>>({});
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("all");
+  const [query, setQuery] = useState(""); // saisie
+  const [search, setSearch] = useState(""); // terme appliqué (debounce)
 
   useEffect(() => {
     void meta.dealTypes().then((d) =>
@@ -18,16 +24,35 @@ export default function Cockpit() {
     );
   }, []);
 
+  // Debounce de la recherche (300 ms) ; tout changement de filtre/recherche revient page 1.
   useEffect(() => {
-    const params = filter === "all" ? {} : { only: filter };
-    void cockpit.companies(params).then(setItems);
-  }, [filter]);
+    const id = setTimeout(() => setSearch(query.trim()), 300);
+    return () => clearTimeout(id);
+  }, [query]);
+
+  useEffect(() => {
+    setOffset(0);
+  }, [filter, search]);
+
+  useEffect(() => {
+    void cockpit
+      .companies({
+        only: filter === "all" ? undefined : filter,
+        q: search || undefined,
+        limit: LIMIT,
+        offset,
+      })
+      .then((p) => {
+        setItems(p.items);
+        setTotal(p.total);
+      });
+  }, [filter, search, offset]);
 
   return (
     <>
       <h1>{t("cockpit.title")}</h1>
 
-      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+      <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
         {FILTERS.map((f) => (
           <button
             key={f}
@@ -37,6 +62,19 @@ export default function Cockpit() {
             {t(`cockpit.filters.${f}`)}
           </button>
         ))}
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t("cockpit.searchPlaceholder")}
+          aria-label={t("cockpit.searchPlaceholder")}
+          style={{
+            marginLeft: "auto",
+            minWidth: 220,
+            padding: "8px 10px",
+            borderRadius: 8,
+            border: "1px solid var(--c-border)",
+          }}
+        />
       </div>
 
       <div className="card" style={{ padding: 0, overflowX: "auto" }}>
@@ -95,6 +133,8 @@ export default function Cockpit() {
           </tbody>
         </table>
       </div>
+
+      <Pager total={total} limit={LIMIT} offset={offset} onChange={setOffset} />
     </>
   );
 }

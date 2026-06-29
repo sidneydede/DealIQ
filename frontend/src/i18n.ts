@@ -172,6 +172,12 @@ const fr = {
       },
       days: "j",
       empty: "Aucun dossier.",
+      searchPlaceholder: "Rechercher (nom, secteur)…",
+    },
+    pager: {
+      range: "{{from}}–{{to}} sur {{total}}",
+      prev: "Précédent",
+      next: "Suivant",
     },
     reporting: {
       title: "Tableau de bord",
@@ -573,6 +579,11 @@ const en = {
       empty: "No notifications.",
       new: "new",
       unreadCount: "{{count}} unread notification(s)",
+    },
+    pager: {
+      range: "{{from}}–{{to}} of {{total}}",
+      prev: "Previous",
+      next: "Next",
     },
     auth: {
       loginTitle: "Sign in",

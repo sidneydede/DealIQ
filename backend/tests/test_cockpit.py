@@ -56,7 +56,9 @@ def test_cockpit_enriched_and_filters(client, db_session):
     _full_funnel(client, name="Dette Co", deal_type="dette_bancaire")
 
     _auth(_user(db_session, "a@dealiq.com", Role.analyste))
-    items = client.get("/api/v1/cockpit/companies").json()
+    payload = client.get("/api/v1/cockpit/companies").json()
+    assert payload["total"] == 2
+    items = payload["items"]
     assert len(items) == 2
     first = items[0]
     assert "readiness_category" in first and "quote_requests" in first
@@ -66,7 +68,15 @@ def test_cockpit_enriched_and_filters(client, db_session):
     only_dette = client.get(
         "/api/v1/cockpit/companies", params={"deal_type": "dette_bancaire"}
     ).json()
-    assert len(only_dette) == 1 and only_dette[0]["name"] == "Dette Co"
+    assert only_dette["total"] == 1 and only_dette["items"][0]["name"] == "Dette Co"
+
+    # recherche plein-texte (nom / secteur)
+    search = client.get("/api/v1/cockpit/companies", params={"q": "equity"}).json()
+    assert search["total"] == 1 and search["items"][0]["name"] == "Equity Co"
+
+    # pagination
+    paged = client.get("/api/v1/cockpit/companies", params={"limit": 1, "offset": 0}).json()
+    assert paged["total"] == 2 and len(paged["items"]) == 1 and paged["limit"] == 1
     _clear()
 
 
@@ -115,9 +125,9 @@ def test_audit_read_admin_only(client, db_session):
     assert client.get("/api/v1/audit").status_code == 403
     # admin autorisé
     _auth(_user(db_session, "admin@dealiq.com", Role.admin))
-    logs = client.get("/api/v1/audit").json()
-    assert len(logs) > 0
+    payload = client.get("/api/v1/audit").json()
+    assert payload["total"] > 0 and len(payload["items"]) > 0
     # filtre par action
     created = client.get("/api/v1/audit", params={"action": "company_created"}).json()
-    assert all(log["action"] == "company_created" for log in created)
+    assert all(log["action"] == "company_created" for log in created["items"])
     _clear()

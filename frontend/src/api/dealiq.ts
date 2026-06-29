@@ -34,6 +34,7 @@ import type {
   MissionDetail,
   NotificationItem,
   OffersResponse,
+  Page,
   Program,
   ProgramMember,
   ProgramReport,
@@ -105,9 +106,21 @@ export const offers = {
 };
 
 export const cockpit = {
-  companies: (params: { deal_type?: string; status_filter?: string; only?: string } = {}) => {
-    const qs = new URLSearchParams(params as Record<string, string>).toString();
-    return api.get<CockpitItem[]>(`/cockpit/companies${qs ? `?${qs}` : ""}`);
+  companies: (
+    params: {
+      deal_type?: string;
+      status_filter?: string;
+      only?: string;
+      q?: string;
+      limit?: number;
+      offset?: number;
+    } = {},
+  ) => {
+    const clean = Object.fromEntries(
+      Object.entries(params).filter(([, v]) => v !== undefined && v !== ""),
+    ) as Record<string, string>;
+    const qs = new URLSearchParams(clean).toString();
+    return api.get<Page<CockpitItem>>(`/cockpit/companies${qs ? `?${qs}` : ""}`);
   },
   pipeline: () => api.get<Record<string, number>>("/cockpit/pipeline"),
   setQuoteStatus: (quoteId: string, statusValue: string) =>
@@ -119,9 +132,14 @@ export const reporting = {
 };
 
 export const admin = {
-  audit: (params: { action?: string; object_id?: string } = {}) => {
-    const qs = new URLSearchParams(params as Record<string, string>).toString();
-    return api.get<AuditLogEntry[]>(`/audit${qs ? `?${qs}` : ""}`);
+  audit: (
+    params: { action?: string; object_id?: string; limit?: number; offset?: number } = {},
+  ) => {
+    const clean = Object.fromEntries(
+      Object.entries(params).filter(([, v]) => v !== undefined && v !== ""),
+    ) as Record<string, string>;
+    const qs = new URLSearchParams(clean).toString();
+    return api.get<Page<AuditLogEntry>>(`/audit${qs ? `?${qs}` : ""}`);
   },
 };
 

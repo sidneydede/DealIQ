@@ -26,14 +26,23 @@ def cockpit_items(
     status: CompanyStatus | None = None,
     deal_type: DealTypeCode | None = None,
     only: str | None = None,
-) -> list[dict]:
-    """File de dossiers pour le cabinet, filtrable (à traiter / investor-ready / type / statut)."""
+    q: str | None = None,
+    limit: int | None = None,
+    offset: int = 0,
+) -> tuple[list[dict], int]:
+    """File de dossiers pour le cabinet, filtrable + recherche + pagination.
+
+    Renvoie (page d'items, total filtré). Les filtres dérivés (investor-ready, SLA)
+    dépendent du score/ancienneté : on filtre en mémoire puis on pagine.
+    """
     companies = db.query(Company).order_by(Company.created_at.desc()).all()
 
     # nombre de demandes de devis par entreprise (un seul passage)
     quote_counts: dict[str, int] = {}
     for (cid,) in db.query(QuoteRequest.company_id).all():
         quote_counts[cid] = quote_counts.get(cid, 0) + 1
+
+    needle = q.strip().lower() if q else None
 
     items: list[dict] = []
     for c in companies:
@@ -42,20 +51,6 @@ def cockpit_items(
         score = c.score
         days = _days_open(c)
         sla_breach = c.status == CompanyStatus.brouillon and days > SLA_DAYS
-
-        item = {
-            "company_id": c.id,
-            "name": c.name,
-            "country": c.country,
-            "sector": c.sector,
-            "status": c.status,
-            "deal_type_primary": dtype,
-            "readiness_category": score.category if score else None,
-            "score_total": score.total if score else None,
-            "quote_requests": quote_counts.get(c.id, 0),
-            "days_open": days,
-            "sla_breach": sla_breach,
-        }
 
         if status and c.status != status:
             continue
@@ -69,8 +64,27 @@ def cockpit_items(
             continue
         if only == "sla" and not sla_breach:
             continue
-        items.append(item)
-    return items
+        if needle and needle not in c.name.lower() and needle not in (c.sector or "").lower():
+            continue
+
+        items.append({
+            "company_id": c.id,
+            "name": c.name,
+            "country": c.country,
+            "sector": c.sector,
+            "status": c.status,
+            "deal_type_primary": dtype,
+            "readiness_category": score.category if score else None,
+            "score_total": score.total if score else None,
+            "quote_requests": quote_counts.get(c.id, 0),
+            "days_open": days,
+            "sla_breach": sla_breach,
+        })
+
+    total = len(items)
+    if limit is None:
+        return items, total
+    return items[offset : offset + limit], total
 
 
 def pipeline_counts(db: Session) -> dict[str, int]:

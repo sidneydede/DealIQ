@@ -2,15 +2,23 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { admin } from "../api/dealiq";
+import Pager from "../components/Pager";
 import type { AuditLogEntry } from "../api/types";
+
+const LIMIT = 50;
 
 export default function Audit() {
   const { t } = useTranslation();
   const [logs, setLogs] = useState<AuditLogEntry[]>([]);
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
 
   useEffect(() => {
-    void admin.audit().then(setLogs);
-  }, []);
+    void admin.audit({ limit: LIMIT, offset }).then((p) => {
+      setLogs(p.items);
+      setTotal(p.total);
+    });
+  }, [offset]);
 
   return (
     <>
@@ -50,6 +58,8 @@ export default function Audit() {
           </tbody>
         </table>
       </div>
+
+      <Pager total={total} limit={LIMIT} offset={offset} onChange={setOffset} />
     </>
   );
 }

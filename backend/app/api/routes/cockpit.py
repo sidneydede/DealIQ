@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import require_cabinet
+from app.api.pagination import Page, Pagination, pagination
 from app.database import get_db
 from app.domain.enums import CompanyStatus, DealTypeCode
 from app.models.quote import QuoteRequest
@@ -18,15 +19,21 @@ router = APIRouter()
 _QUOTE_STATUSES = {"nouveau", "traite"}
 
 
-@router.get("/cockpit/companies", response_model=list[CockpitItem])
+@router.get("/cockpit/companies", response_model=Page[CockpitItem])
 def cockpit_companies(
     status_filter: CompanyStatus | None = None,
     deal_type: DealTypeCode | None = None,
     only: str | None = None,
+    q: str | None = None,
+    page: Pagination = Depends(pagination),
     db: Session = Depends(get_db),
     _: User = Depends(require_cabinet),
-) -> list[dict]:
-    return svc.cockpit_items(db, status=status_filter, deal_type=deal_type, only=only)
+) -> Page[CockpitItem]:
+    items, total = svc.cockpit_items(
+        db, status=status_filter, deal_type=deal_type, only=only,
+        q=q, limit=page.limit, offset=page.offset,
+    )
+    return Page.build(items, total, page)
 
 
 @router.get("/cockpit/pipeline")

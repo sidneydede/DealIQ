@@ -12,9 +12,9 @@ export default function TeaserAdmin() {
   const [teaser, setTeaser] = useState<Teaser | null>(null);
 
   useEffect(() => {
-    void cockpit.companies({ only: "investor_ready" }).then((list) => {
-      setCompanies(list);
-      if (list[0]) setCompanyId(list[0].company_id);
+    void cockpit.companies({ only: "investor_ready", limit: 200 }).then((p) => {
+      setCompanies(p.items);
+      if (p.items[0]) setCompanyId(p.items[0].company_id);
     });
   }, []);
 

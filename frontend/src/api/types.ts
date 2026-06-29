@@ -14,6 +14,13 @@ export interface AdminUser {
   is_active: boolean;
 }
 
+export interface Page<T> {
+  items: T[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
 export interface NotificationItem {
   id: string;
   type: string;
