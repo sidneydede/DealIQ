@@ -207,6 +207,10 @@ const fr = {
       prev: "Précédent",
       next: "Suivant",
     },
+    sort: {
+      by: "Trier par",
+      date: "Date",
+    },
     reporting: {
       title: "Tableau de bord",
       kpi: {
@@ -628,6 +632,10 @@ const en = {
       range: "{{from}}–{{to}} of {{total}}",
       prev: "Previous",
       next: "Next",
+    },
+    sort: {
+      by: "Sort by",
+      date: "Date",
     },
     auth: {
       loginTitle: "Sign in",

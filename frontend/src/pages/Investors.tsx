@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { investors } from "../api/dealiq";
 import { ApiError } from "../api/client";
 import Pager from "../components/Pager";
+import { SortSelect, useSort } from "../components/SortHeader";
 import type { Investor } from "../api/types";
 
 const LIMIT = 25;
@@ -75,11 +76,14 @@ export default function Investors() {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [qualifFilter, setQualifFilter] = useState("");
+  const { sort, order, toggle, state: sortState } = useSort("created_at", "desc");
 
   const filterParams = {
     q: search || undefined,
     type_filter: typeFilter || undefined,
     qualif_status: qualifFilter || undefined,
+    sort,
+    order,
   };
 
   const reload = useCallback(async () => {
@@ -87,7 +91,7 @@ export default function Investors() {
     setList(p.items);
     setTotal(p.total);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, typeFilter, qualifFilter, offset]);
+  }, [search, typeFilter, qualifFilter, sort, order, offset]);
 
   useEffect(() => {
     const id = setTimeout(() => setSearch(query.trim()), 300);
@@ -96,7 +100,7 @@ export default function Investors() {
 
   useEffect(() => {
     setOffset(0);
-  }, [search, typeFilter, qualifFilter]);
+  }, [search, typeFilter, qualifFilter, sort, order]);
 
   useEffect(() => {
     void reload();
@@ -192,6 +196,17 @@ export default function Investors() {
             </option>
           ))}
         </select>
+        <SortSelect
+          byLabel={t("sort.by")}
+          state={sortState}
+          onSort={toggle}
+          options={[
+            { field: "created_at", label: t("sort.date") },
+            { field: "name", label: t("investors.name") },
+            { field: "type", label: t("investors.type") },
+            { field: "qualif_status", label: t("investors.qualifStatus") },
+          ]}
+        />
         <button className="btn btn--ghost" onClick={() => void investors.exportCsv(filterParams)}>
           {t("investors.exportCsv")}
         </button>

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import { deals } from "../api/dealiq";
 import Pager from "../components/Pager";
+import { SortSelect, useSort } from "../components/SortHeader";
 import type { Deal, DealDetail } from "../api/types";
 
 const STAGES = [
@@ -25,19 +26,22 @@ export default function Pipeline() {
   const [detail, setDetail] = useState<DealDetail | null>(null);
   const [note, setNote] = useState("");
   const [stageFilter, setStageFilter] = useState("");
+  const { sort, order, toggle: toggleSort, state: sortState } = useSort("created_at", "desc");
 
   const reload = useCallback(() => {
-    void deals.list({ stage: stageFilter || undefined, limit: LIMIT, offset }).then((p) => {
-      setList(p.items);
-      setTotal(p.total);
-    });
-  }, [stageFilter, offset]);
+    void deals
+      .list({ stage: stageFilter || undefined, sort, order, limit: LIMIT, offset })
+      .then((p) => {
+        setList(p.items);
+        setTotal(p.total);
+      });
+  }, [stageFilter, sort, order, offset]);
   useEffect(() => reload(), [reload]);
 
-  // Retour page 1 au changement de filtre.
+  // Retour page 1 au changement de filtre / tri.
   useEffect(() => {
     setOffset(0);
-  }, [stageFilter]);
+  }, [stageFilter, sort, order]);
 
   async function openDeal(id: string) {
     if (openId === id) {
@@ -74,7 +78,7 @@ export default function Pipeline() {
         }}
       >
         <h1>{t("dealPipeline.title")}</h1>
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
           <select
             value={stageFilter}
             onChange={(e) => setStageFilter(e.target.value)}
@@ -88,9 +92,21 @@ export default function Pipeline() {
               </option>
             ))}
           </select>
+          <SortSelect
+            byLabel={t("sort.by")}
+            state={sortState}
+            onSort={toggleSort}
+            options={[
+              { field: "created_at", label: t("sort.date") },
+              { field: "stage", label: t("dealPipeline.stage") },
+              { field: "deal_type", label: t("cockpit.cols.dealType") },
+            ]}
+          />
           <button
             className="btn btn--ghost"
-            onClick={() => void deals.exportCsv({ stage: stageFilter || undefined })}
+            onClick={() =>
+              void deals.exportCsv({ stage: stageFilter || undefined, sort, order })
+            }
           >
             {t("dealPipeline.exportCsv")}
           </button>

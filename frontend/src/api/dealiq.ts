@@ -206,6 +206,8 @@ export const investors = {
       q?: string;
       type_filter?: string;
       qualif_status?: string;
+      sort?: string;
+      order?: string;
       limit?: number;
       offset?: number;
     } = {},
@@ -217,7 +219,9 @@ export const investors = {
     return api.get<Page<Investor>>(`/investors${qs ? `?${qs}` : ""}`);
   },
   me: () => api.get<Investor>("/investors/me"),
-  exportCsv: (params: { q?: string; type_filter?: string; qualif_status?: string } = {}) => {
+  exportCsv: (
+    params: { q?: string; type_filter?: string; qualif_status?: string; sort?: string; order?: string } = {},
+  ) => {
     const clean = Object.fromEntries(
       Object.entries(params).filter(([, v]) => v !== undefined && v !== ""),
     ) as Record<string, string>;
@@ -330,7 +334,16 @@ export const dd = {
 };
 
 export const deals = {
-  list: (params: { stage?: string; deal_type?: string; limit?: number; offset?: number } = {}) => {
+  list: (
+    params: {
+      stage?: string;
+      deal_type?: string;
+      sort?: string;
+      order?: string;
+      limit?: number;
+      offset?: number;
+    } = {},
+  ) => {
     const clean = Object.fromEntries(
       Object.entries(params).filter(([, v]) => v !== undefined && v !== ""),
     ) as Record<string, string>;
@@ -338,7 +351,7 @@ export const deals = {
     return api.get<Page<Deal>>(`/deals${qs ? `?${qs}` : ""}`);
   },
   get: (id: string) => api.get<DealDetail>(`/deals/${id}`),
-  exportCsv: (params: { stage?: string; deal_type?: string } = {}) => {
+  exportCsv: (params: { stage?: string; deal_type?: string; sort?: string; order?: string } = {}) => {
     const clean = Object.fromEntries(
       Object.entries(params).filter(([, v]) => v !== undefined && v !== ""),
     ) as Record<string, string>;
