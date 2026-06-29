@@ -173,6 +173,13 @@ export const admin = {
   },
 };
 
+export const account = {
+  verifyEmail: (email: string, code: string) =>
+    api.post<unknown>("/auth/verify-email", { email, code }, false),
+  resendVerification: (email: string) =>
+    api.post<unknown>("/auth/resend-verification", { email }, false),
+};
+
 export const security = {
   mfaSetup: () => api.post<{ secret: string; otpauth_uri: string }>("/auth/mfa/setup"),
   mfaEnable: (code: string) => api.post<{ mfa_enabled: boolean }>("/auth/mfa/enable", { code }),

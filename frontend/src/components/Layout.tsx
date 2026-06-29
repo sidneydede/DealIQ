@@ -2,9 +2,73 @@ import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import { notifications as notifApi } from "../api/dealiq";
+import { account, notifications as notifApi } from "../api/dealiq";
+import { ApiError } from "../api/client";
 import { useAuth, type Role } from "../auth/AuthContext";
+import { useToast } from "./Toast";
 import { setLanguage } from "../i18n";
+
+function VerifyEmailBanner() {
+  const { t } = useTranslation();
+  const { user, refreshUser } = useAuth();
+  const toast = useToast();
+  const [code, setCode] = useState("");
+
+  if (!user || user.email_verified) return null;
+
+  async function verify() {
+    try {
+      await account.verifyEmail(user!.email, code);
+      await refreshUser();
+      toast.success(t("verify.ok"));
+    } catch (e) {
+      toast.error(e instanceof ApiError ? e.message : t("verify.error"));
+    }
+  }
+  async function resend() {
+    try {
+      await account.resendVerification(user!.email);
+      toast.success(t("verify.resent"));
+    } catch {
+      toast.error(t("verify.error"));
+    }
+  }
+
+  return (
+    <div
+      role="alert"
+      style={{
+        background: "#fff4e0",
+        borderBottom: "1px solid #f0c674",
+        padding: "8px 16px",
+        display: "flex",
+        gap: 8,
+        alignItems: "center",
+        flexWrap: "wrap",
+        fontSize: 14,
+      }}
+    >
+      <span>{t("verify.prompt")}</span>
+      <input
+        value={code}
+        onChange={(e) => setCode(e.target.value)}
+        inputMode="numeric"
+        placeholder="123456"
+        style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid var(--c-border)", width: 110 }}
+      />
+      <button className="btn" style={{ padding: "4px 10px" }} onClick={() => void verify()}>
+        {t("verify.verify")}
+      </button>
+      <button
+        className="btn btn--ghost"
+        style={{ padding: "4px 10px" }}
+        onClick={() => void resend()}
+      >
+        {t("verify.resend")}
+      </button>
+    </div>
+  );
+}
 
 function NotificationBell() {
   const { t } = useTranslation();
@@ -138,6 +202,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         ))}
       </aside>
       <div className="main">
+        <VerifyEmailBanner />
         <header className="topbar">
           <span className="muted">{user?.email}</span>
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>

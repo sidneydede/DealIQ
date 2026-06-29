@@ -16,7 +16,7 @@ from app.core.security import (
     verify_password,
 )
 from app.database import get_db
-from app.domain import mfa
+from app.domain import email_template, mfa, otp
 from app.domain.enums import AuditAction, Role
 from app.models.user import User
 from app.schemas.auth import (
@@ -25,12 +25,29 @@ from app.schemas.auth import (
     MfaSetupOut,
     MfaVerify,
     RefreshRequest,
+    ResendVerification,
     TokenPair,
     UserLogin,
     UserOut,
     UserRegister,
+    VerifyEmail,
 )
 from app.services import audit
+from app.services import email as email_adapter
+
+
+def _send_verification(user: User) -> None:
+    """Génère et envoie un code OTP de validation e-mail (US-M1-02)."""
+    user.email_otp = otp.generate_code()
+    user.email_otp_expires = otp.expiry()
+    title = "Validez votre adresse e-mail"
+    body = (
+        f"Votre code de validation DealIQ est : {user.email_otp}. "
+        f"Il expire dans {otp.OTP_TTL_MINUTES} minutes."
+    )
+    email_adapter.send_email(
+        user.email, title, body, html=email_template.render(title, body)
+    )
 
 router = APIRouter()
 
@@ -55,7 +72,9 @@ def register(payload: UserRegister, request: Request, db: Session = Depends(get_
         hashed_password=hash_password(payload.password),
         full_name=payload.full_name,
         role=Role.entrepreneur,
+        email_verified=False,
     )
+    _send_verification(user)  # OTP de validation e-mail (US-M1-02)
     db.add(user)
     db.commit()
     db.refresh(user)
@@ -64,6 +83,31 @@ def register(payload: UserRegister, request: Request, db: Session = Depends(get_
         ip_address=_client_ip(request),
     )
     return user
+
+
+@router.post("/verify-email", response_model=UserOut)
+def verify_email(payload: VerifyEmail, db: Session = Depends(get_db)) -> User:
+    user = db.query(User).filter(User.email == payload.email).first()
+    if user is None or not otp.is_valid(user.email_otp, user.email_otp_expires, payload.code):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Code invalide ou expiré"
+        )
+    user.email_verified = True
+    user.email_otp = None
+    user.email_otp_expires = None
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+@router.post("/resend-verification", status_code=status.HTTP_202_ACCEPTED)
+def resend_verification(payload: ResendVerification, db: Session = Depends(get_db)) -> dict:
+    user = db.query(User).filter(User.email == payload.email).first()
+    # Réponse générique (pas d'énumération de comptes) ; n'envoie que si pertinent.
+    if user is not None and not user.email_verified:
+        _send_verification(user)
+        db.commit()
+    return {"sent": True}
 
 
 @router.post("/login", response_model=LoginResponse)

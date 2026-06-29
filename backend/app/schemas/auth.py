@@ -52,6 +52,15 @@ class MfaSetupOut(BaseModel):
     otpauth_uri: str
 
 
+class VerifyEmail(BaseModel):
+    email: EmailStr
+    code: str = Field(min_length=6, max_length=6)
+
+
+class ResendVerification(BaseModel):
+    email: EmailStr
+
+
 class UserOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -61,6 +70,7 @@ class UserOut(BaseModel):
     role: Role
     is_active: bool
     mfa_enabled: bool = False
+    email_verified: bool = False
 
 
 class RoleUpdate(BaseModel):

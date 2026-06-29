@@ -47,6 +47,7 @@ def create_user(
         hashed_password=hash_password(secret),
         full_name=payload.full_name,
         role=payload.role,
+        email_verified=True,  # compte créé par un admin = pré-vérifié
     )
     db.add(user)
     db.commit()

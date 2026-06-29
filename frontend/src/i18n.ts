@@ -13,6 +13,14 @@ const fr = {
       cancel: "Annuler",
       confirm: "Confirmer",
     },
+    verify: {
+      prompt: "Validez votre adresse e-mail avec le code reçu :",
+      verify: "Valider",
+      resend: "Renvoyer",
+      ok: "Adresse e-mail validée.",
+      resent: "Nouveau code envoyé.",
+      error: "Code invalide ou expiré.",
+    },
     nav: {
       dashboard: "Tableau de bord",
       diagnostic: "Mon diagnostic",
@@ -660,6 +668,14 @@ const en = {
       loading: "Loading…",
       cancel: "Cancel",
       confirm: "Confirm",
+    },
+    verify: {
+      prompt: "Verify your email address with the code you received:",
+      verify: "Verify",
+      resend: "Resend",
+      ok: "Email address verified.",
+      resent: "New code sent.",
+      error: "Invalid or expired code.",
     },
     nav: {
       dashboard: "Dashboard",

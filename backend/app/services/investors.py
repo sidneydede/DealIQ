@@ -87,6 +87,7 @@ def invite_investor(
             hashed_password=hash_password(temp),
             role=Role.investisseur,
             full_name=investor.name,
+            email_verified=True,  # compte créé par le cabinet = pré-vérifié
         )
         db.add(user)
         db.commit()

@@ -18,6 +18,7 @@ export interface User {
   role: Role;
   is_active: boolean;
   mfa_enabled: boolean;
+  email_verified: boolean;
 }
 
 interface LoginResponse {

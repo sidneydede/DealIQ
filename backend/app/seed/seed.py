@@ -38,6 +38,7 @@ def seed_admin(db: Session) -> bool:
             hashed_password=hash_password(os.getenv("ADMIN_PASSWORD", "ChangeMe123!")),
             full_name="Administrateur DealIQ",
             role=Role.admin,
+            email_verified=True,
         )
     )
     db.commit()

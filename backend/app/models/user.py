@@ -1,7 +1,9 @@
 """Entité User (CDC §8.3, M1)."""
 from __future__ import annotations
 
-from sqlalchemy import Boolean, String
+from datetime import datetime
+
+from sqlalchemy import Boolean, DateTime, String
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -22,3 +24,7 @@ class User(UUIDMixin, TimestampMixin, Base):
     mfa_enabled: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     # Secret TOTP (base32). Renseigné à l'enrôlement, effacé à la désactivation.
     mfa_secret: Mapped[str | None] = mapped_column(String(64))
+    # Validation e-mail par OTP (US-M1-02) à l'auto-inscription.
+    email_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    email_otp: Mapped[str | None] = mapped_column(String(6))
+    email_otp_expires: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
