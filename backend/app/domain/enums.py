@@ -307,6 +307,7 @@ class AuditAction(str, Enum):
     mission_promoted = "mission_promoted"
     program_created = "program_created"
     program_member_added = "program_member_added"
+    dd_computed = "dd_computed"
     export = "export"
 
 

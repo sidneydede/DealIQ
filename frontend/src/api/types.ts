@@ -456,6 +456,24 @@ export interface ProgramReport {
   closings: number;
 }
 
+export interface DdRetraitement {
+  value: number;
+  rule: string;
+  sources: string[];
+}
+
+export interface DdAnalysis {
+  id: string;
+  company_id: string;
+  deal_type: string | null;
+  class_totals: Record<string, number>;
+  retraitements: Record<string, DdRetraitement>;
+  focus: string[];
+  synthesis: string | null;
+  grid_version: string | null;
+  created_at: string;
+}
+
 export interface DealTypeHistoryEntry {
   id: string;
   old_primary: string | null;

@@ -13,6 +13,7 @@ import type {
   DataRoomAccess,
   DataRoomDocument,
   DataRoomLog,
+  DdAnalysis,
   Deal,
   DealDetail,
   DealMilestone,
@@ -203,6 +204,16 @@ export const mandates = {
   updateFee: (feeId: string, statusValue: string) =>
     api.patch<Fee>(`/fees/${feeId}`, { status: statusValue }),
   conflicts: () => api.get<ConflictItem[]>("/conflicts"),
+};
+
+export const dd = {
+  importBalance: (
+    companyId: string,
+    lines: { account: string; label?: string; amount: number }[],
+    fiscal_year?: string,
+  ) => api.post(`/companies/${companyId}/syscohada`, { lines, fiscal_year }),
+  compute: (companyId: string) => api.post<DdAnalysis>(`/companies/${companyId}/dd/compute`),
+  get: (companyId: string) => api.get<DdAnalysis>(`/companies/${companyId}/dd`),
 };
 
 export const deals = {

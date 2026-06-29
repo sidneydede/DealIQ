@@ -7,6 +7,7 @@ import Cockpit from "./pages/Cockpit";
 import Conflicts from "./pages/Conflicts";
 import Dashboard from "./pages/Dashboard";
 import DataRoomAdmin from "./pages/DataRoomAdmin";
+import Dd from "./pages/Dd";
 import DealTypeSelect from "./pages/DealTypeSelect";
 import Documents from "./pages/Documents";
 import Esg from "./pages/Esg";
@@ -77,6 +78,7 @@ export default function App() {
           <Route path="/pipeline" element={<Pipeline />} />
           <Route path="/mandates" element={<MandatesPage />} />
           <Route path="/esg" element={<Esg />} />
+          <Route path="/dd" element={<Dd />} />
           <Route path="/programs" element={<Programs />} />
           <Route path="/conflicts" element={<Conflicts />} />
           <Route path="/kyc" element={<Kyc />} />

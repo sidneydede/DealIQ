@@ -8,6 +8,7 @@ from app.models.dataroom import (
     DataRoomDocument,
     DataRoomLog,
 )
+from app.models.dd import DdAnalysis, SyscohadaImport
 from app.models.deal import Deal, DealMilestone, DealStageHistory
 from app.models.dealtype_history import DealTypeHistory
 from app.models.document import Document
@@ -55,6 +56,8 @@ __all__ = [
     "EsgProfile",
     "Program",
     "ProgramMember",
+    "SyscohadaImport",
+    "DdAnalysis",
     "Score",
     "Document",
     "OnboardingSession",

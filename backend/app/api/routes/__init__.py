@@ -7,6 +7,7 @@ from app.api.routes import (
     cockpit,
     companies,
     dataroom,
+    dd,
     deals,
     documents,
     esg,
@@ -53,3 +54,4 @@ api_router.include_router(mandates.router, tags=["mandates"])
 api_router.include_router(missions.router, tags=["missions"])
 api_router.include_router(esg.router, tags=["esg"])
 api_router.include_router(programs.router, tags=["programs"])
+api_router.include_router(dd.router, tags=["dd"])
