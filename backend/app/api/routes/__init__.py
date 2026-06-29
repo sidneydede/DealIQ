@@ -12,6 +12,7 @@ from app.api.routes import (
     health,
     investors,
     kyc,
+    mandates,
     matching,
     meta,
     offers,
@@ -45,3 +46,4 @@ api_router.include_router(qa.router, tags=["qa"])
 api_router.include_router(kyc.router, tags=["kyc"])
 api_router.include_router(dataroom.router, tags=["dataroom"])
 api_router.include_router(deals.router, tags=["deals"])
+api_router.include_router(mandates.router, tags=["mandates"])

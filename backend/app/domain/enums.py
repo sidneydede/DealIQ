@@ -195,6 +195,41 @@ class DealStage(str, Enum):
     abandonne = "abandonne"
 
 
+class RepresentedParty(str, Enum):
+    """Partie dont le Cabinet est mandataire (RG-M17-01, gouvernance des conflits)."""
+
+    entreprise = "entreprise"
+    investisseur = "investisseur"
+    les_deux = "les_deux"  # double mandat → conflit à divulguer
+
+
+class MandateType(str, Enum):
+    levee = "levee"  # levée de fonds / sourcing capital
+    cession = "cession"
+    sourcing = "sourcing"
+    arrangement_dette = "arrangement_dette"
+    conseil = "conseil"
+    autre = "autre"
+
+
+class MandateStatus(str, Enum):
+    brouillon = "brouillon"
+    actif = "actif"
+    clos = "clos"
+
+
+class FeeType(str, Enum):
+    retainer = "retainer"
+    success_fee = "success_fee"
+    arrangement = "arrangement"
+
+
+class FeeStatus(str, Enum):
+    du = "du"
+    facture = "facture"
+    paye = "paye"
+
+
 class DataRoomStatus(str, Enum):
     ouverte = "ouverte"
     fermee = "fermee"
@@ -238,6 +273,9 @@ class AuditAction(str, Enum):
     dataroom_document_viewed = "dataroom_document_viewed"
     deal_created = "deal_created"
     deal_stage_changed = "deal_stage_changed"
+    mandate_created = "mandate_created"
+    mandate_status_changed = "mandate_status_changed"
+    fee_added = "fee_added"
     export = "export"
 
 

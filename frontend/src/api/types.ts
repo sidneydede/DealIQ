@@ -344,6 +344,39 @@ export interface DealDetail extends Deal {
   history: DealStageHistory[];
 }
 
+export interface Mandate {
+  id: string;
+  company_id: string;
+  deal_id: string | null;
+  represented_party: string;
+  mandate_type: string;
+  exclusive: boolean;
+  duration_months: number | null;
+  scope: string | null;
+  status: string;
+  signed: boolean;
+  created_at: string;
+}
+
+export interface Fee {
+  id: string;
+  mandate_id: string;
+  fee_type: string;
+  amount: number | null;
+  currency: string;
+  due_date: string | null;
+  status: string;
+  note: string | null;
+}
+
+export interface ConflictItem {
+  company_id: string;
+  company_name: string | null;
+  represented_parties: string[];
+  has_conflict: boolean;
+  disclosure: string | null;
+}
+
 export interface DealTypeHistoryEntry {
   id: string;
   old_primary: string | null;

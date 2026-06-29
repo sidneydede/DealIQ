@@ -13,6 +13,7 @@ from app.models.dealtype_history import DealTypeHistory
 from app.models.document import Document
 from app.models.investor import InvestmentCriteria, Investor
 from app.models.kyc import KycCheck
+from app.models.mandate import Fee, Mandate
 from app.models.onboarding import OnboardingSession
 from app.models.qa import QAItem
 from app.models.quote import QuoteRequest
@@ -42,6 +43,8 @@ __all__ = [
     "Deal",
     "DealStageHistory",
     "DealMilestone",
+    "Mandate",
+    "Fee",
     "Score",
     "Document",
     "OnboardingSession",

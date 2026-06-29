@@ -4,6 +4,7 @@ import Layout from "./components/Layout";
 import { useAuth } from "./auth/AuthContext";
 import Audit from "./pages/Audit";
 import Cockpit from "./pages/Cockpit";
+import Conflicts from "./pages/Conflicts";
 import Dashboard from "./pages/Dashboard";
 import DataRoomAdmin from "./pages/DataRoomAdmin";
 import DealTypeSelect from "./pages/DealTypeSelect";
@@ -12,6 +13,7 @@ import Interactions from "./pages/Interactions";
 import Investors from "./pages/Investors";
 import Kyc from "./pages/Kyc";
 import Login from "./pages/Login";
+import MandatesPage from "./pages/Mandates";
 import Matching from "./pages/Matching";
 import MyCompany from "./pages/MyCompany";
 import MyCriteria from "./pages/MyCriteria";
@@ -67,6 +69,8 @@ export default function App() {
           <Route path="/datarooms" element={<DataRoomAdmin />} />
           <Route path="/my-datarooms" element={<MyDataRooms />} />
           <Route path="/pipeline" element={<Pipeline />} />
+          <Route path="/mandates" element={<MandatesPage />} />
+          <Route path="/conflicts" element={<Conflicts />} />
           <Route path="/kyc" element={<Kyc />} />
           <Route path="/users" element={<Placeholder title="Utilisateurs" />} />
           <Route path="/audit" element={<Audit />} />

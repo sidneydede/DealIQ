@@ -5,6 +5,7 @@ import type {
   CockpitItem,
   Company,
   CompanyCreateResult,
+  ConflictItem,
   CountryMeta,
   Criteria,
   DashboardData,
@@ -22,8 +23,10 @@ import type {
   FinancingNeed,
   GatingResult,
   Interaction,
+  Fee,
   Investor,
   KycCheck,
+  Mandate,
   MatchResult,
   OffersResponse,
   OnboardingSession,
@@ -146,6 +149,22 @@ export const kyc = {
     api.post<KycCheck>("/kyc/checks", { subject_type, subject_id, check_type }),
   update: (id: string, status: string, notes?: string) =>
     api.patch<KycCheck>(`/kyc/checks/${id}`, { status, notes }),
+};
+
+export const mandates = {
+  forCompany: (companyId: string) => api.get<Mandate[]>(`/companies/${companyId}/mandates`),
+  create: (
+    companyId: string,
+    body: { represented_party: string; mandate_type: string; exclusive: boolean },
+  ) => api.post<Mandate>(`/companies/${companyId}/mandates`, body),
+  update: (id: string, body: { status?: string; signed?: boolean }) =>
+    api.patch<Mandate>(`/mandates/${id}`, body),
+  fees: (id: string) => api.get<Fee[]>(`/mandates/${id}/fees`),
+  addFee: (id: string, body: { fee_type: string; amount?: number; currency?: string }) =>
+    api.post<Fee>(`/mandates/${id}/fees`, body),
+  updateFee: (feeId: string, statusValue: string) =>
+    api.patch<Fee>(`/fees/${feeId}`, { status: statusValue }),
+  conflicts: () => api.get<ConflictItem[]>("/conflicts"),
 };
 
 export const deals = {
