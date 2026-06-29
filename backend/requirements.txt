@@ -12,6 +12,7 @@ python-multipart==0.0.20
 email-validator==2.2.0
 fpdf2==2.8.2
 pyotp==2.9.0
+boto3==1.43.36
 
 # Tests / qualité
 pytest==8.3.4

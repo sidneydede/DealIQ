@@ -28,9 +28,16 @@ class Settings(BaseSettings):
     # CORS (chaîne séparée par des virgules)
     cors_origins: str = "http://localhost:5173"
 
-    # Stockage documentaire (mock S3 = système de fichiers local en MVP)
+    # Stockage documentaire — local (FS) par défaut ; "s3" pour un vrai bucket
+    # (AWS S3 / Scaleway / MinIO via s3_endpoint_url). Identifiants AWS via la
+    # chaîne standard boto3 (AWS_ACCESS_KEY_ID/SECRET, profil, rôle IAM…).
+    storage_provider: str = "local"  # local | s3
     storage_dir: str = "storage"
     max_upload_mb: int = 10
+    s3_bucket: str = ""
+    s3_region: str = ""
+    s3_endpoint_url: str = ""  # vide = AWS ; sinon endpoint S3-compatible
+    s3_sse: str = "AES256"  # chiffrement côté serveur ("" pour désactiver)
 
     # Rate limiting (appliqué aux endpoints sensibles ; actif en production)
     rate_limit_max: int = 10

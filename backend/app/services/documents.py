@@ -1,8 +1,7 @@
-"""Logique documents & checklist (M4). Stockage local (mock S3 en MVP)."""
+"""Logique documents & checklist (M4). Stockage via adaptateur (local ou S3)."""
 from __future__ import annotations
 
 import hashlib
-from pathlib import Path
 
 from sqlalchemy.orm import Session
 
@@ -12,7 +11,7 @@ from app.models.company import Company
 from app.models.document import Document
 from app.models.reference import DealType
 from app.models.user import User
-from app.services import audit
+from app.services import audit, storage
 
 # Types MIME autorisés (RG-M4-01) : PDF, images, tableurs.
 ALLOWED_CONTENT_TYPES = {
@@ -43,12 +42,6 @@ def _content_matches(content_type: str | None, data: bytes) -> bool:
     if not signatures:
         return False
     return any(data.startswith(sig) for sig in signatures)
-
-
-def _storage_path(company_id: str, doc_id: str, filename: str) -> Path:
-    base = Path(settings.storage_dir) / company_id
-    base.mkdir(parents=True, exist_ok=True)
-    return base / f"{doc_id}_{filename}"
 
 
 def save_upload(
@@ -88,11 +81,9 @@ def save_upload(
         uploaded_by=actor.id,
     )
     db.add(doc)
-    db.flush()  # obtient doc.id pour le chemin
+    db.flush()  # obtient doc.id pour la clé de stockage
 
-    path = _storage_path(company.id, doc.id, filename)
-    path.write_bytes(data)
-    doc.storage_key = str(path)
+    doc.storage_key = storage.put(company.id, doc.id, filename, data, content_type)
 
     db.commit()
     db.refresh(doc)
