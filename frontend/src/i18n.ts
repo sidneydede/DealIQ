@@ -380,6 +380,10 @@ const fr = {
       discardConfirm: "Écarter cet investisseur de la mise en relation ?",
       statusOk: "Statut mis à jour.",
       trackedOk: "Deal créé depuis la mise en relation.",
+      feedback: "Retour investisseur",
+      nextStep: "Prochaine étape",
+      feedbackPlaceholder: "Retour investisseur (motif…)",
+      nextStepPlaceholder: "Prochaine étape convenue…",
     },
     qa: {
       title: "Mes échanges",
@@ -1043,6 +1047,10 @@ const en = {
       discardConfirm: "Discard this investor from the introduction?",
       statusOk: "Status updated.",
       trackedOk: "Deal created from the introduction.",
+      feedback: "Investor feedback",
+      nextStep: "Next step",
+      feedbackPlaceholder: "Investor feedback (reason…)",
+      nextStepPlaceholder: "Agreed next step…",
     },
     kyc: {
       title: "Compliance — KYC / KYB / AML",

@@ -259,8 +259,12 @@ export const teasers = {
 
 export const interactions = {
   list: () => api.get<Interaction[]>("/interactions"),
-  setStatus: (id: string, statusValue: string) =>
-    api.patch<Interaction>(`/interactions/${id}/status`, { status: statusValue }),
+  setStatus: (
+    id: string,
+    statusValue: string,
+    extra?: { feedback?: string; next_step?: string },
+  ) =>
+    api.patch<Interaction>(`/interactions/${id}/status`, { status: statusValue, ...extra }),
 };
 
 export const kyc = {

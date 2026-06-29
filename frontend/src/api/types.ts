@@ -284,6 +284,8 @@ export interface Interaction {
   investor_id: string;
   status: string;
   note: string | null;
+  feedback: string | null;
+  next_step: string | null;
   created_at: string;
 }
 

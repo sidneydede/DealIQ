@@ -141,4 +141,7 @@ def update_interaction(
     interaction = db.get(Interaction, interaction_id)
     if interaction is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Interaction introuvable")
-    return svc.update_interaction_status(db, interaction, payload.status, user, ip=_ip(request))
+    return svc.update_interaction_status(
+        db, interaction, payload.status, user,
+        feedback=payload.feedback, next_step=payload.next_step, ip=_ip(request),
+    )

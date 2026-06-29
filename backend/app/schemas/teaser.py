@@ -57,6 +57,8 @@ class InterestCreate(BaseModel):
 
 class InteractionStatusUpdate(BaseModel):
     status: InteractionStatus
+    feedback: str | None = Field(default=None, max_length=2000)
+    next_step: str | None = Field(default=None, max_length=2000)
 
 
 class InteractionOut(BaseModel):
@@ -68,4 +70,6 @@ class InteractionOut(BaseModel):
     investor_id: str
     status: InteractionStatus
     note: str | None
+    feedback: str | None
+    next_step: str | None
     created_at: datetime

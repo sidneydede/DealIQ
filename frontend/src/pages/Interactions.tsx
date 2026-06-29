@@ -22,11 +22,19 @@ export default function Interactions() {
   const confirm = useConfirm();
   const [list, setList] = useState<Interaction[]>([]);
   const [open, setOpen] = useState<string | null>(null);
+  const [fb, setFb] = useState<Record<string, { feedback: string; next_step: string }>>({});
 
   const reload = useCallback(() => {
     void api.list().then(setList);
   }, []);
   useEffect(() => reload(), [reload]);
+
+  function field(id: string, key: "feedback" | "next_step", value: string) {
+    setFb((m) => {
+      const cur = m[id] ?? { feedback: "", next_step: "" };
+      return { ...m, [id]: { ...cur, [key]: value } };
+    });
+  }
 
   async function advance(id: string, status: string) {
     // Écarter un investisseur est sensible : on confirme.
@@ -37,7 +45,10 @@ export default function Interactions() {
       return;
     }
     try {
-      await api.setStatus(id, status);
+      const extra = fb[id]
+        ? { feedback: fb[id].feedback || undefined, next_step: fb[id].next_step || undefined }
+        : undefined;
+      await api.setStatus(id, status, extra);
       reload();
       toast.success(t("interactions.statusOk"));
     } catch (err) {
@@ -86,6 +97,37 @@ export default function Interactions() {
             </div>
           </div>
           {it.note && <p className="muted">{it.note}</p>}
+          {(it.feedback || it.next_step) && (
+            <div className="card" style={{ background: "var(--c-bg)", margin: "8px 0" }}>
+              {it.feedback && (
+                <div>
+                  <strong>{t("interactions.feedback")} :</strong> {it.feedback}
+                </div>
+              )}
+              {it.next_step && (
+                <div>
+                  <strong>{t("interactions.nextStep")} :</strong> {it.next_step}
+                </div>
+              )}
+            </div>
+          )}
+          {/* Saisie feedback / prochaine étape (transmis au prochain changement de statut). */}
+          {(NEXT[it.status] ?? []).length > 0 && (
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "6px 0" }}>
+              <input
+                value={fb[it.id]?.feedback ?? ""}
+                onChange={(e) => field(it.id, "feedback", e.target.value)}
+                placeholder={t("interactions.feedbackPlaceholder")}
+                style={{ flex: 1, minWidth: 200, padding: 8, borderRadius: 8, border: "1px solid var(--c-border)" }}
+              />
+              <input
+                value={fb[it.id]?.next_step ?? ""}
+                onChange={(e) => field(it.id, "next_step", e.target.value)}
+                placeholder={t("interactions.nextStepPlaceholder")}
+                style={{ flex: 1, minWidth: 200, padding: 8, borderRadius: 8, border: "1px solid var(--c-border)" }}
+              />
+            </div>
+          )}
           <button
             className="btn btn--ghost"
             style={{ marginTop: 8 }}

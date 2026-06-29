@@ -158,10 +158,14 @@ def express_interest(
 
 def update_interaction_status(
     db: Session, interaction: Interaction, new_status: InteractionStatus, actor: User,
-    ip: str | None = None,
+    feedback: str | None = None, next_step: str | None = None, ip: str | None = None,
 ) -> Interaction:
     old = interaction.status
     interaction.status = new_status
+    if feedback is not None:
+        interaction.feedback = feedback
+    if next_step is not None:
+        interaction.next_step = next_step
     db.commit()
     db.refresh(interaction)
     audit.record(

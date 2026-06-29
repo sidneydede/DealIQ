@@ -156,4 +156,15 @@ def test_full_interest_flow(client, db_session):
         .count()
         == 1
     )
+
+    # US-M10-04 : feedback investisseur (motif d'écartement) + prochaine étape.
+    ecarte = client.patch(
+        f"/api/v1/interactions/{iid}/status",
+        json={"status": "ecarte", "feedback": "Ticket trop élevé", "next_step": "Relancer en 2027"},
+    )
+    assert ecarte.status_code == 200
+    body = ecarte.json()
+    assert body["status"] == "ecarte"
+    assert body["feedback"] == "Ticket trop élevé"
+    assert body["next_step"] == "Relancer en 2027"
     _clear()

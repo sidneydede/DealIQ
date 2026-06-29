@@ -56,3 +56,7 @@ class Interaction(UUIDMixin, TimestampMixin, Base):
         nullable=False,
     )
     note: Mapped[str | None] = mapped_column(Text)
+    # Feedback investisseur (US-M10-04) : motif de refus / d'écartement.
+    feedback: Mapped[str | None] = mapped_column(Text)
+    # Prochaine étape convenue (next step) côté suivi cabinet.
+    next_step: Mapped[str | None] = mapped_column(Text)
