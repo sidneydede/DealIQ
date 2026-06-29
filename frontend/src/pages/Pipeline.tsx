@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { deals } from "../api/dealiq";
+import { deals, meta } from "../api/dealiq";
 import Pager from "../components/Pager";
 import { SortSelect, useSort } from "../components/SortHeader";
 import type { Deal, DealDetail } from "../api/types";
@@ -26,22 +26,37 @@ export default function Pipeline() {
   const [detail, setDetail] = useState<DealDetail | null>(null);
   const [note, setNote] = useState("");
   const [stageFilter, setStageFilter] = useState("");
+  const [dealTypeFilter, setDealTypeFilter] = useState("");
+  const [dealTypeLabels, setDealTypeLabels] = useState<Record<string, string>>({});
   const { sort, order, toggle: toggleSort, state: sortState } = useSort("created_at", "desc");
+
+  useEffect(() => {
+    void meta.dealTypes().then((d) =>
+      setDealTypeLabels(Object.fromEntries(d.map((x) => [x.code, x.label]))),
+    );
+  }, []);
 
   const reload = useCallback(() => {
     void deals
-      .list({ stage: stageFilter || undefined, sort, order, limit: LIMIT, offset })
+      .list({
+        stage: stageFilter || undefined,
+        deal_type: dealTypeFilter || undefined,
+        sort,
+        order,
+        limit: LIMIT,
+        offset,
+      })
       .then((p) => {
         setList(p.items);
         setTotal(p.total);
       });
-  }, [stageFilter, sort, order, offset]);
+  }, [stageFilter, dealTypeFilter, sort, order, offset]);
   useEffect(() => reload(), [reload]);
 
   // Retour page 1 au changement de filtre / tri.
   useEffect(() => {
     setOffset(0);
-  }, [stageFilter, sort, order]);
+  }, [stageFilter, dealTypeFilter, sort, order]);
 
   async function openDeal(id: string) {
     if (openId === id) {
@@ -92,6 +107,19 @@ export default function Pipeline() {
               </option>
             ))}
           </select>
+          <select
+            value={dealTypeFilter}
+            onChange={(e) => setDealTypeFilter(e.target.value)}
+            aria-label={t("cockpit.cols.dealType")}
+            style={{ padding: 8, borderRadius: 8, border: "1px solid var(--c-border)" }}
+          >
+            <option value="">{t("cockpit.allDealTypes")}</option>
+            {Object.entries(dealTypeLabels).map(([code, label]) => (
+              <option key={code} value={code}>
+                {label}
+              </option>
+            ))}
+          </select>
           <SortSelect
             byLabel={t("sort.by")}
             state={sortState}
@@ -105,7 +133,12 @@ export default function Pipeline() {
           <button
             className="btn btn--ghost"
             onClick={() =>
-              void deals.exportCsv({ stage: stageFilter || undefined, sort, order })
+              void deals.exportCsv({
+                stage: stageFilter || undefined,
+                deal_type: dealTypeFilter || undefined,
+                sort,
+                order,
+              })
             }
           >
             {t("dealPipeline.exportCsv")}
