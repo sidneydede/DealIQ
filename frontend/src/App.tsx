@@ -3,7 +3,9 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
 import { useAuth } from "./auth/AuthContext";
 import Dashboard from "./pages/Dashboard";
+import DealTypeSelect from "./pages/DealTypeSelect";
 import Login from "./pages/Login";
+import MyCompany from "./pages/MyCompany";
 
 function Placeholder({ title }: { title: string }) {
   return (
@@ -27,8 +29,9 @@ export default function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/company" element={<MyCompany />} />
           <Route path="/diagnostic" element={<Placeholder title="Mon diagnostic" />} />
-          <Route path="/deal-type" element={<Placeholder title="Mon type de deal" />} />
+          <Route path="/deal-type" element={<DealTypeSelect />} />
           <Route path="/documents" element={<Placeholder title="Documents" />} />
           <Route path="/readiness" element={<Placeholder title="Ma readiness" />} />
           <Route path="/offers" element={<Placeholder title="Accompagnement" />} />

@@ -120,6 +120,13 @@ class DataReliability(str, Enum):
     inference = "inference"
 
 
+class DealTypeChangeSource(str, Enum):
+    """Origine d'un changement de type de deal (historisation M24)."""
+
+    entrepreneur = "entrepreneur"  # sélection / changement par l'entrepreneur (onboarding)
+    cabinet = "cabinet"  # requalification par un consultant (RG-M24-04)
+
+
 class AuditAction(str, Enum):
     """Actions sensibles journalisées (M22)."""
 

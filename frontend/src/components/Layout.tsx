@@ -12,6 +12,7 @@ interface NavItem {
 // Sitemap UI (CDC §7.5) — périmètre Lot 0 (placeholders ; modules branchés aux lots suivants).
 const NAV: NavItem[] = [
   { to: "/", key: "nav.dashboard", roles: ["entrepreneur", "analyste", "senior", "admin"] },
+  { to: "/company", key: "nav.company", roles: ["entrepreneur"] },
   { to: "/diagnostic", key: "nav.diagnostic", roles: ["entrepreneur"] },
   { to: "/deal-type", key: "nav.dealType", roles: ["entrepreneur"] },
   { to: "/documents", key: "nav.documents", roles: ["entrepreneur"] },
