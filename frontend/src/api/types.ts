@@ -6,6 +6,18 @@ export interface DealTypeMeta {
   target_financiers: string | null;
 }
 
+export interface AdminUser {
+  id: string;
+  email: string;
+  full_name: string | null;
+  role: string;
+  is_active: boolean;
+}
+
+export interface UserCreated extends AdminUser {
+  temporary_password: string | null;
+}
+
 export interface CountryMeta {
   code: string;
   label: string;

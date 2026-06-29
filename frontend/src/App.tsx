@@ -35,17 +35,7 @@ import Reporting from "./pages/Reporting";
 import ReportView from "./pages/ReportView";
 import ScoringCalibration from "./pages/ScoringCalibration";
 import TeaserAdmin from "./pages/TeaserAdmin";
-
-function Placeholder({ title }: { title: string }) {
-  return (
-    <>
-      <h1>{title}</h1>
-      <div className="card">
-        <p className="muted">Module à implémenter dans un prochain lot.</p>
-      </div>
-    </>
-  );
-}
+import Users from "./pages/Users";
 
 export default function App() {
   const { user, loading } = useAuth();
@@ -94,7 +84,7 @@ export default function App() {
           <Route path="/programs" element={<Programs />} />
           <Route path="/conflicts" element={<Conflicts />} />
           <Route path="/kyc" element={<Kyc />} />
-          <Route path="/users" element={<Placeholder title="Utilisateurs" />} />
+          <Route path="/users" element={<Users />} />
           <Route path="/audit" element={<Audit />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

@@ -283,6 +283,7 @@ class AuditAction(str, Enum):
     token_refresh = "token_refresh"
     user_created = "user_created"
     role_changed = "role_changed"
+    account_status_changed = "account_status_changed"
     company_created = "company_created"
     company_status_changed = "company_status_changed"
     deal_type_changed = "deal_type_changed"

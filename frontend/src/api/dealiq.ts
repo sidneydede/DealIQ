@@ -1,5 +1,6 @@
 import { api } from "./client";
 import type {
+  AdminUser,
   AuditLogEntry,
   ChecklistItem,
   CockpitItem,
@@ -45,6 +46,7 @@ import type {
   SimulateResult,
   Teaser,
   TeaserPublic,
+  UserCreated,
 } from "./types";
 
 export const meta = {
@@ -118,6 +120,15 @@ export const admin = {
     const qs = new URLSearchParams(params as Record<string, string>).toString();
     return api.get<AuditLogEntry[]>(`/audit${qs ? `?${qs}` : ""}`);
   },
+};
+
+export const users = {
+  list: () => api.get<AdminUser[]>("/users"),
+  create: (body: { email: string; full_name?: string; role: string; password?: string }) =>
+    api.post<UserCreated>("/users", body),
+  changeRole: (id: string, role: string) => api.patch<AdminUser>(`/users/${id}/role`, { role }),
+  setActive: (id: string, is_active: boolean) =>
+    api.patch<AdminUser>(`/users/${id}/active`, { is_active }),
 };
 
 export const investors = {

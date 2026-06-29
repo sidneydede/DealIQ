@@ -40,3 +40,21 @@ class UserOut(BaseModel):
 
 class RoleUpdate(BaseModel):
     role: Role
+
+
+class UserCreate(BaseModel):
+    """Création d'un compte par un admin (M1). Mot de passe optionnel : généré sinon."""
+
+    email: EmailStr
+    full_name: str | None = None
+    role: Role = Role.entrepreneur
+    password: str | None = Field(default=None, min_length=8, max_length=128)
+
+
+class UserCreatedOut(UserOut):
+    # Mot de passe temporaire renvoyé UNE SEULE FOIS quand il a été généré côté serveur.
+    temporary_password: str | None = None
+
+
+class ActiveUpdate(BaseModel):
+    is_active: bool
