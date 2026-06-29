@@ -17,7 +17,7 @@ class AuditLog(UUIDMixin, TimestampMixin, Base):
     actor_id: Mapped[str | None] = mapped_column(String(36), index=True)
     actor_email: Mapped[str | None] = mapped_column(String(255))
     action: Mapped[AuditAction] = mapped_column(
-        SAEnum(AuditAction, name="audit_action"), nullable=False
+        SAEnum(AuditAction, native_enum=False), nullable=False
     )
     object_type: Mapped[str | None] = mapped_column(String(80))
     object_id: Mapped[str | None] = mapped_column(String(36), index=True)

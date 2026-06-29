@@ -18,7 +18,7 @@ class Program(UUIDMixin, TimestampMixin, Base):
     scope: Mapped[str | None] = mapped_column(Text)
     deliverables: Mapped[str | None] = mapped_column(Text)
     status: Mapped[ProgramStatus] = mapped_column(
-        SAEnum(ProgramStatus, name="program_status"), default=ProgramStatus.actif, nullable=False
+        SAEnum(ProgramStatus, native_enum=False), default=ProgramStatus.actif, nullable=False
     )
     created_by: Mapped[str | None] = mapped_column(ForeignKey("users.id"))
 

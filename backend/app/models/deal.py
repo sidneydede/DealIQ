@@ -16,10 +16,10 @@ class Deal(UUIDMixin, TimestampMixin, Base):
     investor_id: Mapped[str] = mapped_column(ForeignKey("investors.id"), index=True, nullable=False)
     interaction_id: Mapped[str | None] = mapped_column(ForeignKey("interactions.id"))
     deal_type: Mapped[DealTypeCode | None] = mapped_column(
-        SAEnum(DealTypeCode, name="deal_type_code")
+        SAEnum(DealTypeCode, native_enum=False)
     )
     stage: Mapped[DealStage] = mapped_column(
-        SAEnum(DealStage, name="deal_stage"), default=DealStage.interesse, nullable=False
+        SAEnum(DealStage, native_enum=False), default=DealStage.interesse, nullable=False
     )
     owner_id: Mapped[str | None] = mapped_column(ForeignKey("users.id"))  # consultant en charge
 
@@ -30,9 +30,9 @@ class DealStageHistory(UUIDMixin, TimestampMixin, Base):
     __tablename__ = "deal_stage_history"
 
     deal_id: Mapped[str] = mapped_column(ForeignKey("deals.id"), index=True, nullable=False)
-    old_stage: Mapped[DealStage | None] = mapped_column(SAEnum(DealStage, name="deal_stage"))
+    old_stage: Mapped[DealStage | None] = mapped_column(SAEnum(DealStage, native_enum=False))
     new_stage: Mapped[DealStage] = mapped_column(
-        SAEnum(DealStage, name="deal_stage"), nullable=False
+        SAEnum(DealStage, native_enum=False), nullable=False
     )
     actor_id: Mapped[str | None] = mapped_column(String(36))
     note: Mapped[str | None] = mapped_column(Text)

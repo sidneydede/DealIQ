@@ -21,7 +21,7 @@ class Document(UUIDMixin, TimestampMixin, Base):
     sha256: Mapped[str | None] = mapped_column(String(64))  # intégrité (RG-M4-02)
     version: Mapped[int] = mapped_column(Integer, default=1)
     status: Mapped[DocumentStatus] = mapped_column(
-        SAEnum(DocumentStatus, name="document_status"),
+        SAEnum(DocumentStatus, native_enum=False),
         default=DocumentStatus.recu,
         nullable=False,
     )

@@ -38,6 +38,10 @@ Thumbs.db
 # Logs
 *.log
 
+# Bases SQLite locales / temporaires (tests, autogen Alembic)
+*.db
+*.sqlite
+
 # Stockage documentaire local (mock S3)
 backend/storage/
 storage/

@@ -25,16 +25,16 @@ class Mandate(UUIDMixin, TimestampMixin, Base):
     deal_id: Mapped[str | None] = mapped_column(ForeignKey("deals.id"), index=True)
     # Partie représentée — obligatoire (RG-M17-01).
     represented_party: Mapped[RepresentedParty] = mapped_column(
-        SAEnum(RepresentedParty, name="represented_party"), nullable=False
+        SAEnum(RepresentedParty, native_enum=False), nullable=False
     )
     mandate_type: Mapped[MandateType] = mapped_column(
-        SAEnum(MandateType, name="mandate_type"), nullable=False
+        SAEnum(MandateType, native_enum=False), nullable=False
     )
     exclusive: Mapped[bool] = mapped_column(Boolean, default=False)
     duration_months: Mapped[int | None] = mapped_column(Integer)
     scope: Mapped[str | None] = mapped_column(Text)
     status: Mapped[MandateStatus] = mapped_column(
-        SAEnum(MandateStatus, name="mandate_status"), default=MandateStatus.brouillon,
+        SAEnum(MandateStatus, native_enum=False), default=MandateStatus.brouillon,
         nullable=False,
     )
     signed: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -47,13 +47,13 @@ class Fee(UUIDMixin, TimestampMixin, Base):
     __tablename__ = "fees"
 
     mandate_id: Mapped[str] = mapped_column(ForeignKey("mandates.id"), index=True, nullable=False)
-    fee_type: Mapped[FeeType] = mapped_column(SAEnum(FeeType, name="fee_type"), nullable=False)
+    fee_type: Mapped[FeeType] = mapped_column(SAEnum(FeeType, native_enum=False), nullable=False)
     amount: Mapped[float | None] = mapped_column(Numeric(18, 2))
     currency: Mapped[Currency] = mapped_column(
-        SAEnum(Currency, name="currency"), default=Currency.XOF
+        SAEnum(Currency, native_enum=False), default=Currency.XOF
     )
     due_date: Mapped[date | None] = mapped_column(Date)
     status: Mapped[FeeStatus] = mapped_column(
-        SAEnum(FeeStatus, name="fee_status"), default=FeeStatus.du, nullable=False
+        SAEnum(FeeStatus, native_enum=False), default=FeeStatus.du, nullable=False
     )
     note: Mapped[str | None] = mapped_column(Text)

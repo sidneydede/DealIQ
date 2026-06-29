@@ -28,13 +28,13 @@ class Company(UUIDMixin, TimestampMixin, Base):
 
     # Identité (RG-M2-02 : nom, pays, secteur obligatoires à la création)
     name: Mapped[str] = mapped_column(String(255), index=True, nullable=False)
-    country: Mapped[Country] = mapped_column(SAEnum(Country, name="country"), nullable=False)
+    country: Mapped[Country] = mapped_column(SAEnum(Country, native_enum=False), nullable=False)
     sector: Mapped[str] = mapped_column(String(120), nullable=False)
     rccm: Mapped[str | None] = mapped_column(String(120), index=True)  # clé d'unicité RG-M2-01
 
-    stage: Mapped[CompanyStage | None] = mapped_column(SAEnum(CompanyStage, name="company_stage"))
+    stage: Mapped[CompanyStage | None] = mapped_column(SAEnum(CompanyStage, native_enum=False))
     status: Mapped[CompanyStatus] = mapped_column(
-        SAEnum(CompanyStatus, name="company_status"),
+        SAEnum(CompanyStatus, native_enum=False),
         default=CompanyStatus.brouillon,
         nullable=False,
     )
@@ -43,10 +43,10 @@ class Company(UUIDMixin, TimestampMixin, Base):
     revenue_min: Mapped[float | None] = mapped_column(Numeric(18, 2))
     revenue_max: Mapped[float | None] = mapped_column(Numeric(18, 2))
     currency: Mapped[Currency] = mapped_column(
-        SAEnum(Currency, name="currency"), default=Currency.XOF, nullable=False
+        SAEnum(Currency, native_enum=False), default=Currency.XOF, nullable=False
     )
     financials_reliability: Mapped[DataReliability] = mapped_column(
-        SAEnum(DataReliability, name="data_reliability"),
+        SAEnum(DataReliability, native_enum=False),
         default=DataReliability.declare_non_audite,
         nullable=False,
     )
@@ -88,17 +88,17 @@ class FinancingNeed(UUIDMixin, TimestampMixin, Base):
     )
     amount: Mapped[float | None] = mapped_column(Numeric(18, 2))
     currency: Mapped[Currency] = mapped_column(
-        SAEnum(Currency, name="currency"), default=Currency.XOF
+        SAEnum(Currency, native_enum=False), default=Currency.XOF
     )
     use_of_funds: Mapped[str | None] = mapped_column(Text)
     horizon: Mapped[str | None] = mapped_column(String(120))
 
     # Type de deal — obligatoire avant scoring (RG-M24-01)
     deal_type_primary: Mapped[DealTypeCode | None] = mapped_column(
-        SAEnum(DealTypeCode, name="deal_type_code")
+        SAEnum(DealTypeCode, native_enum=False)
     )
     deal_type_secondary: Mapped[DealTypeCode | None] = mapped_column(
-        SAEnum(DealTypeCode, name="deal_type_code")  # optionnel (RG-M24-05)
+        SAEnum(DealTypeCode, native_enum=False)  # optionnel (RG-M24-05)
     )
 
     company: Mapped[Company] = relationship(back_populates="financing_need")

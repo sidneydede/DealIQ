@@ -19,19 +19,19 @@ class DealTypeHistory(UUIDMixin, TimestampMixin, Base):
         ForeignKey("companies.id"), index=True, nullable=False
     )
     old_primary: Mapped[DealTypeCode | None] = mapped_column(
-        SAEnum(DealTypeCode, name="deal_type_code")
+        SAEnum(DealTypeCode, native_enum=False)
     )
     new_primary: Mapped[DealTypeCode | None] = mapped_column(
-        SAEnum(DealTypeCode, name="deal_type_code")
+        SAEnum(DealTypeCode, native_enum=False)
     )
     old_secondary: Mapped[DealTypeCode | None] = mapped_column(
-        SAEnum(DealTypeCode, name="deal_type_code")
+        SAEnum(DealTypeCode, native_enum=False)
     )
     new_secondary: Mapped[DealTypeCode | None] = mapped_column(
-        SAEnum(DealTypeCode, name="deal_type_code")
+        SAEnum(DealTypeCode, native_enum=False)
     )
     source: Mapped[DealTypeChangeSource] = mapped_column(
-        SAEnum(DealTypeChangeSource, name="deal_type_change_source"), nullable=False
+        SAEnum(DealTypeChangeSource, native_enum=False), nullable=False
     )
     actor_id: Mapped[str | None] = mapped_column(String(36))
     motif: Mapped[str | None] = mapped_column(Text)  # obligatoire pour une requalification cabinet

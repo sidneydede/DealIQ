@@ -13,11 +13,11 @@ class Investor(UUIDMixin, TimestampMixin, Base):
     __tablename__ = "investors"
 
     name: Mapped[str] = mapped_column(String(255), index=True, nullable=False)
-    type: Mapped[InvestorType] = mapped_column(SAEnum(InvestorType, name="investor_type"))
+    type: Mapped[InvestorType] = mapped_column(SAEnum(InvestorType, native_enum=False))
     jurisdiction: Mapped[str | None] = mapped_column(String(120))
     team: Mapped[str | None] = mapped_column(String(255))
     qualif_status: Mapped[InvestorQualifStatus] = mapped_column(
-        SAEnum(InvestorQualifStatus, name="investor_qualif_status"),
+        SAEnum(InvestorQualifStatus, native_enum=False),
         default=InvestorQualifStatus.prospect,
         nullable=False,
     )
@@ -48,7 +48,7 @@ class InvestmentCriteria(UUIDMixin, TimestampMixin, Base):
     ticket_min: Mapped[float | None] = mapped_column(Numeric(18, 2))
     ticket_max: Mapped[float | None] = mapped_column(Numeric(18, 2))
     ticket_currency: Mapped[Currency] = mapped_column(
-        SAEnum(Currency, name="currency"), default=Currency.XOF
+        SAEnum(Currency, native_enum=False), default=Currency.XOF
     )
     esg_required: Mapped[bool] = mapped_column(Boolean, default=False)
 

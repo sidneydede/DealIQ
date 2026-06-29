@@ -18,7 +18,7 @@ class QuoteRequest(UUIDMixin, TimestampMixin, Base):
     requested_by: Mapped[str | None] = mapped_column(ForeignKey("users.id"))
     offer_key: Mapped[str | None] = mapped_column(String(60))  # offre visée (M7)
     deal_type: Mapped[DealTypeCode | None] = mapped_column(
-        SAEnum(DealTypeCode, name="deal_type_code")
+        SAEnum(DealTypeCode, native_enum=False)
     )
     message: Mapped[str | None] = mapped_column(Text)
     contact_phone: Mapped[str | None] = mapped_column(String(50))

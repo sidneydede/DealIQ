@@ -23,7 +23,7 @@ class DataRoom(UUIDMixin, TimestampMixin, Base):
     )
     provider_ref: Mapped[str | None] = mapped_column(String(120))  # réf. prestataire (mock)
     status: Mapped[DataRoomStatus] = mapped_column(
-        SAEnum(DataRoomStatus, name="dataroom_status"),
+        SAEnum(DataRoomStatus, native_enum=False),
         default=DataRoomStatus.ouverte,
         nullable=False,
     )
@@ -61,5 +61,5 @@ class DataRoomLog(UUIDMixin, TimestampMixin, Base):
     investor_id: Mapped[str | None] = mapped_column(ForeignKey("investors.id"))
     actor_id: Mapped[str | None] = mapped_column(String(36))
     action: Mapped[DataRoomLogAction] = mapped_column(
-        SAEnum(DataRoomLogAction, name="dataroom_log_action"), nullable=False
+        SAEnum(DataRoomLogAction, native_enum=False), nullable=False
     )

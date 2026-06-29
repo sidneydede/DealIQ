@@ -13,15 +13,15 @@ class KycCheck(UUIDMixin, TimestampMixin, Base):
     __tablename__ = "kyc_checks"
 
     subject_type: Mapped[KycSubjectType] = mapped_column(
-        SAEnum(KycSubjectType, name="kyc_subject_type"), nullable=False
+        SAEnum(KycSubjectType, native_enum=False), nullable=False
     )
     subject_id: Mapped[str] = mapped_column(String(36), index=True, nullable=False)
     subject_label: Mapped[str | None] = mapped_column(String(255))  # nom au moment du contrôle
     check_type: Mapped[KycCheckType] = mapped_column(
-        SAEnum(KycCheckType, name="kyc_check_type"), nullable=False
+        SAEnum(KycCheckType, native_enum=False), nullable=False
     )
     status: Mapped[KycStatus] = mapped_column(
-        SAEnum(KycStatus, name="kyc_status"), default=KycStatus.en_attente, nullable=False
+        SAEnum(KycStatus, native_enum=False), default=KycStatus.en_attente, nullable=False
     )
     provider: Mapped[str | None] = mapped_column(String(60))
     result: Mapped[dict] = mapped_column(JSON, default=dict)  # preuve (RG-M15-03)

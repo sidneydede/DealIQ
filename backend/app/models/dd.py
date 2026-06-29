@@ -27,7 +27,7 @@ class DdAnalysis(UUIDMixin, TimestampMixin, Base):
     company_id: Mapped[str] = mapped_column(ForeignKey("companies.id"), index=True, nullable=False)
     import_id: Mapped[str | None] = mapped_column(ForeignKey("syscohada_imports.id"))
     deal_type: Mapped[DealTypeCode | None] = mapped_column(
-        SAEnum(DealTypeCode, name="deal_type_code")
+        SAEnum(DealTypeCode, native_enum=False)
     )
     class_totals: Mapped[dict] = mapped_column(JSON, default=dict)
     retraitements: Mapped[dict] = mapped_column(JSON, default=dict)  # {key: {value, rule, sources}}

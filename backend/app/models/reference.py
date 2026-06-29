@@ -19,7 +19,7 @@ class DealType(UUIDMixin, TimestampMixin, Base):
     __tablename__ = "deal_types"
 
     code: Mapped[DealTypeCode] = mapped_column(
-        SAEnum(DealTypeCode, name="deal_type_code"), unique=True, nullable=False
+        SAEnum(DealTypeCode, native_enum=False), unique=True, nullable=False
     )
     label: Mapped[str] = mapped_column(String(120), nullable=False)
     description: Mapped[str | None] = mapped_column(Text)

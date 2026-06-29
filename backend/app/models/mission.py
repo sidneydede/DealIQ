@@ -16,7 +16,7 @@ class Mission(UUIDMixin, TimestampMixin, Base):
         ForeignKey("companies.id"), unique=True, index=True, nullable=False
     )
     status: Mapped[MissionStatus] = mapped_column(
-        SAEnum(MissionStatus, name="mission_status"), default=MissionStatus.en_cours, nullable=False
+        SAEnum(MissionStatus, native_enum=False), default=MissionStatus.en_cours, nullable=False
     )
     owner_id: Mapped[str | None] = mapped_column(ForeignKey("users.id"))
 
@@ -38,10 +38,10 @@ class Deliverable(UUIDMixin, TimestampMixin, Base):
     __tablename__ = "deliverables"
 
     mission_id: Mapped[str] = mapped_column(ForeignKey("missions.id"), index=True, nullable=False)
-    kind: Mapped[DeliverableKind] = mapped_column(SAEnum(DeliverableKind, name="deliverable_kind"))
+    kind: Mapped[DeliverableKind] = mapped_column(SAEnum(DeliverableKind, native_enum=False))
     version: Mapped[int] = mapped_column(Integer, default=1)
     status: Mapped[DeliverableStatus] = mapped_column(
-        SAEnum(DeliverableStatus, name="deliverable_status"),
+        SAEnum(DeliverableStatus, native_enum=False),
         default=DeliverableStatus.brouillon,
         nullable=False,
     )
@@ -54,6 +54,6 @@ class MissionReview(UUIDMixin, TimestampMixin, Base):
     __tablename__ = "mission_reviews"
 
     mission_id: Mapped[str] = mapped_column(ForeignKey("missions.id"), index=True, nullable=False)
-    role: Mapped[Role] = mapped_column(SAEnum(Role, name="role"), nullable=False)
+    role: Mapped[Role] = mapped_column(SAEnum(Role, native_enum=False), nullable=False)
     reviewer_id: Mapped[str | None] = mapped_column(ForeignKey("users.id"))
     note: Mapped[str | None] = mapped_column(Text)

@@ -24,12 +24,12 @@ class Score(UUIDMixin, TimestampMixin, Base):
     subscores: Mapped[dict] = mapped_column(JSON, default=dict)
     total: Mapped[float | None] = mapped_column(Float)
     category: Mapped[ReadinessCategory | None] = mapped_column(
-        SAEnum(ReadinessCategory, name="readiness_category")
+        SAEnum(ReadinessCategory, native_enum=False)
     )
     confidence: Mapped[float | None] = mapped_column(Float)  # indice de confiance (RG-M5-03)
     grid_version: Mapped[str | None] = mapped_column(String(40))
     deal_type_applied: Mapped[DealTypeCode | None] = mapped_column(
-        SAEnum(DealTypeCode, name="deal_type_code")
+        SAEnum(DealTypeCode, native_enum=False)
     )
 
     company: Mapped[Company] = relationship(back_populates="score")

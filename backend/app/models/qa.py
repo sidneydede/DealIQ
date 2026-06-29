@@ -20,5 +20,5 @@ class QAItem(UUIDMixin, TimestampMixin, Base):
     answer: Mapped[str | None] = mapped_column(Text)
     answered_by: Mapped[str | None] = mapped_column(ForeignKey("users.id"))
     status: Mapped[QAStatus] = mapped_column(
-        SAEnum(QAStatus, name="qa_status"), default=QAStatus.ouverte, nullable=False
+        SAEnum(QAStatus, native_enum=False), default=QAStatus.ouverte, nullable=False
     )

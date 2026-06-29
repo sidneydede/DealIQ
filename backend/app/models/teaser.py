@@ -21,7 +21,7 @@ class Teaser(UUIDMixin, TimestampMixin, Base):
         ForeignKey("companies.id"), unique=True, index=True, nullable=False
     )
     deal_type: Mapped[DealTypeCode | None] = mapped_column(
-        SAEnum(DealTypeCode, name="deal_type_code")
+        SAEnum(DealTypeCode, native_enum=False)
     )
     template: Mapped[str | None] = mapped_column(String(120))
 
@@ -31,13 +31,13 @@ class Teaser(UUIDMixin, TimestampMixin, Base):
     zone: Mapped[str | None] = mapped_column(String(40))  # UEMOA/CEMAC, pas le pays précis
     revenue_band: Mapped[str | None] = mapped_column(String(60))
     amount_band: Mapped[str | None] = mapped_column(String(60))
-    instrument: Mapped[Instrument | None] = mapped_column(SAEnum(Instrument, name="instrument"))
+    instrument: Mapped[Instrument | None] = mapped_column(SAEnum(Instrument, native_enum=False))
     strengths: Mapped[list] = mapped_column(JSON, default=list)
     summary: Mapped[str | None] = mapped_column(Text)
 
     version: Mapped[int] = mapped_column(Integer, default=1)
     status: Mapped[TeaserStatus] = mapped_column(
-        SAEnum(TeaserStatus, name="teaser_status"), default=TeaserStatus.brouillon, nullable=False
+        SAEnum(TeaserStatus, native_enum=False), default=TeaserStatus.brouillon, nullable=False
     )
     validated_by: Mapped[str | None] = mapped_column(ForeignKey("users.id"))
 
@@ -51,7 +51,7 @@ class Interaction(UUIDMixin, TimestampMixin, Base):
     company_id: Mapped[str] = mapped_column(ForeignKey("companies.id"), index=True, nullable=False)
     investor_id: Mapped[str] = mapped_column(ForeignKey("investors.id"), index=True, nullable=False)
     status: Mapped[InteractionStatus] = mapped_column(
-        SAEnum(InteractionStatus, name="interaction_status"),
+        SAEnum(InteractionStatus, native_enum=False),
         default=InteractionStatus.interesse,
         nullable=False,
     )

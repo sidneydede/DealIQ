@@ -48,6 +48,23 @@ npm install
 npm run dev          # http://localhost:5173
 ```
 
+### Migrations de base de données (Alembic — autogénérées)
+
+Le schéma est géré par des migrations Alembic **autogénérées** (les enums sont stockés
+en VARCHAR + CHECK via `native_enum=False`, ce qui évite les types ENUM Postgres partagés
+et fiabilise l'autogen). La metadata porte une **convention de nommage** des contraintes.
+
+```bash
+cd backend
+alembic upgrade head                              # applique les migrations
+# Après toute modification d'un modèle SQLAlchemy :
+alembic revision --autogenerate -m "ma migration" # génère le diff
+# (relire/ajuster le fichier généré, puis)
+alembic upgrade head
+```
+
+> Règle : ne jamais éditer une migration déjà appliquée en prod ; toujours en créer une nouvelle.
+
 ## Organisation des lots
 
 | Lot | Contenu |
