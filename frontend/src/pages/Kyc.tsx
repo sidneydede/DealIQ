@@ -2,12 +2,17 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { companies as companiesApi, investors as investorsApi, kyc } from "../api/dealiq";
+import { ApiError } from "../api/client";
+import { useConfirm } from "../components/Confirm";
+import { useToast } from "../components/Toast";
 import type { KycCheck } from "../api/types";
 
 const CHECK_TYPES = ["kyb", "aml_screening", "manuelle"];
 
 export default function Kyc() {
   const { t } = useTranslation();
+  const toast = useToast();
+  const confirm = useConfirm();
   const [checks, setChecks] = useState<KycCheck[]>([]);
   const [subjectType, setSubjectType] = useState<"company" | "investor">("company");
   const [subjects, setSubjects] = useState<{ id: string; name: string }[]>([]);
@@ -35,12 +40,29 @@ export default function Kyc() {
 
   async function run() {
     if (!subjectId) return;
-    await kyc.run(subjectType, subjectId, checkType);
-    reload();
+    try {
+      await kyc.run(subjectType, subjectId, checkType);
+      reload();
+      toast.success(t("kyc.checkRunOk"));
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : t("security.error"));
+    }
   }
   async function update(id: string, status: string) {
-    await kyc.update(id, status, notes[id]);
-    reload();
+    // Rejeter un contrôle est une décision de conformité sensible : on confirme.
+    if (
+      status === "rejete" &&
+      !(await confirm({ message: t("kyc.rejectConfirm"), danger: true }))
+    ) {
+      return;
+    }
+    try {
+      await kyc.update(id, status, notes[id]);
+      reload();
+      toast.success(t("kyc.statusOk"));
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : t("security.error"));
+    }
   }
 
   return (

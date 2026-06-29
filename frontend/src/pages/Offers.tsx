@@ -2,11 +2,15 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { offers as offersApi } from "../api/dealiq";
+import { ApiError } from "../api/client";
+import Loading from "../components/Loading";
+import { useToast } from "../components/Toast";
 import type { OffersResponse } from "../api/types";
 import { useMyCompany } from "../hooks/useMyCompany";
 
 export default function Offers() {
   const { t } = useTranslation();
+  const toast = useToast();
   const { company } = useMyCompany();
   const [data, setData] = useState<OffersResponse | null>(null);
   const [openKey, setOpenKey] = useState<string | null>(null);
@@ -20,16 +24,21 @@ export default function Offers() {
 
   async function submit(offerKey: string) {
     if (!company) return;
-    await offersApi.requestQuote(company.id, {
-      offer_key: offerKey,
-      contact_phone: phone || undefined,
-      message: message || undefined,
-    });
-    setSent(true);
-    setOpenKey(null);
+    try {
+      await offersApi.requestQuote(company.id, {
+        offer_key: offerKey,
+        contact_phone: phone || undefined,
+        message: message || undefined,
+      });
+      setSent(true);
+      setOpenKey(null);
+      toast.success(t("offers.quoteSent"));
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : t("security.error"));
+    }
   }
 
-  if (!data) return <p className="muted">Chargement…</p>;
+  if (!data) return <Loading />;
 
   return (
     <>

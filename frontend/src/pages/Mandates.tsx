@@ -2,6 +2,9 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { companies as companiesApi, mandates } from "../api/dealiq";
+import { ApiError } from "../api/client";
+import { useConfirm } from "../components/Confirm";
+import { useToast } from "../components/Toast";
 import type { Company, Fee, Mandate } from "../api/types";
 
 const PARTIES = ["entreprise", "investisseur", "les_deux"];
@@ -9,6 +12,8 @@ const TYPES = ["levee", "cession", "sourcing", "arrangement_dette", "conseil", "
 
 export default function MandatesPage() {
   const { t } = useTranslation();
+  const toast = useToast();
+  const confirm = useConfirm();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyId, setCompanyId] = useState("");
   const [list, setList] = useState<Mandate[]>([]);
@@ -31,16 +36,27 @@ export default function MandatesPage() {
   useEffect(() => void reload(), [reload]);
 
   async function create() {
-    await mandates.create(companyId, {
-      represented_party: party,
-      mandate_type: type,
-      exclusive,
-    });
-    await reload();
+    try {
+      await mandates.create(companyId, {
+        represented_party: party,
+        mandate_type: type,
+        exclusive,
+      });
+      await reload();
+      toast.success(t("mandates.createdOk"));
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : t("security.error"));
+    }
   }
   async function sign(id: string) {
-    await mandates.update(id, { status: "actif", signed: true });
-    await reload();
+    if (!(await confirm({ message: t("mandates.signConfirm") }))) return;
+    try {
+      await mandates.update(id, { status: "actif", signed: true });
+      await reload();
+      toast.success(t("mandates.signedOk"));
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : t("security.error"));
+    }
   }
   async function loadFees(id: string) {
     setFees({ ...fees, [id]: await mandates.fees(id) });

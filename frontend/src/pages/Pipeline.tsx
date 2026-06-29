@@ -2,8 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { deals, meta } from "../api/dealiq";
+import { ApiError } from "../api/client";
+import { useConfirm } from "../components/Confirm";
 import Pager from "../components/Pager";
 import { SortSelect, useSort } from "../components/SortHeader";
+import { useToast } from "../components/Toast";
 import type { Deal, DealDetail } from "../api/types";
 
 const STAGES = [
@@ -19,6 +22,8 @@ const LIMIT = 25;
 
 export default function Pipeline() {
   const { t } = useTranslation();
+  const toast = useToast();
+  const confirm = useConfirm();
   const [list, setList] = useState<Deal[]>([]);
   const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
@@ -69,10 +74,18 @@ export default function Pipeline() {
 
   async function advance(stage: string) {
     if (!detail) return;
-    await deals.advance(detail.id, stage, note || undefined);
-    setNote("");
-    setDetail(await deals.get(detail.id));
-    reload();
+    if (stage === "abandonne" && !(await confirm({ message: t("dealPipeline.abandonConfirm"), danger: true }))) {
+      return;
+    }
+    try {
+      await deals.advance(detail.id, stage, note || undefined);
+      setNote("");
+      setDetail(await deals.get(detail.id));
+      reload();
+      toast.success(t("dealPipeline.advancedOk"));
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : t("security.error"));
+    }
   }
 
   async function toggle(milestoneId: string, done: boolean) {

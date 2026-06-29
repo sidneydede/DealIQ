@@ -3,10 +3,14 @@ import { useTranslation } from "react-i18next";
 
 import { ApiError } from "../api/client";
 import { cockpit, teasers } from "../api/dealiq";
+import { useConfirm } from "../components/Confirm";
+import { useToast } from "../components/Toast";
 import type { CockpitItem, Teaser } from "../api/types";
 
 export default function TeaserAdmin() {
   const { t } = useTranslation();
+  const toast = useToast();
+  const confirm = useConfirm();
   const [companies, setCompanies] = useState<CockpitItem[]>([]);
   const [companyId, setCompanyId] = useState("");
   const [teaser, setTeaser] = useState<Teaser | null>(null);
@@ -30,10 +34,23 @@ export default function TeaserAdmin() {
   }, [companyId]);
 
   async function generate() {
-    setTeaser(await teasers.generate(companyId));
+    try {
+      setTeaser(await teasers.generate(companyId));
+      toast.success(t("teaserAdmin.generatedOk"));
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : t("security.error"));
+    }
   }
   async function publish() {
-    if (teaser) setTeaser(await teasers.publish(teaser.id));
+    if (!teaser) return;
+    // Publier expose le teaser aux investisseurs : on confirme.
+    if (!(await confirm({ message: t("teaserAdmin.publishConfirm") }))) return;
+    try {
+      setTeaser(await teasers.publish(teaser.id));
+      toast.success(t("teaserAdmin.publishedOk"));
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : t("security.error"));
+    }
   }
 
   return (

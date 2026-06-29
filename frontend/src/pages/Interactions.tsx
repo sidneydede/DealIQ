@@ -2,8 +2,12 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { deals, interactions as api } from "../api/dealiq";
+import { ApiError } from "../api/client";
+import { useConfirm } from "../components/Confirm";
+import { useToast } from "../components/Toast";
 import type { Interaction } from "../api/types";
 import QAThread from "../components/QAThread";
+import { formatDateTime, formatRelative } from "../utils/format";
 
 const NEXT: Record<string, string[]> = {
   interesse: ["nda_envoye", "ecarte"],
@@ -13,7 +17,9 @@ const NEXT: Record<string, string[]> = {
 };
 
 export default function Interactions() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const toast = useToast();
+  const confirm = useConfirm();
   const [list, setList] = useState<Interaction[]>([]);
   const [open, setOpen] = useState<string | null>(null);
 
@@ -23,8 +29,29 @@ export default function Interactions() {
   useEffect(() => reload(), [reload]);
 
   async function advance(id: string, status: string) {
-    await api.setStatus(id, status);
-    reload();
+    // Écarter un investisseur est sensible : on confirme.
+    if (
+      status === "ecarte" &&
+      !(await confirm({ message: t("interactions.discardConfirm"), danger: true }))
+    ) {
+      return;
+    }
+    try {
+      await api.setStatus(id, status);
+      reload();
+      toast.success(t("interactions.statusOk"));
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : t("security.error"));
+    }
+  }
+
+  async function track(id: string) {
+    try {
+      await deals.createFromInteraction(id);
+      toast.success(t("interactions.trackedOk"));
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : t("security.error"));
+    }
   }
 
   return (
@@ -42,7 +69,9 @@ export default function Interactions() {
         <div className="card" key={it.id}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div>
-              <span className="muted">{new Date(it.created_at).toLocaleString("fr")}</span>
+              <span className="muted" title={formatDateTime(it.created_at, i18n.language)}>
+                {formatRelative(it.created_at, i18n.language)}
+              </span>
               <div>
                 {t("interactions.status")} :{" "}
                 <span className="badge badge--info">{it.status}</span>
@@ -67,7 +96,7 @@ export default function Interactions() {
           <button
             className="btn btn--ghost"
             style={{ marginTop: 8 }}
-            onClick={() => deals.createFromInteraction(it.id)}
+            onClick={() => track(it.id)}
           >
             {t("dealPipeline.track")}
           </button>

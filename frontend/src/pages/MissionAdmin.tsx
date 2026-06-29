@@ -3,12 +3,16 @@ import { useTranslation } from "react-i18next";
 
 import { ApiError } from "../api/client";
 import { companies as companiesApi, missions } from "../api/dealiq";
+import { useConfirm } from "../components/Confirm";
+import { useToast } from "../components/Toast";
 import type { Company, MissionDetail } from "../api/types";
 
 const KINDS = ["business_plan", "modele_financier", "valorisation", "teaser", "data_room_init"];
 
 export default function MissionAdmin() {
   const { t } = useTranslation();
+  const toast = useToast();
+  const confirm = useConfirm();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyId, setCompanyId] = useState("");
   const [mission, setMission] = useState<MissionDetail | null>(null);
@@ -46,18 +50,23 @@ export default function MissionAdmin() {
     try {
       await missions.review(mission.id);
       await refresh();
+      toast.success(t("mission.reviewedOk"));
     } catch (e) {
       setError(e instanceof ApiError ? e.message : "Erreur");
+      toast.error(e instanceof ApiError ? e.message : t("security.error"));
     }
   }
   async function promote() {
     if (!mission) return;
+    if (!(await confirm({ message: t("mission.promoteConfirm") }))) return;
     setError(null);
     try {
       await missions.promote(mission.id);
       await refresh();
+      toast.success(t("mission.promotedOk"));
     } catch (e) {
       setError(e instanceof ApiError ? e.message : "Erreur");
+      toast.error(e instanceof ApiError ? e.message : t("security.error"));
     }
   }
 
