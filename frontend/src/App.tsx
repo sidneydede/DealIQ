@@ -31,6 +31,7 @@ import Questionnaire from "./pages/Questionnaire";
 import Readiness from "./pages/Readiness";
 import Reporting from "./pages/Reporting";
 import ReportView from "./pages/ReportView";
+import ScoringCalibration from "./pages/ScoringCalibration";
 import TeaserAdmin from "./pages/TeaserAdmin";
 
 function Placeholder({ title }: { title: string }) {
@@ -79,6 +80,7 @@ export default function App() {
           <Route path="/mandates" element={<MandatesPage />} />
           <Route path="/esg" element={<Esg />} />
           <Route path="/dd" element={<Dd />} />
+          <Route path="/scoring" element={<ScoringCalibration />} />
           <Route path="/programs" element={<Programs />} />
           <Route path="/conflicts" element={<Conflicts />} />
           <Route path="/kyc" element={<Kyc />} />

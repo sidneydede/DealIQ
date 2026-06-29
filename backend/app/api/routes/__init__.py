@@ -25,6 +25,7 @@ from app.api.routes import (
     reporting,
     reports,
     scores,
+    scoring_admin,
     teasers,
     users,
 )
@@ -55,3 +56,4 @@ api_router.include_router(missions.router, tags=["missions"])
 api_router.include_router(esg.router, tags=["esg"])
 api_router.include_router(programs.router, tags=["programs"])
 api_router.include_router(dd.router, tags=["dd"])
+api_router.include_router(scoring_admin.router, tags=["scoring"])

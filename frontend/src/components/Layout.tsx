@@ -42,6 +42,7 @@ const NAV: NavItem[] = [
   { to: "/conflicts", key: "nav.conflicts", roles: ["conformite", "senior", "admin"] },
   { to: "/reporting", key: "nav.reporting", roles: ["analyste", "senior", "admin"] },
   { to: "/kyc", key: "nav.kyc", roles: ["conformite", "admin"] },
+  { to: "/scoring", key: "nav.scoring", roles: ["admin"] },
   { to: "/users", key: "nav.users", roles: ["admin"] },
   { to: "/audit", key: "nav.audit", roles: ["admin", "conformite"] },
 ];

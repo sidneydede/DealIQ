@@ -23,6 +23,7 @@ from app.models.qa import QAItem
 from app.models.quote import QuoteRequest
 from app.models.reference import DealType
 from app.models.score import Score
+from app.models.scoring_config import ScoringConfig
 from app.models.teaser import Interaction, Teaser
 from app.models.user import User
 
@@ -59,6 +60,7 @@ __all__ = [
     "SyscohadaImport",
     "DdAnalysis",
     "Score",
+    "ScoringConfig",
     "Document",
     "OnboardingSession",
     "QuoteRequest",

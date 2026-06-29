@@ -474,6 +474,26 @@ export interface DdAnalysis {
   created_at: string;
 }
 
+export interface ScoringConfig {
+  id: string;
+  version: string;
+  base_weights: Record<string, number>;
+  caps: Record<string, number>;
+  thresholds: Record<string, number>;
+  confidence: Record<string, number>;
+  active: boolean;
+  deal_type_weights: Record<string, Record<string, number>>;
+}
+
+export interface SimulateResult {
+  total: number;
+  category: string | null;
+  confidence: number;
+  subscores: Record<string, number>;
+  gaps: string[];
+  grid_version: string;
+}
+
 export interface DealTypeHistoryEntry {
   id: string;
   old_primary: string | null;

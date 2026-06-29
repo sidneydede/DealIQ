@@ -49,7 +49,10 @@ def main() -> None:
     try:
         n = seed_deal_types(db)
         admin = seed_admin(db)
-        print(f"Seed terminé : {n} type(s) de deal créé(s) ; admin créé={admin}")
+        from app.services import scoring as scoring_svc
+
+        scoring_svc.get_or_create_config(db)  # config de scoring par défaut
+        print(f"Seed terminé : {n} type(s) de deal ; admin créé={admin} ; config scoring OK")
     finally:
         db.close()
 

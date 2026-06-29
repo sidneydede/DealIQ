@@ -41,6 +41,8 @@ import type {
   QuoteRequest,
   ReadinessScore,
   Report,
+  ScoringConfig,
+  SimulateResult,
   Teaser,
   TeaserPublic,
 } from "./types";
@@ -75,6 +77,14 @@ export const documents = {
 export const readiness = {
   compute: (id: string) => api.post<ReadinessScore>(`/companies/${id}/score`),
   get: (id: string) => api.get<ReadinessScore>(`/companies/${id}/score`),
+};
+
+export const scoringAdmin = {
+  getConfig: () => api.get<ScoringConfig>("/admin/scoring/config"),
+  updateConfig: (body: Partial<ScoringConfig>) =>
+    api.put<ScoringConfig>("/admin/scoring/config", body),
+  simulate: (body: Record<string, unknown>) =>
+    api.post<SimulateResult>("/admin/scoring/simulate", body),
 };
 
 export const report = {

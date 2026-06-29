@@ -26,6 +26,16 @@ DEFAULT_WEIGHTS: dict[str, float] = {
 # Dimensions subjectives plafonnées (RG-M5-02).
 CAPPED_DIMENSIONS = {"scalabilite_marche": 0.6, "esg": 0.6}
 
+# Seuils de catégorisation (paramétrables via ScoringConfig — calibrage métier).
+DEFAULT_THRESHOLDS: dict[str, float] = {
+    "investor_ready_min": 70.0,  # score mini pour investor-ready (si pièces vérifiées)
+    "early_precoce_max": 45.0,   # sous ce score, un dossier early = trop précoce
+    "precoce_floor": 30.0,       # plancher absolu trop précoce
+}
+
+# Paramètres de l'indice de confiance.
+DEFAULT_CONFIDENCE: dict[str, float] = {"base": 0.3, "doc": 0.5, "need": 0.2}
+
 # Libellés de gaps par dimension (pour le mini-rapport M6).
 GAP_LABELS: dict[str, str] = {
     "traction": "Traction commerciale à étayer (factures, contrats, historique de ventes).",
@@ -48,9 +58,10 @@ def normalize_weights(weights: dict[str, float] | None) -> dict[str, float]:
     return {d: v / total for d, v in raw.items()}
 
 
-def apply_caps(signals: dict[str, float]) -> dict[str, float]:
+def apply_caps(signals: dict[str, float], caps: dict[str, float] | None = None) -> dict[str, float]:
+    caps = caps if caps is not None else CAPPED_DIMENSIONS
     capped = dict(signals)
-    for dim, ceiling in CAPPED_DIMENSIONS.items():
+    for dim, ceiling in caps.items():
         if dim in capped:
             capped[dim] = min(capped[dim], ceiling)
     return capped
@@ -71,17 +82,19 @@ def map_category(
     stage: CompanyStage | None,
     deal_type: DealTypeCode | None,
     has_verified_financials: bool,
+    thresholds: dict[str, float] | None = None,
 ) -> ReadinessCategory:
     """Mappe un score en catégorie, avec gating documentaire et orientation par instrument."""
+    th = {**DEFAULT_THRESHOLDS, **(thresholds or {})}
     early = stage in (CompanyStage.idee, CompanyStage.amorcage)
 
-    if early and total < 45:
+    if early and total < th["early_precoce_max"]:
         return ReadinessCategory.trop_precoce
-    if total < 30:
+    if total < th["precoce_floor"]:
         return ReadinessCategory.trop_precoce
 
     # Gating documentaire (RG-M5-01) : pas d'investor-ready sans pièces financières vérifiées.
-    if total >= 70 and has_verified_financials and not early:
+    if total >= th["investor_ready_min"] and has_verified_financials and not early:
         return ReadinessCategory.investor_ready
 
     # Orientation dette quand l'opération vise un instrument de dette.
@@ -91,9 +104,13 @@ def map_category(
     return ReadinessCategory.a_preparer
 
 
-def confidence_index(doc_verified_fraction: float, need_complete: bool) -> float:
+def confidence_index(
+    doc_verified_fraction: float, need_complete: bool, params: dict[str, float] | None = None
+) -> float:
     """Indice de confiance 0..1 selon la part de données vérifiées (RG-M5-03)."""
-    value = 0.3 + 0.5 * max(0.0, min(doc_verified_fraction, 1.0)) + (0.2 if need_complete else 0.0)
+    p = {**DEFAULT_CONFIDENCE, **(params or {})}
+    frac = max(0.0, min(doc_verified_fraction, 1.0))
+    value = p["base"] + p["doc"] * frac + (p["need"] if need_complete else 0.0)
     return round(min(value, 1.0), 2)
 
 
