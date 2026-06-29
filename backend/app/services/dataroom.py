@@ -10,6 +10,7 @@ from app.domain.enums import (
     DataRoomLogAction,
     InteractionStatus,
     KycSubjectType,
+    NotificationType,
 )
 from app.models.company import Company
 from app.models.dataroom import DataRoom, DataRoomAccess, DataRoomDocument, DataRoomLog
@@ -19,6 +20,7 @@ from app.models.teaser import Interaction
 from app.models.user import User
 from app.services import audit
 from app.services import kyc as kyc_svc
+from app.services import notifications as notif
 
 
 class GateError(Exception):
@@ -111,6 +113,20 @@ def grant_access(
         object_id=access.id, meta={"investor_id": investor.id, "company_id": room.company_id},
         ip_address=ip,
     )
+    # Notifier l'investisseur que sa data room est ouverte (s'il a un compte).
+    if investor.user_id:
+        owner = db.get(User, investor.user_id)
+        if owner:
+            notif.notify(
+                db,
+                recipient=owner,
+                type=NotificationType.dataroom_access_granted,
+                title="Accès data room accordé",
+                body="Vous avez désormais accès à une data room. Consultez vos data rooms.",
+                link="/my-datarooms",
+                object_type="DataRoom",
+                object_id=room.id,
+            )
     return access
 
 

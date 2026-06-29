@@ -40,6 +40,7 @@ const fr = {
       kyc: "Conformité (KYC)",
       users: "Utilisateurs",
       audit: "Journal d'audit",
+      notifications: "Notifications",
       logout: "Se déconnecter",
     },
     auth: {
@@ -223,6 +224,13 @@ const fr = {
         sponsor: "Sponsor",
         admin: "Administrateur",
       },
+    },
+    notifications: {
+      title: "Notifications",
+      markAllRead: "Tout marquer comme lu",
+      empty: "Aucune notification.",
+      new: "nouveau",
+      unreadCount: "{{count}} notification(s) non lue(s)",
     },
     criteria: {
       title: "Mes critères d'investissement",
@@ -555,7 +563,15 @@ const en = {
       kyc: "Compliance (KYC)",
       users: "Users",
       audit: "Audit log",
+      notifications: "Notifications",
       logout: "Sign out",
+    },
+    notifications: {
+      title: "Notifications",
+      markAllRead: "Mark all as read",
+      empty: "No notifications.",
+      new: "new",
+      unreadCount: "{{count}} unread notification(s)",
     },
     auth: {
       loginTitle: "Sign in",

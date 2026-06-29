@@ -17,6 +17,7 @@ from app.models.investor import InvestmentCriteria, Investor
 from app.models.kyc import KycCheck
 from app.models.mandate import Fee, Mandate
 from app.models.mission import Deliverable, Mission, MissionReview, MissionTask
+from app.models.notification import Notification
 from app.models.onboarding import OnboardingSession
 from app.models.program import Program, ProgramMember
 from app.models.qa import QAItem
@@ -64,5 +65,6 @@ __all__ = [
     "Document",
     "OnboardingSession",
     "QuoteRequest",
+    "Notification",
     "AuditLog",
 ]

@@ -32,6 +32,7 @@ import type {
   Mandate,
   MatchResult,
   MissionDetail,
+  NotificationItem,
   OffersResponse,
   Program,
   ProgramMember,
@@ -120,6 +121,14 @@ export const admin = {
     const qs = new URLSearchParams(params as Record<string, string>).toString();
     return api.get<AuditLogEntry[]>(`/audit${qs ? `?${qs}` : ""}`);
   },
+};
+
+export const notifications = {
+  list: (unread = false) =>
+    api.get<NotificationItem[]>(`/notifications${unread ? "?unread=true" : ""}`),
+  unreadCount: () => api.get<{ count: number }>("/notifications/unread-count"),
+  markRead: (id: string) => api.post<NotificationItem>(`/notifications/${id}/read`),
+  markAllRead: () => api.post<{ count: number }>("/notifications/read-all"),
 };
 
 export const users = {

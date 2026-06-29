@@ -4,12 +4,20 @@ from __future__ import annotations
 from sqlalchemy.orm import Session
 
 from app.domain import kyc as provider
-from app.domain.enums import AuditAction, KycCheckType, KycStatus, KycSubjectType
+from app.domain.enums import (
+    AuditAction,
+    KycCheckType,
+    KycStatus,
+    KycSubjectType,
+    NotificationType,
+    Role,
+)
 from app.models.company import Company
 from app.models.investor import Investor
 from app.models.kyc import KycCheck
 from app.models.user import User
 from app.services import audit
+from app.services import notifications as notif
 
 
 def _subject_label(db: Session, subject_type: KycSubjectType, subject_id: str) -> str | None:
@@ -58,6 +66,17 @@ def run_check(
             object_id=check.id, meta={"result": result}, ip_address=ip, commit=False,
         )
     db.commit()
+    if status == KycStatus.hit:
+        notif.notify_roles(
+            db,
+            (Role.conformite, Role.admin),
+            type=NotificationType.kyc_hit,
+            title="Alerte KYC/AML",
+            body=f"Hit de filtrage sur « {label or subject_id} ». Revue conformité requise.",
+            link="/kyc",
+            object_type="KycCheck",
+            object_id=check.id,
+        )
     return check
 
 

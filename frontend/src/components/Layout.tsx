@@ -1,8 +1,65 @@
-import { NavLink } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+import { notifications as notifApi } from "../api/dealiq";
 import { useAuth, type Role } from "../auth/AuthContext";
 import { setLanguage } from "../i18n";
+
+function NotificationBell() {
+  const { t } = useTranslation();
+  const location = useLocation();
+  const [count, setCount] = useState(0);
+
+  async function refresh() {
+    try {
+      setCount((await notifApi.unreadCount()).count);
+    } catch {
+      /* hors-ligne : on garde la dernière valeur connue */
+    }
+  }
+  useEffect(() => {
+    void refresh();
+    const id = setInterval(() => void refresh(), 30000);
+    return () => clearInterval(id);
+  }, []);
+  // Rafraîchir au changement de page (ex. après avoir marqué comme lu).
+  useEffect(() => {
+    void refresh();
+  }, [location.pathname]);
+
+  return (
+    <NavLink
+      to="/notifications"
+      aria-label={t("nav.notifications")}
+      style={{ position: "relative", padding: "4px 8px", fontSize: 18, textDecoration: "none" }}
+    >
+      <span aria-hidden>🔔</span>
+      {count > 0 && (
+        <span
+          aria-label={t("notifications.unreadCount", { count })}
+          style={{
+            position: "absolute",
+            top: -2,
+            right: -2,
+            background: "var(--c-danger, #c0392b)",
+            color: "#fff",
+            borderRadius: 10,
+            fontSize: 11,
+            fontWeight: 700,
+            minWidth: 16,
+            height: 16,
+            lineHeight: "16px",
+            textAlign: "center",
+            padding: "0 4px",
+          }}
+        >
+          {count > 99 ? "99+" : count}
+        </span>
+      )}
+    </NavLink>
+  );
+}
 
 interface NavItem {
   to: string;
@@ -46,6 +103,11 @@ const NAV: NavItem[] = [
   { to: "/scoring", key: "nav.scoring", roles: ["admin"] },
   { to: "/users", key: "nav.users", roles: ["admin"] },
   { to: "/audit", key: "nav.audit", roles: ["admin", "conformite"] },
+  {
+    to: "/notifications",
+    key: "nav.notifications",
+    roles: ["entrepreneur", "investisseur", "analyste", "senior", "admin", "sponsor", "conformite"],
+  },
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -73,6 +135,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <header className="topbar">
           <span className="muted">{user?.email}</span>
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            <NotificationBell />
             <div role="group" aria-label="Langue" style={{ fontSize: 13 }}>
               <button
                 className="btn btn--ghost"

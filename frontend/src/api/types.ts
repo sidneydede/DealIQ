@@ -14,6 +14,18 @@ export interface AdminUser {
   is_active: boolean;
 }
 
+export interface NotificationItem {
+  id: string;
+  type: string;
+  title: string;
+  body: string;
+  link: string | null;
+  object_type: string | null;
+  object_id: string | null;
+  read_at: string | null;
+  created_at: string;
+}
+
 export interface UserCreated extends AdminUser {
   temporary_password: string | null;
 }

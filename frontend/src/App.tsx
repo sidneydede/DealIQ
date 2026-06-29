@@ -25,6 +25,7 @@ import MyCriteria from "./pages/MyCriteria";
 import MyDataRooms from "./pages/MyDataRooms";
 import MyInteractions from "./pages/MyInteractions";
 import MyMission from "./pages/MyMission";
+import Notifications from "./pages/Notifications";
 import Offers from "./pages/Offers";
 import Opportunities from "./pages/Opportunities";
 import Pipeline from "./pages/Pipeline";
@@ -86,6 +87,7 @@ export default function App() {
           <Route path="/kyc" element={<Kyc />} />
           <Route path="/users" element={<Users />} />
           <Route path="/audit" element={<Audit />} />
+          <Route path="/notifications" element={<Notifications />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Layout>

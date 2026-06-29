@@ -8,6 +8,8 @@ from app.domain.enums import (
     AuditAction,
     Instrument,
     InteractionStatus,
+    NotificationType,
+    Role,
     TeaserStatus,
     zone_for_country,
 )
@@ -17,6 +19,7 @@ from app.models.reference import DealType
 from app.models.teaser import Interaction, Teaser
 from app.models.user import User
 from app.services import audit
+from app.services import notifications as notif
 
 # Dimensions fortes → points forts anonymisés du teaser.
 _STRENGTH_LABELS = {
@@ -139,6 +142,16 @@ def express_interest(
     audit.record(
         db, AuditAction.interaction_created, actor=actor, object_type="Interaction",
         object_id=interaction.id, meta={"teaser_id": teaser.id}, ip_address=ip,
+    )
+    notif.notify_roles(
+        db,
+        (Role.analyste, Role.senior, Role.admin),
+        type=NotificationType.investor_interest,
+        title="Nouvel intérêt investisseur",
+        body=f"{investor.name} s'est positionné sur le teaser « {teaser.title} ».",
+        link="/interactions",
+        object_type="Interaction",
+        object_id=interaction.id,
     )
     return interaction
 

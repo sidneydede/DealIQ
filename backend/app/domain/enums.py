@@ -312,6 +312,16 @@ class AuditAction(str, Enum):
     export = "export"
 
 
+class NotificationType(str, Enum):
+    """Catégories de notifications in-app (et e-mail mock)."""
+
+    investor_interest = "investor_interest"
+    qa_asked = "qa_asked"
+    qa_answered = "qa_answered"
+    dataroom_access_granted = "dataroom_access_granted"
+    kyc_hit = "kyc_hit"
+
+
 # --- Tables de correspondance utiles ---
 
 UEMOA_COUNTRIES = {

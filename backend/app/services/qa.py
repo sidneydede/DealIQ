@@ -3,13 +3,19 @@ from __future__ import annotations
 
 from sqlalchemy.orm import Session
 
-from app.domain.enums import QAStatus, Role
+from app.domain.enums import NotificationType, QAStatus, Role
 from app.models.investor import Investor
 from app.models.qa import QAItem
 from app.models.teaser import Interaction
 from app.models.user import User
+from app.services import notifications as notif
 
 CABINET_ROLES = {Role.analyste, Role.senior, Role.admin, Role.conformite}
+
+
+def _excerpt(text: str, limit: int = 140) -> str:
+    text = text.strip()
+    return text if len(text) <= limit else text[: limit - 1] + "…"
 
 
 def investor_ids_for(db: Session, user: User) -> set[str]:
@@ -48,6 +54,17 @@ def ask(db: Session, interaction: Interaction, user: User, question: str) -> QAI
     db.add(item)
     db.commit()
     db.refresh(item)
+    notif.notify_roles(
+        db,
+        (Role.analyste, Role.senior, Role.admin),
+        exclude_user_id=user.id,
+        type=NotificationType.qa_asked,
+        title="Nouvelle question",
+        body=_excerpt(question),
+        link="/interactions",
+        object_type="Interaction",
+        object_id=interaction.id,
+    )
     return item
 
 
@@ -57,6 +74,22 @@ def answer(db: Session, item: QAItem, user: User, text: str) -> QAItem:
     item.status = QAStatus.repondue
     db.commit()
     db.refresh(item)
+    # Notifier l'investisseur propriétaire de la mise en relation, s'il a un compte.
+    inter = db.get(Interaction, item.interaction_id)
+    investor = db.get(Investor, inter.investor_id) if inter else None
+    if investor and investor.user_id:
+        owner = db.get(User, investor.user_id)
+        if owner:
+            notif.notify(
+                db,
+                recipient=owner,
+                type=NotificationType.qa_answered,
+                title="Réponse à votre question",
+                body=_excerpt(text),
+                link="/my-interactions",
+                object_type="Interaction",
+                object_id=item.interaction_id,
+            )
     return item
 
 

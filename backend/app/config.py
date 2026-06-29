@@ -40,6 +40,10 @@ class Settings(BaseSettings):
     llm_provider: str = "mock"
     anthropic_api_key: str = ""
 
+    # E-mail (notifications). Mock par défaut : aucun envoi réseau, juste journalisé.
+    email_provider: str = "mock"
+    email_from: str = "noreply@dealiq.com"
+
     @property
     def cors_origins_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
