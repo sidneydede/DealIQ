@@ -144,6 +144,12 @@ export const admin = {
   },
 };
 
+export const security = {
+  mfaSetup: () => api.post<{ secret: string; otpauth_uri: string }>("/auth/mfa/setup"),
+  mfaEnable: (code: string) => api.post<{ mfa_enabled: boolean }>("/auth/mfa/enable", { code }),
+  mfaDisable: (code: string) => api.post<{ mfa_enabled: boolean }>("/auth/mfa/disable", { code }),
+};
+
 export const notifications = {
   list: (unread = false) =>
     api.get<NotificationItem[]>(`/notifications${unread ? "?unread=true" : ""}`),

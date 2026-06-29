@@ -13,6 +13,7 @@ pwd_context = CryptContext(schemes=["argon2", "bcrypt"], deprecated="auto")
 
 ACCESS = "access"
 REFRESH = "refresh"
+MFA = "mfa"  # jeton court de défi MFA entre /auth/login et /auth/mfa/verify
 
 
 def hash_password(password: str) -> str:
@@ -45,6 +46,11 @@ def create_refresh_token(subject: str, role: str) -> str:
     return _create_token(
         subject, role, REFRESH, timedelta(days=settings.refresh_token_expire_days)
     )
+
+
+def create_mfa_token(subject: str, role: str) -> str:
+    """Jeton de défi MFA, valable 5 minutes (le temps de saisir le code)."""
+    return _create_token(subject, role, MFA, timedelta(minutes=5))
 
 
 def decode_token(token: str) -> dict[str, Any] | None:

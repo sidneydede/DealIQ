@@ -28,6 +28,30 @@ class RefreshRequest(BaseModel):
     refresh_token: str
 
 
+class LoginResponse(BaseModel):
+    """Réponse de /auth/login : jetons, ou défi MFA si la 2FA est active."""
+
+    mfa_required: bool = False
+    access_token: str | None = None
+    refresh_token: str | None = None
+    token_type: str = "bearer"
+    mfa_token: str | None = None  # présent uniquement si mfa_required
+
+
+class MfaCode(BaseModel):
+    code: str = Field(min_length=6, max_length=10)
+
+
+class MfaVerify(BaseModel):
+    mfa_token: str
+    code: str = Field(min_length=6, max_length=10)
+
+
+class MfaSetupOut(BaseModel):
+    secret: str
+    otpauth_uri: str
+
+
 class UserOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -36,6 +60,7 @@ class UserOut(BaseModel):
     full_name: str | None
     role: Role
     is_active: bool
+    mfa_enabled: bool = False
 
 
 class RoleUpdate(BaseModel):

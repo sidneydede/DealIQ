@@ -108,6 +108,11 @@ const NAV: NavItem[] = [
     key: "nav.notifications",
     roles: ["entrepreneur", "investisseur", "analyste", "senior", "admin", "sponsor", "conformite"],
   },
+  {
+    to: "/security",
+    key: "nav.security",
+    roles: ["entrepreneur", "investisseur", "analyste", "senior", "admin", "sponsor", "conformite"],
+  },
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {

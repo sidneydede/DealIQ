@@ -35,6 +35,7 @@ import Readiness from "./pages/Readiness";
 import Reporting from "./pages/Reporting";
 import ReportView from "./pages/ReportView";
 import ScoringCalibration from "./pages/ScoringCalibration";
+import Security from "./pages/Security";
 import TeaserAdmin from "./pages/TeaserAdmin";
 import Users from "./pages/Users";
 
@@ -88,6 +89,7 @@ export default function App() {
           <Route path="/users" element={<Users />} />
           <Route path="/audit" element={<Audit />} />
           <Route path="/notifications" element={<Notifications />} />
+          <Route path="/security" element={<Security />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Layout>

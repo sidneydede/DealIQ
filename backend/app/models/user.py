@@ -19,4 +19,6 @@ class User(UUIDMixin, TimestampMixin, Base):
         SAEnum(Role, native_enum=False), default=Role.entrepreneur, nullable=False
     )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
-    mfa_enabled: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)  # V1
+    mfa_enabled: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    # Secret TOTP (base32). Renseigné à l'enrôlement, effacé à la désactivation.
+    mfa_secret: Mapped[str | None] = mapped_column(String(64))
