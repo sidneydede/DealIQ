@@ -141,6 +141,19 @@ def test_pipeline_filters_and_rbac(client, db_session):
     _clear()
 
 
+def test_dashboard_investor_funnel(client, db_session):
+    # _interaction crée : entreprise, investisseur, teaser publié, interaction (intérêt).
+    _interaction(client, db_session)
+    _cabinet(db_session)
+    d = client.get("/api/v1/reporting/dashboard").json()
+    assert d["investors_total"] >= 1
+    assert d["teasers_published"] >= 1
+    assert d["interactions_total"] >= 1
+    assert d["interactions_by_status"].get("interesse", 0) >= 1
+    assert "interest_to_deal_rate" in d and "deals_closing" in d
+    _clear()
+
+
 def test_deals_csv_export(client, db_session):
     _, iid = _interaction(client, db_session)
     _cabinet(db_session)

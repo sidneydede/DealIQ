@@ -62,10 +62,22 @@ export default function Reporting() {
         <Kpi label={t("reporting.kpi.quotes")} value={String(d.quote_requests_total)} />
       </div>
 
+      <h2 style={{ marginTop: 24 }}>{t("reporting.investorFunnel")}</h2>
+      <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+        <Kpi label={t("reporting.kpi.investors")} value={String(d.investors_total)} />
+        <Kpi label={t("reporting.kpi.teasersPublished")} value={String(d.teasers_published)} />
+        <Kpi label={t("reporting.kpi.interactions")} value={String(d.interactions_total)} />
+        <Kpi label={t("reporting.kpi.deals")} value={String(d.deals_total)} />
+        <Kpi label={t("reporting.kpi.closings")} value={String(d.deals_closing)} />
+        <Kpi label={t("reporting.kpi.interestToDeal")} value={pct(d.interest_to_deal_rate)} />
+      </div>
+
       <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: 14 }}>
         <Breakdown title={t("reporting.byDealType")} data={d.by_deal_type} />
         <Breakdown title={t("reporting.byCategory")} data={d.by_readiness_category} />
         <Breakdown title={t("reporting.byStatus")} data={d.companies_by_status} />
+        <Breakdown title={t("reporting.byInteractionStatus")} data={d.interactions_by_status} />
+        <Breakdown title={t("reporting.byDealStage")} data={d.deals_by_stage} />
       </div>
     </>
   );

@@ -4,11 +4,14 @@ from __future__ import annotations
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
+from app.domain.enums import DealStage, TeaserStatus
 from app.models.company import Company, FinancingNeed
 from app.models.deal import Deal
+from app.models.investor import Investor
 from app.models.onboarding import OnboardingSession
 from app.models.quote import QuoteRequest
 from app.models.score import Score
+from app.models.teaser import Interaction, Teaser
 from app.models.user import User
 
 
@@ -49,6 +52,23 @@ def dashboard(db: Session) -> dict:
         for st, count in db.query(Deal.stage, func.count(Deal.id)).group_by(Deal.stage)
     }
 
+    # Funnel investisseur (M9/M11/M12/M16)
+    investors_total = db.query(func.count(Investor.id)).scalar() or 0
+    teasers_published = (
+        db.query(func.count(Teaser.id))
+        .filter(Teaser.status == TeaserStatus.publie)
+        .scalar()
+        or 0
+    )
+    interactions_total = db.query(func.count(Interaction.id)).scalar() or 0
+    interactions_by_status = {
+        (st.value if hasattr(st, "value") else st): count
+        for st, count in db.query(Interaction.status, func.count(Interaction.id)).group_by(
+            Interaction.status
+        )
+    }
+    deals_closing = deals_by_stage.get(DealStage.closing.value, 0)
+
     return {
         # O1 — complétion du diagnostic
         "users_total": users_total,
@@ -66,4 +86,12 @@ def dashboard(db: Session) -> dict:
         # Deals (M16) — KPI ventilés par étape de pipeline
         "deals_total": deals_total,
         "deals_by_stage": deals_by_stage,
+        "deals_closing": deals_closing,
+        # Funnel investisseur (M9/M11/M12)
+        "investors_total": investors_total,
+        "teasers_published": teasers_published,
+        "interactions_total": interactions_total,
+        "interactions_by_status": interactions_by_status,
+        # Conversion intérêt → deal (cible interne)
+        "interest_to_deal_rate": _ratio(deals_total, interactions_total),
     }

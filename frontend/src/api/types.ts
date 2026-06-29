@@ -195,6 +195,15 @@ export interface DashboardData {
   by_deal_type: Record<string, number>;
   by_readiness_category: Record<string, number>;
   companies_by_status: Record<string, number>;
+  // Funnel investisseur & deals
+  deals_total: number;
+  deals_by_stage: Record<string, number>;
+  deals_closing: number;
+  investors_total: number;
+  teasers_published: number;
+  interactions_total: number;
+  interactions_by_status: Record<string, number>;
+  interest_to_deal_rate: number;
 }
 
 export interface AuditLogEntry {
