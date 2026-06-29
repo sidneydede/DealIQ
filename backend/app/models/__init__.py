@@ -4,6 +4,7 @@ from app.models.base import Base
 from app.models.company import Company, Contact, FinancingNeed
 from app.models.dealtype_history import DealTypeHistory
 from app.models.document import Document
+from app.models.onboarding import OnboardingSession
 from app.models.reference import DealType
 from app.models.score import Score
 from app.models.user import User
@@ -18,5 +19,6 @@ __all__ = [
     "DealTypeHistory",
     "Score",
     "Document",
+    "OnboardingSession",
     "AuditLog",
 ]

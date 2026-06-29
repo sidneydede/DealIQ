@@ -54,3 +54,16 @@ def require_roles(*roles: Role) -> Callable[[User], User]:
 CABINET_ROLES = (Role.analyste, Role.senior, Role.admin)
 require_admin = require_roles(Role.admin)
 require_cabinet = require_roles(*CABINET_ROLES)
+
+
+def load_company(company_id: str, db: Session, user: User):
+    """Charge une entreprise en vérifiant l'accès (cabinet=tout, entrepreneur=la sienne)."""
+    from app.models.company import Company
+    from app.services import companies as svc
+
+    company = db.get(Company, company_id)
+    if company is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Entreprise introuvable")
+    if not svc.can_access(user, company):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Accès refusé")
+    return company

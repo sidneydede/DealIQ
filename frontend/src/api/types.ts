@@ -50,6 +50,51 @@ export interface CompanyCreateResult {
   duplicate_warnings: DuplicateMatch[];
 }
 
+export interface Question {
+  id: string;
+  label: string;
+  type: "single_choice" | "number" | "text";
+  options: string[];
+  required: boolean;
+}
+
+export interface OnboardingSession {
+  company_id: string;
+  answers: Record<string, unknown>;
+  current_step: number;
+  completed: boolean;
+  consent_given: boolean;
+  consent_at: string | null;
+  gating_route: string | null;
+}
+
+export interface GatingResult {
+  eligible: boolean;
+  route: "pipeline" | "nurturing" | "orientation_cabinet";
+  reasons: string[];
+}
+
+export interface DocumentOut {
+  id: string;
+  company_id: string;
+  doc_type: string;
+  filename: string;
+  content_type: string | null;
+  size_bytes: number | null;
+  sha256: string | null;
+  version: number;
+  status: "recu" | "verifie" | "rejete";
+  created_at: string;
+}
+
+export interface ChecklistItem {
+  doc_type: string;
+  required: boolean;
+  received: boolean;
+  verified: boolean;
+  documents: DocumentOut[];
+}
+
 export interface DealTypeHistoryEntry {
   id: string;
   old_primary: string | null;

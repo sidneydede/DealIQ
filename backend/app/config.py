@@ -28,6 +28,10 @@ class Settings(BaseSettings):
     # CORS (chaîne séparée par des virgules)
     cors_origins: str = "http://localhost:5173"
 
+    # Stockage documentaire (mock S3 = système de fichiers local en MVP)
+    storage_dir: str = "storage"
+    max_upload_mb: int = 10
+
     # IA / LLM (accélérateur ; mock par défaut, aucune clé requise)
     llm_provider: str = "mock"
     anthropic_api_key: str = ""

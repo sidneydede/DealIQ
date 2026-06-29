@@ -37,3 +37,7 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Stockage documentaire local (mock S3)
+backend/storage/
+storage/
