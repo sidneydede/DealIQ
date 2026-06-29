@@ -412,6 +412,24 @@ export interface MissionDetail {
   blockers: string[];
 }
 
+export interface EsgProfile {
+  id: string;
+  company_id: string;
+  jobs_total: number | null;
+  jobs_female: number | null;
+  jobs_youth: number | null;
+  women_in_leadership: boolean | null;
+  environmental_policy: boolean | null;
+  climate_risk_assessed: boolean | null;
+  governance_formalized: boolean | null;
+  board_independent: boolean | null;
+  esg_required: boolean;
+  evidence_note: string | null;
+  notes: string | null;
+  completeness: number;
+  incomplete_for_dfi: boolean;
+}
+
 export interface DealTypeHistoryEntry {
   id: string;
   old_primary: string | null;

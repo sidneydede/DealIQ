@@ -9,6 +9,7 @@ from app.api.routes import (
     dataroom,
     deals,
     documents,
+    esg,
     health,
     investors,
     kyc,
@@ -49,3 +50,4 @@ api_router.include_router(dataroom.router, tags=["dataroom"])
 api_router.include_router(deals.router, tags=["deals"])
 api_router.include_router(mandates.router, tags=["mandates"])
 api_router.include_router(missions.router, tags=["missions"])
+api_router.include_router(esg.router, tags=["esg"])

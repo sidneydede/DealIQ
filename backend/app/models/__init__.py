@@ -11,6 +11,7 @@ from app.models.dataroom import (
 from app.models.deal import Deal, DealMilestone, DealStageHistory
 from app.models.dealtype_history import DealTypeHistory
 from app.models.document import Document
+from app.models.esg import EsgProfile
 from app.models.investor import InvestmentCriteria, Investor
 from app.models.kyc import KycCheck
 from app.models.mandate import Fee, Mandate
@@ -50,6 +51,7 @@ __all__ = [
     "MissionTask",
     "Deliverable",
     "MissionReview",
+    "EsgProfile",
     "Score",
     "Document",
     "OnboardingSession",

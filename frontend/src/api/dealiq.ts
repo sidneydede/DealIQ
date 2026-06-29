@@ -17,6 +17,7 @@ import type {
   DealDetail,
   DealMilestone,
   DocumentView,
+  EsgProfile,
   DealTypeHistoryEntry,
   DealTypeMeta,
   DocumentOut,
@@ -150,6 +151,16 @@ export const kyc = {
     api.post<KycCheck>("/kyc/checks", { subject_type, subject_id, check_type }),
   update: (id: string, status: string, notes?: string) =>
     api.patch<KycCheck>(`/kyc/checks/${id}`, { status, notes }),
+};
+
+export const esg = {
+  get: (companyId: string) => api.get<EsgProfile>(`/companies/${companyId}/esg`),
+  upsert: (companyId: string, body: Record<string, unknown>) =>
+    api.put<EsgProfile>(`/companies/${companyId}/esg`, body),
+  setRequired: (companyId: string, esg_required: boolean) =>
+    api.patch<EsgProfile>(`/companies/${companyId}/esg/required`, { esg_required }),
+  export: (companyId: string) =>
+    api.get<Record<string, unknown>>(`/companies/${companyId}/esg/export`),
 };
 
 export const missions = {

@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import DataRoomAdmin from "./pages/DataRoomAdmin";
 import DealTypeSelect from "./pages/DealTypeSelect";
 import Documents from "./pages/Documents";
+import Esg from "./pages/Esg";
 import Interactions from "./pages/Interactions";
 import Investors from "./pages/Investors";
 import Kyc from "./pages/Kyc";
@@ -74,6 +75,7 @@ export default function App() {
           <Route path="/my-datarooms" element={<MyDataRooms />} />
           <Route path="/pipeline" element={<Pipeline />} />
           <Route path="/mandates" element={<MandatesPage />} />
+          <Route path="/esg" element={<Esg />} />
           <Route path="/conflicts" element={<Conflicts />} />
           <Route path="/kyc" element={<Kyc />} />
           <Route path="/users" element={<Placeholder title="Utilisateurs" />} />
