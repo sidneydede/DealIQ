@@ -2,13 +2,16 @@
 from fastapi import APIRouter
 
 from app.api.routes import (
+    admin,
     auth,
+    cockpit,
     companies,
     documents,
     health,
     meta,
     offers,
     onboarding,
+    reporting,
     reports,
     scores,
     users,
@@ -25,3 +28,6 @@ api_router.include_router(documents.router, tags=["documents"])
 api_router.include_router(scores.router, tags=["readiness"])
 api_router.include_router(reports.router, tags=["report"])
 api_router.include_router(offers.router, tags=["offers"])
+api_router.include_router(cockpit.router, tags=["cockpit"])
+api_router.include_router(reporting.router, tags=["reporting"])
+api_router.include_router(admin.router, tags=["admin"])

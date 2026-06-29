@@ -139,6 +139,45 @@ export interface QuoteRequest {
   created_at: string;
 }
 
+export interface CockpitItem {
+  company_id: string;
+  name: string;
+  country: string;
+  sector: string;
+  status: string;
+  deal_type_primary: string | null;
+  readiness_category: string | null;
+  score_total: number | null;
+  quote_requests: number;
+  days_open: number;
+  sla_breach: boolean;
+}
+
+export interface DashboardData {
+  users_total: number;
+  companies_total: number;
+  onboarding_started: number;
+  onboarding_completed: number;
+  completion_rate: number;
+  quote_requests_total: number;
+  conversion_rate: number;
+  by_deal_type: Record<string, number>;
+  by_readiness_category: Record<string, number>;
+  companies_by_status: Record<string, number>;
+}
+
+export interface AuditLogEntry {
+  id: string;
+  actor_id: string | null;
+  actor_email: string | null;
+  action: string;
+  object_type: string | null;
+  object_id: string | null;
+  meta: Record<string, unknown>;
+  ip_address: string | null;
+  created_at: string;
+}
+
 export interface DealTypeHistoryEntry {
   id: string;
   old_primary: string | null;

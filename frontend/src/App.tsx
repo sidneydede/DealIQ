@@ -2,6 +2,8 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import Layout from "./components/Layout";
 import { useAuth } from "./auth/AuthContext";
+import Audit from "./pages/Audit";
+import Cockpit from "./pages/Cockpit";
 import Dashboard from "./pages/Dashboard";
 import DealTypeSelect from "./pages/DealTypeSelect";
 import Documents from "./pages/Documents";
@@ -10,6 +12,7 @@ import MyCompany from "./pages/MyCompany";
 import Offers from "./pages/Offers";
 import Questionnaire from "./pages/Questionnaire";
 import Readiness from "./pages/Readiness";
+import Reporting from "./pages/Reporting";
 import ReportView from "./pages/ReportView";
 
 function Placeholder({ title }: { title: string }) {
@@ -41,9 +44,10 @@ export default function App() {
           <Route path="/readiness" element={<Readiness />} />
           <Route path="/report" element={<ReportView />} />
           <Route path="/offers" element={<Offers />} />
-          <Route path="/cockpit" element={<Placeholder title="Cockpit cabinet" />} />
+          <Route path="/cockpit" element={<Cockpit />} />
+          <Route path="/reporting" element={<Reporting />} />
           <Route path="/users" element={<Placeholder title="Utilisateurs" />} />
-          <Route path="/audit" element={<Placeholder title="Journal d'audit" />} />
+          <Route path="/audit" element={<Audit />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Layout>

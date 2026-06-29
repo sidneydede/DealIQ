@@ -1,9 +1,12 @@
 import { api } from "./client";
 import type {
+  AuditLogEntry,
   ChecklistItem,
+  CockpitItem,
   Company,
   CompanyCreateResult,
   CountryMeta,
+  DashboardData,
   DealTypeHistoryEntry,
   DealTypeMeta,
   DocumentOut,
@@ -59,6 +62,27 @@ export const offers = {
     id: string,
     body: { offer_key?: string | null; message?: string; contact_phone?: string },
   ) => api.post<QuoteRequest>(`/companies/${id}/quote-request`, body),
+};
+
+export const cockpit = {
+  companies: (params: { deal_type?: string; status_filter?: string; only?: string } = {}) => {
+    const qs = new URLSearchParams(params as Record<string, string>).toString();
+    return api.get<CockpitItem[]>(`/cockpit/companies${qs ? `?${qs}` : ""}`);
+  },
+  pipeline: () => api.get<Record<string, number>>("/cockpit/pipeline"),
+  setQuoteStatus: (quoteId: string, statusValue: string) =>
+    api.patch<QuoteRequest>(`/quote-requests/${quoteId}/status`, { status: statusValue }),
+};
+
+export const reporting = {
+  dashboard: () => api.get<DashboardData>("/reporting/dashboard"),
+};
+
+export const admin = {
+  audit: (params: { action?: string; object_id?: string } = {}) => {
+    const qs = new URLSearchParams(params as Record<string, string>).toString();
+    return api.get<AuditLogEntry[]>(`/audit${qs ? `?${qs}` : ""}`);
+  },
 };
 
 export interface CompanyCreateInput {
