@@ -155,6 +155,14 @@ class InteractionStatus(str, Enum):
     nda_signe = "nda_signe"
 
 
+class QAStatus(str, Enum):
+    """Statut d'une question (M14)."""
+
+    ouverte = "ouverte"
+    repondue = "repondue"
+    cloturee = "cloturee"
+
+
 class DealTypeChangeSource(str, Enum):
     """Origine d'un changement de type de deal (historisation M24)."""
 

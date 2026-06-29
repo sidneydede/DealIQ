@@ -6,6 +6,7 @@ from app.models.dealtype_history import DealTypeHistory
 from app.models.document import Document
 from app.models.investor import InvestmentCriteria, Investor
 from app.models.onboarding import OnboardingSession
+from app.models.qa import QAItem
 from app.models.quote import QuoteRequest
 from app.models.reference import DealType
 from app.models.score import Score
@@ -24,6 +25,7 @@ __all__ = [
     "InvestmentCriteria",
     "Teaser",
     "Interaction",
+    "QAItem",
     "Score",
     "Document",
     "OnboardingSession",

@@ -13,6 +13,7 @@ from app.api.routes import (
     meta,
     offers,
     onboarding,
+    qa,
     reporting,
     reports,
     scores,
@@ -37,3 +38,4 @@ api_router.include_router(admin.router, tags=["admin"])
 api_router.include_router(investors.router, prefix="/investors", tags=["investors"])
 api_router.include_router(matching.router, tags=["matching"])
 api_router.include_router(teasers.router, tags=["teasers"])
+api_router.include_router(qa.router, tags=["qa"])

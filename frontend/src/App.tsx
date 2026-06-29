@@ -13,6 +13,7 @@ import Login from "./pages/Login";
 import Matching from "./pages/Matching";
 import MyCompany from "./pages/MyCompany";
 import MyCriteria from "./pages/MyCriteria";
+import MyInteractions from "./pages/MyInteractions";
 import Offers from "./pages/Offers";
 import Opportunities from "./pages/Opportunities";
 import Questionnaire from "./pages/Questionnaire";
@@ -54,6 +55,7 @@ export default function App() {
           <Route path="/reporting" element={<Reporting />} />
           <Route path="/my-criteria" element={<MyCriteria />} />
           <Route path="/opportunities" element={<Opportunities />} />
+          <Route path="/my-interactions" element={<MyInteractions />} />
           <Route path="/investors" element={<Investors />} />
           <Route path="/matching" element={<Matching />} />
           <Route path="/teasers" element={<TeaserAdmin />} />

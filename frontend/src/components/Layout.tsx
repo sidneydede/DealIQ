@@ -19,6 +19,7 @@ const NAV: NavItem[] = [
   { to: "/company", key: "nav.company", roles: ["entrepreneur"] },
   { to: "/my-criteria", key: "nav.myCriteria", roles: ["investisseur"] },
   { to: "/opportunities", key: "nav.opportunities", roles: ["investisseur"] },
+  { to: "/my-interactions", key: "nav.myInteractions", roles: ["investisseur"] },
   { to: "/diagnostic", key: "nav.diagnostic", roles: ["entrepreneur"] },
   { to: "/deal-type", key: "nav.dealType", roles: ["entrepreneur"] },
   { to: "/documents", key: "nav.documents", roles: ["entrepreneur"] },

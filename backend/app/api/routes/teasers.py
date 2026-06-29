@@ -120,12 +120,14 @@ def express_interest(
     return svc.express_interest(db, teaser, investor, payload.note, user, ip=_ip(request))
 
 
-# --- M12 : suivi des mises en relation côté cabinet ---
+# --- M12 : suivi des mises en relation (cabinet = toutes ; investisseur = les siennes) ---
 @router.get("/interactions", response_model=list[InteractionOut])
 def list_interactions(
-    db: Session = Depends(get_db), _: User = Depends(require_cabinet)
+    db: Session = Depends(get_db), user: User = Depends(get_current_user)
 ) -> list[Interaction]:
-    return db.query(Interaction).order_by(Interaction.created_at.desc()).all()
+    from app.services import qa as qa_svc
+
+    return qa_svc.list_interactions(db, user)
 
 
 @router.patch("/interactions/{interaction_id}/status", response_model=InteractionOut)

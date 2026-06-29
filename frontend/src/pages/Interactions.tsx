@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import { interactions as api } from "../api/dealiq";
 import type { Interaction } from "../api/types";
+import QAThread from "../components/QAThread";
 
 const NEXT: Record<string, string[]> = {
   interesse: ["nda_envoye", "ecarte"],
@@ -14,6 +15,7 @@ const NEXT: Record<string, string[]> = {
 export default function Interactions() {
   const { t } = useTranslation();
   const [list, setList] = useState<Interaction[]>([]);
+  const [open, setOpen] = useState<string | null>(null);
 
   const reload = useCallback(() => {
     void api.list().then(setList);
@@ -55,6 +57,14 @@ export default function Interactions() {
             </div>
           </div>
           {it.note && <p className="muted">{it.note}</p>}
+          <button
+            className="btn btn--ghost"
+            style={{ marginTop: 8 }}
+            onClick={() => setOpen(open === it.id ? null : it.id)}
+          >
+            {t("qa.thread")}
+          </button>
+          {open === it.id && <QAThread interactionId={it.id} canAnswer={true} />}
         </div>
       ))}
     </>

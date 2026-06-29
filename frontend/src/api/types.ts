@@ -241,6 +241,18 @@ export interface Interaction {
   created_at: string;
 }
 
+export interface QAItem {
+  id: string;
+  interaction_id: string;
+  asked_by: string | null;
+  question: string;
+  answer: string | null;
+  answered_by: string | null;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface DealTypeHistoryEntry {
   id: string;
   old_primary: string | null;

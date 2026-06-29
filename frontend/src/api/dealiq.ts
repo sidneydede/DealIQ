@@ -18,6 +18,7 @@ import type {
   MatchResult,
   OffersResponse,
   OnboardingSession,
+  QAItem,
   Question,
   QuoteRequest,
   ReadinessScore,
@@ -125,6 +126,15 @@ export const interactions = {
   list: () => api.get<Interaction[]>("/interactions"),
   setStatus: (id: string, statusValue: string) =>
     api.patch<Interaction>(`/interactions/${id}/status`, { status: statusValue }),
+};
+
+export const qa = {
+  thread: (interactionId: string) => api.get<QAItem[]>(`/interactions/${interactionId}/qa`),
+  ask: (interactionId: string, question: string) =>
+    api.post<QAItem>(`/interactions/${interactionId}/qa`, { question }),
+  answer: (itemId: string, answer: string) =>
+    api.post<QAItem>(`/qa/${itemId}/answer`, { answer }),
+  close: (itemId: string) => api.patch<QAItem>(`/qa/${itemId}/close`),
 };
 
 export interface CompanyCreateInput {
