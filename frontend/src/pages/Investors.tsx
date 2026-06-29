@@ -134,20 +134,27 @@ export default function Investors() {
         </button>
       </form>
 
-      <input
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder={t("investors.searchPlaceholder")}
-        aria-label={t("investors.searchPlaceholder")}
-        style={{
-          margin: "8px 0 4px",
-          width: "100%",
-          maxWidth: 360,
-          padding: "8px 10px",
-          borderRadius: 8,
-          border: "1px solid var(--c-border)",
-        }}
-      />
+      <div style={{ display: "flex", gap: 8, alignItems: "center", margin: "8px 0 4px" }}>
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t("investors.searchPlaceholder")}
+          aria-label={t("investors.searchPlaceholder")}
+          style={{
+            flex: 1,
+            maxWidth: 360,
+            padding: "8px 10px",
+            borderRadius: 8,
+            border: "1px solid var(--c-border)",
+          }}
+        />
+        <button
+          className="btn btn--ghost"
+          onClick={() => void investors.exportCsv(search || undefined)}
+        >
+          {t("investors.exportCsv")}
+        </button>
+      </div>
 
       {list.map((inv) => (
         <div className="card" key={inv.id}>

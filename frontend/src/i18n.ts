@@ -197,6 +197,7 @@ const fr = {
       days: "j",
       empty: "Aucun dossier.",
       searchPlaceholder: "Rechercher (nom, secteur)…",
+      exportCsv: "Exporter CSV",
     },
     pager: {
       range: "{{from}}–{{to}} sur {{total}}",
@@ -297,6 +298,7 @@ const fr = {
       inviteError: "Échec de l'invitation.",
       tempPassword: "Mot de passe temporaire",
       searchPlaceholder: "Rechercher un investisseur…",
+      exportCsv: "Exporter CSV",
     },
     matching: {
       title: "Matching",
@@ -839,6 +841,7 @@ const en = {
       days: "d",
       empty: "No file.",
       searchPlaceholder: "Search (name, industry)…",
+      exportCsv: "Export CSV",
     },
     reporting: {
       title: "Dashboard",
@@ -911,6 +914,7 @@ const en = {
       inviteError: "Invitation failed.",
       tempPassword: "Temporary password",
       searchPlaceholder: "Search an investor…",
+      exportCsv: "Export CSV",
     },
     matching: {
       title: "Matching",

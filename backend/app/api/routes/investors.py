@@ -1,7 +1,7 @@
 """Routes investisseurs & critères (M9)."""
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user, require_cabinet
@@ -18,7 +18,17 @@ from app.schemas.investor import (
     InviteIn,
     InviteResult,
 )
+from app.services import csv_export
 from app.services import investors as svc
+
+_INVESTOR_CSV_COLUMNS = [
+    ("name", "Nom"),
+    ("type", "Type"),
+    ("jurisdiction", "Juridiction"),
+    ("qualif_status", "Statut"),
+    ("linked", "Compte rattaché"),
+    ("has_criteria", "Critères définis"),
+]
 
 router = APIRouter()
 
@@ -52,6 +62,32 @@ def list_investors(
 ) -> Page[InvestorOut]:
     items, total = svc.paginate_for_user(db, user, q=q, limit=page.limit, offset=page.offset)
     return Page.build(items, total, page)
+
+
+@router.get("/export.csv")
+def export_investors_csv(
+    q: str | None = None,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+) -> Response:
+    items, _total = svc.paginate_for_user(db, user, q=q, limit=100000, offset=0)
+    rows = [
+        {
+            "name": inv.name,
+            "type": inv.type,
+            "jurisdiction": inv.jurisdiction,
+            "qualif_status": inv.qualif_status,
+            "linked": inv.user_id is not None,
+            "has_criteria": inv.criteria is not None,
+        }
+        for inv in items
+    ]
+    content = csv_export.to_csv(rows, _INVESTOR_CSV_COLUMNS)
+    return Response(
+        content=content,
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": 'attachment; filename="investisseurs.csv"'},
+    )
 
 
 @router.get("/me", response_model=InvestorOut)

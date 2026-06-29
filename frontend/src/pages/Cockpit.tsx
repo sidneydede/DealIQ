@@ -75,6 +75,17 @@ export default function Cockpit() {
             border: "1px solid var(--c-border)",
           }}
         />
+        <button
+          className="btn btn--ghost"
+          onClick={() =>
+            void cockpit.exportCsv({
+              only: filter === "all" ? undefined : filter,
+              q: search || undefined,
+            })
+          }
+        >
+          {t("cockpit.exportCsv")}
+        </button>
       </div>
 
       <div className="card" style={{ padding: 0, overflowX: "auto" }}>

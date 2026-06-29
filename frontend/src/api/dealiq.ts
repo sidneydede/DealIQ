@@ -123,6 +123,15 @@ export const cockpit = {
     const qs = new URLSearchParams(clean).toString();
     return api.get<Page<CockpitItem>>(`/cockpit/companies${qs ? `?${qs}` : ""}`);
   },
+  exportCsv: (
+    params: { deal_type?: string; status_filter?: string; only?: string; q?: string } = {},
+  ) => {
+    const clean = Object.fromEntries(
+      Object.entries(params).filter(([, v]) => v !== undefined && v !== ""),
+    ) as Record<string, string>;
+    const qs = new URLSearchParams(clean).toString();
+    return api.download(`/cockpit/companies.csv${qs ? `?${qs}` : ""}`, "dealflow.csv");
+  },
   pipeline: () => api.get<Record<string, number>>("/cockpit/pipeline"),
   setQuoteStatus: (quoteId: string, statusValue: string) =>
     api.patch<QuoteRequest>(`/quote-requests/${quoteId}/status`, { status: statusValue }),
@@ -182,6 +191,11 @@ export const investors = {
     return api.get<Page<Investor>>(`/investors${qs ? `?${qs}` : ""}`);
   },
   me: () => api.get<Investor>("/investors/me"),
+  exportCsv: (q?: string) =>
+    api.download(
+      `/investors/export.csv${q ? `?q=${encodeURIComponent(q)}` : ""}`,
+      "investisseurs.csv",
+    ),
   create: (body: { name: string; type: string; user_email?: string }) =>
     api.post<Investor>("/investors", body),
   invite: (id: string, email?: string) =>
