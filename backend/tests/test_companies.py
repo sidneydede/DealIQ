@@ -25,6 +25,28 @@ def _create_company(client, **over):
     return client.post("/api/v1/companies", json=body)
 
 
+def test_company_update_is_historized(client, db_session):
+    entr = _mk_user(db_session, "hist@dealiq.com")
+    _auth_as(entr)
+    cid = _create_company(client, name="Acme SARL", sector="Agro").json()["company"]["id"]
+
+    r = client.patch(f"/api/v1/companies/{cid}", json={"name": "Acme Group", "sector": "Tech"})
+    assert r.status_code == 200 and r.json()["name"] == "Acme Group"
+
+    hist = client.get(f"/api/v1/companies/{cid}/history").json()
+    by_field = {h["field"]: h for h in hist}
+    assert by_field["name"]["old_value"] == "Acme SARL"
+    assert by_field["name"]["new_value"] == "Acme Group"
+    assert by_field["sector"]["old_value"] == "Agro"
+    assert by_field["sector"]["new_value"] == "Tech"
+    assert all(h["changed_by"] == entr.id for h in hist)
+
+    # Une PATCH sans changement réel n'ajoute pas d'entrée.
+    client.patch(f"/api/v1/companies/{cid}", json={"name": "Acme Group"})
+    assert len(client.get(f"/api/v1/companies/{cid}/history").json()) == 2
+    app.dependency_overrides.pop(get_current_user, None)
+
+
 def test_create_company_defaults(client, db_session):
     entr = _mk_user(db_session, "a@dealiq.com")
     _auth_as(entr)

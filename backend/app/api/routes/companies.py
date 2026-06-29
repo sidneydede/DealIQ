@@ -12,6 +12,7 @@ from app.models.user import User
 from app.schemas.company import (
     CompanyCreate,
     CompanyCreateResult,
+    CompanyHistoryOut,
     CompanyOut,
     CompanyStatusUpdate,
     CompanyUpdate,
@@ -73,11 +74,15 @@ def update_company(
     user: User = Depends(get_current_user),
 ) -> Company:
     company = _load(company_id, db, user)
-    for field, value in payload.model_dump(exclude_unset=True).items():
-        setattr(company, field, value)
-    db.commit()
-    db.refresh(company)
-    return company
+    return svc.apply_update(db, company, payload.model_dump(exclude_unset=True), user)
+
+
+@router.get("/{company_id}/history", response_model=list[CompanyHistoryOut])
+def company_history(
+    company_id: str, db: Session = Depends(get_db), user: User = Depends(get_current_user)
+) -> list:
+    company = _load(company_id, db, user)
+    return svc.change_history(db, company)
 
 
 @router.patch("/{company_id}/status", response_model=CompanyOut)

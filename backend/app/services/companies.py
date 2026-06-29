@@ -16,11 +16,44 @@ from app.domain.enums import (
     currency_for_country,
 )
 from app.models.company import Company, FinancingNeed
+from app.models.company_history import CompanyHistory
 from app.models.dealtype_history import DealTypeHistory
 from app.models.user import User
 from app.services import audit
 
 CABINET_ROLES = {Role.analyste, Role.senior, Role.admin}
+
+
+def _as_str(value: object) -> str | None:
+    if value is None:
+        return None
+    return str(getattr(value, "value", value))
+
+
+def apply_update(db: Session, company: Company, data: dict, actor: User) -> Company:
+    """Applique une mise à jour de fiche en historisant chaque champ modifié (US-M2-03)."""
+    for field, value in data.items():
+        old = getattr(company, field)
+        if old == value:
+            continue
+        db.add(CompanyHistory(
+            company_id=company.id, field=field,
+            old_value=_as_str(old), new_value=_as_str(value), changed_by=actor.id,
+        ))
+        setattr(company, field, value)
+    db.commit()
+    db.refresh(company)
+    return company
+
+
+def change_history(db: Session, company: Company) -> list[CompanyHistory]:
+    """Historique des modifications de la fiche (US-M2-03), du plus récent au plus ancien."""
+    return (
+        db.query(CompanyHistory)
+        .filter(CompanyHistory.company_id == company.id)
+        .order_by(CompanyHistory.created_at.desc())
+        .all()
+    )
 
 
 def normalize_name(name: str) -> str:

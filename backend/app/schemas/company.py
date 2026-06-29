@@ -38,6 +38,17 @@ class CompanyUpdate(BaseModel):
     currency: Currency | None = None
 
 
+class CompanyHistoryOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    field: str
+    old_value: str | None
+    new_value: str | None
+    changed_by: str | None
+    created_at: datetime
+
+
 class CompanyStatusUpdate(BaseModel):
     status: CompanyStatus
 

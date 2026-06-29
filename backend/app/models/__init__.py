@@ -2,6 +2,7 @@
 from app.models.audit import AuditLog
 from app.models.base import Base
 from app.models.company import Company, Contact, FinancingNeed
+from app.models.company_history import CompanyHistory
 from app.models.dataroom import (
     DataRoom,
     DataRoomAccess,
@@ -34,6 +35,7 @@ __all__ = [
     "Company",
     "Contact",
     "FinancingNeed",
+    "CompanyHistory",
     "DealType",
     "DealTypeHistory",
     "Investor",

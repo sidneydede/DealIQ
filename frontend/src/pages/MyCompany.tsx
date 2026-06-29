@@ -4,13 +4,19 @@ import { useTranslation } from "react-i18next";
 import { companies, meta } from "../api/dealiq";
 import Loading from "../components/Loading";
 import { useToast } from "../components/Toast";
-import type { CountryMeta, DuplicateMatch } from "../api/types";
+import type { CompanyHistoryEntry, CountryMeta, DuplicateMatch } from "../api/types";
 import { useMyCompany } from "../hooks/useMyCompany";
+import { formatRelative } from "../utils/format";
 
 export default function MyCompany() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const toast = useToast();
   const { company, loading, reload } = useMyCompany();
+  const [hist, setHist] = useState<CompanyHistoryEntry[]>([]);
+
+  useEffect(() => {
+    if (company) void companies.history(company.id).then(setHist);
+  }, [company]);
   const [countries, setCountries] = useState<CountryMeta[]>([]);
   const [name, setName] = useState("");
   const [country, setCountry] = useState("CI");
@@ -78,6 +84,19 @@ export default function MyCompany() {
             <strong>{fn?.deal_type_primary ?? t("dealType.none")}</strong>
           </p>
         </div>
+        {hist.length > 0 && (
+          <div className="card">
+            <h3 style={{ marginTop: 0 }}>{t("company.history")}</h3>
+            {hist.map((h) => (
+              <div key={h.id} className="muted" style={{ fontSize: 13, marginBottom: 4 }}>
+                <span title={new Date(h.created_at).toLocaleString(i18n.language)}>
+                  {formatRelative(h.created_at, i18n.language)}
+                </span>{" "}
+                · <strong>{h.field}</strong> : {h.old_value ?? "—"} → {h.new_value ?? "—"}
+              </div>
+            ))}
+          </div>
+        )}
         <p className="disclaimer">{t("disclaimer")}</p>
       </>
     );

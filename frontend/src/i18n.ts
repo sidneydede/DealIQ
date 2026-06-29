@@ -101,6 +101,7 @@ const fr = {
       duplicateWarning:
         "Une fiche similaire existe déjà dans la base — à vérifier avec votre conseiller.",
       saved: "Fiche enregistrée.",
+      history: "Historique des modifications",
     },
     dealType: {
       title: "Mon type de deal",
@@ -813,6 +814,7 @@ const en = {
       duplicateWarning:
         "A similar profile already exists in the database — please check with your advisor.",
       saved: "Profile saved.",
+      history: "Change history",
     },
     dealType: {
       title: "My deal type",

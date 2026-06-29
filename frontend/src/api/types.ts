@@ -6,6 +6,15 @@ export interface DealTypeMeta {
   target_financiers: string | null;
 }
 
+export interface CompanyHistoryEntry {
+  id: string;
+  field: string;
+  old_value: string | null;
+  new_value: string | null;
+  changed_by: string | null;
+  created_at: string;
+}
+
 export interface AdminUser {
   id: string;
   email: string;

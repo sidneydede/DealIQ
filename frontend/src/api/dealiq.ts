@@ -6,6 +6,7 @@ import type {
   CockpitItem,
   Company,
   CompanyCreateResult,
+  CompanyHistoryEntry,
   ConflictItem,
   CountryMeta,
   Criteria,
@@ -417,4 +418,6 @@ export const companies = {
   ) => api.post<FinancingNeed>(`/companies/${id}/deal-type/requalify`, body),
   dealTypeHistory: (id: string) =>
     api.get<DealTypeHistoryEntry[]>(`/companies/${id}/deal-type/history`),
+  history: (id: string) =>
+    api.get<CompanyHistoryEntry[]>(`/companies/${id}/history`),
 };
