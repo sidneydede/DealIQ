@@ -157,6 +157,10 @@ const fr = {
       missing: "Manquant",
       verified: "Vérifié",
       version: "v",
+      preview: "Aperçu",
+      download: "Télécharger",
+      previewError: "Aperçu indisponible.",
+      previewUnsupported: "Aperçu non disponible pour ce type de fichier — téléchargez-le.",
     },
     readiness: {
       title: "Ma readiness",
@@ -898,6 +902,10 @@ const en = {
       missing: "Missing",
       verified: "Verified",
       version: "v",
+      preview: "Preview",
+      download: "Download",
+      previewError: "Preview unavailable.",
+      previewUnsupported: "Preview not available for this file type — download it instead.",
     },
     readiness: {
       title: "My readiness",

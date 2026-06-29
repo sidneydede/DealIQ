@@ -72,6 +72,22 @@ async function download(path: string, filename: string): Promise<void> {
   URL.revokeObjectURL(url);
 }
 
+async function getBlob(path: string): Promise<Blob> {
+  const headers: Record<string, string> = {};
+  if (tokens.access) headers.Authorization = `Bearer ${tokens.access}`;
+  const res = await fetch(`${BASE_URL}${path}`, { headers });
+  if (!res.ok) {
+    let detail = res.statusText;
+    try {
+      detail = (await res.json()).detail ?? detail;
+    } catch {
+      /* corps non-JSON */
+    }
+    throw new ApiError(res.status, detail);
+  }
+  return res.blob();
+}
+
 async function upload<T>(path: string, form: FormData): Promise<T> {
   const headers: Record<string, string> = {};
   if (tokens.access) headers.Authorization = `Bearer ${tokens.access}`;
@@ -99,4 +115,5 @@ export const api = {
   del: <T>(p: string) => request<T>(p, { method: "DELETE" }),
   upload,
   download,
+  getBlob,
 };

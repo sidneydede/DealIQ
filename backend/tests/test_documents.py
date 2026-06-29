@@ -44,6 +44,29 @@ def _upload(client, cid, doc_type="releves_bancaires", content=b"%PDF-1.4 data",
     )
 
 
+def test_document_content_preview_and_download(client, db_session):
+    _auth(_user(db_session, "owner@dealiq.com"))
+    cid = _company(client)
+    did = _upload(client, cid, content=b"%PDF-1.4 hello").json()["id"]
+
+    # Aperçu (inline) — contenu et type servis, disposition inline.
+    preview = client.get(f"/api/v1/documents/{did}/content")
+    assert preview.status_code == 200
+    assert preview.headers["content-type"].startswith("application/pdf")
+    assert preview.headers["content-disposition"].startswith("inline")
+    assert preview.content == b"%PDF-1.4 hello"
+
+    # Téléchargement (attachment).
+    dl = client.get(f"/api/v1/documents/{did}/content", params={"download": "true"})
+    assert dl.status_code == 200
+    assert dl.headers["content-disposition"].startswith("attachment")
+
+    # Cloisonnement : un autre entrepreneur ne peut pas accéder.
+    _auth(_user(db_session, "intrus@dealiq.com"))
+    assert client.get(f"/api/v1/documents/{did}/content").status_code == 403
+    app.dependency_overrides.pop(get_current_user, None)
+
+
 def test_upload_and_list(client, db_session):
     _auth(_user(db_session, "e@dealiq.com"))
     cid = _company(client)

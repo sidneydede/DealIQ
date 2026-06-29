@@ -79,6 +79,9 @@ export const documents = {
     form.append("file", file);
     return api.upload<DocumentOut>(`/companies/${id}/documents`, form);
   },
+  preview: (docId: string) => api.getBlob(`/documents/${docId}/content`),
+  download: (docId: string, filename: string) =>
+    api.download(`/documents/${docId}/content?download=true`, filename),
 };
 
 export const readiness = {
