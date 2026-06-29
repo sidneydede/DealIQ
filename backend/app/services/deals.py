@@ -93,14 +93,22 @@ def to_dict(db: Session, deal: Deal) -> dict:
 
 
 def list_deals(
-    db: Session, *, stage: DealStage | None = None, deal_type: str | None = None
-) -> list[dict]:
+    db: Session,
+    *,
+    stage: DealStage | None = None,
+    deal_type: str | None = None,
+    limit: int | None = None,
+    offset: int = 0,
+) -> tuple[list[dict], int]:
     q = db.query(Deal).order_by(Deal.created_at.desc())
     if stage:
         q = q.filter(Deal.stage == stage)
     if deal_type:
         q = q.filter(Deal.deal_type == deal_type)
-    return [to_dict(db, d) for d in q.all()]
+    total = q.count()
+    if limit is not None:
+        q = q.offset(offset).limit(limit)
+    return [to_dict(db, d) for d in q.all()], total
 
 
 def detail(db: Session, deal: Deal) -> dict:

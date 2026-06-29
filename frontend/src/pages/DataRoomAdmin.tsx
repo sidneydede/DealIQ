@@ -36,7 +36,7 @@ export default function DataRoomAdmin() {
       setCompanies(p.items);
       if (p.items[0]) setCompanyId(p.items[0].company_id);
     });
-    void investorsApi.list().then(setInvestors);
+    void investorsApi.list({ limit: 200 }).then((p) => setInvestors(p.items));
   }, []);
 
   const refreshRoom = useCallback(async (r: DataRoom) => {

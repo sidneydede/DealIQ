@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import require_cabinet
+from app.api.pagination import Page, Pagination, pagination
 from app.database import get_db
 from app.domain import deal as domain
 from app.domain.enums import DealStage, DealTypeCode
@@ -42,14 +43,19 @@ def create_deal(
     return svc.to_dict(db, deal)
 
 
-@router.get("/deals", response_model=list[DealOut])
+@router.get("/deals", response_model=Page[DealOut])
 def list_deals(
     stage: DealStage | None = None,
     deal_type: DealTypeCode | None = None,
+    page: Pagination = Depends(pagination),
     db: Session = Depends(get_db),
     _: User = Depends(require_cabinet),
-) -> list[dict]:
-    return svc.list_deals(db, stage=stage, deal_type=deal_type.value if deal_type else None)
+) -> Page[DealOut]:
+    items, total = svc.list_deals(
+        db, stage=stage, deal_type=deal_type.value if deal_type else None,
+        limit=page.limit, offset=page.offset,
+    )
+    return Page.build(items, total, page)
 
 
 @router.get("/deals/meta/milestones/{deal_type}", response_model=list[str], tags=["meta"])

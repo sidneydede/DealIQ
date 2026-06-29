@@ -3,19 +3,27 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 import { notifications as notifApi } from "../api/dealiq";
+import Pager from "../components/Pager";
 import type { NotificationItem } from "../api/types";
+
+const LIMIT = 25;
 
 export default function Notifications() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [list, setList] = useState<NotificationItem[]>([]);
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
 
   async function reload() {
-    setList(await notifApi.list());
+    const p = await notifApi.list({ limit: LIMIT, offset });
+    setList(p.items);
+    setTotal(p.total);
   }
   useEffect(() => {
     void reload();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [offset]);
 
   async function onOpen(n: NotificationItem) {
     if (!n.read_at) {
@@ -74,6 +82,8 @@ export default function Notifications() {
           </span>
         </button>
       ))}
+
+      <Pager total={total} limit={LIMIT} offset={offset} onChange={setOffset} />
     </>
   );
 }

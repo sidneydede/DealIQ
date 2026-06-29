@@ -116,11 +116,12 @@ def test_notifications_endpoints(client, db_session, as_role):
     )
     r = client.get("/api/v1/notifications")
     assert r.status_code == 200
-    assert len(r.json()) == 1
+    body = r.json()
+    assert body["total"] == 1 and len(body["items"]) == 1
 
     assert client.get("/api/v1/notifications/unread-count").json()["count"] == 1
 
-    notif_id = r.json()[0]["id"]
+    notif_id = body["items"][0]["id"]
     assert client.post(f"/api/v1/notifications/{notif_id}/read").status_code == 200
     assert client.get("/api/v1/notifications/unread-count").json()["count"] == 0
 

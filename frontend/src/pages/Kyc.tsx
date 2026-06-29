@@ -24,7 +24,9 @@ export default function Kyc() {
     const loader =
       subjectType === "company"
         ? companiesApi.list().then((l) => l.map((c) => ({ id: c.id, name: c.name })))
-        : investorsApi.list().then((l) => l.map((i) => ({ id: i.id, name: i.name })));
+        : investorsApi
+            .list({ limit: 200 })
+            .then((p) => p.items.map((i) => ({ id: i.id, name: i.name })));
     void loader.then((list) => {
       setSubjects(list);
       setSubjectId(list[0]?.id ?? "");

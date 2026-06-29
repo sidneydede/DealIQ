@@ -1,9 +1,12 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 
 import { investors } from "../api/dealiq";
 import { ApiError } from "../api/client";
+import Pager from "../components/Pager";
 import type { Investor } from "../api/types";
+
+const LIMIT = 25;
 
 const TYPES = [
   "equity_pe_vc",
@@ -63,16 +66,32 @@ function InviteRow({ inv, onDone }: { inv: Investor; onDone: () => void }) {
 export default function Investors() {
   const { t } = useTranslation();
   const [list, setList] = useState<Investor[]>([]);
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
   const [name, setName] = useState("");
   const [type, setType] = useState(TYPES[0]);
   const [email, setEmail] = useState("");
+  const [query, setQuery] = useState("");
+  const [search, setSearch] = useState("");
 
-  async function reload() {
-    setList(await investors.list());
-  }
+  const reload = useCallback(async () => {
+    const p = await investors.list({ q: search || undefined, limit: LIMIT, offset });
+    setList(p.items);
+    setTotal(p.total);
+  }, [search, offset]);
+
+  useEffect(() => {
+    const id = setTimeout(() => setSearch(query.trim()), 300);
+    return () => clearTimeout(id);
+  }, [query]);
+
+  useEffect(() => {
+    setOffset(0);
+  }, [search]);
+
   useEffect(() => {
     void reload();
-  }, []);
+  }, [reload]);
 
   async function onCreate(e: FormEvent) {
     e.preventDefault();
@@ -115,6 +134,21 @@ export default function Investors() {
         </button>
       </form>
 
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder={t("investors.searchPlaceholder")}
+        aria-label={t("investors.searchPlaceholder")}
+        style={{
+          margin: "8px 0 4px",
+          width: "100%",
+          maxWidth: 360,
+          padding: "8px 10px",
+          borderRadius: 8,
+          border: "1px solid var(--c-border)",
+        }}
+      />
+
       {list.map((inv) => (
         <div className="card" key={inv.id}>
           <strong>{inv.name}</strong>{" "}
@@ -133,6 +167,8 @@ export default function Investors() {
           <InviteRow inv={inv} onDone={() => void reload()} />
         </div>
       ))}
+
+      <Pager total={total} limit={LIMIT} offset={offset} onChange={setOffset} />
     </>
   );
 }

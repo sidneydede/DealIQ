@@ -129,11 +129,26 @@ def can_access(user: User, investor: Investor) -> bool:
     return investor.user_id == user.id
 
 
-def list_for_user(db: Session, user: User) -> list[Investor]:
+def _list_query(db: Session, user: User):
     q = db.query(Investor).order_by(Investor.created_at.desc())
     if user.role in CABINET_ROLES or user.role == Role.conformite:
-        return q.all()
-    return q.filter(Investor.user_id == user.id).all()
+        return q
+    return q.filter(Investor.user_id == user.id)
+
+
+def list_for_user(db: Session, user: User) -> list[Investor]:
+    return _list_query(db, user).all()
+
+
+def paginate_for_user(
+    db: Session, user: User, *, q: str | None = None, limit: int, offset: int = 0
+) -> tuple[list[Investor], int]:
+    query = _list_query(db, user)
+    if q:
+        query = query.filter(Investor.name.ilike(f"%{q.strip()}%"))
+    total = query.count()
+    items = query.offset(offset).limit(limit).all()
+    return items, total
 
 
 def my_investor(db: Session, user: User) -> Investor | None:

@@ -74,6 +74,19 @@ def list_for(
     return q.order_by(Notification.created_at.desc()).limit(limit).all()
 
 
+def paginate(
+    db: Session, user: User, *, unread_only: bool = False, limit: int, offset: int = 0
+) -> tuple[list[Notification], int]:
+    base = db.query(Notification).filter(Notification.recipient_id == user.id)
+    if unread_only:
+        base = base.filter(Notification.read_at.is_(None))
+    total = base.count()
+    items = (
+        base.order_by(Notification.created_at.desc()).offset(offset).limit(limit).all()
+    )
+    return items, total
+
+
 def unread_count(db: Session, user: User) -> int:
     return (
         db.query(Notification)

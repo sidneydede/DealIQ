@@ -60,11 +60,15 @@ def test_investor_only_sees_own(client, db_session):
         "/api/v1/investors",
         json={"name": "B", "type": "equity_pe_vc", "user_email": "fund@dealiq.com"},
     )
-    assert len(client.get("/api/v1/investors").json()) == 2
+    assert client.get("/api/v1/investors").json()["total"] == 2
+
+    # recherche par nom
+    search = client.get("/api/v1/investors", params={"q": "B"}).json()
+    assert search["total"] == 1 and search["items"][0]["name"] == "B"
 
     _auth(inv_user)
     own = client.get("/api/v1/investors").json()
-    assert len(own) == 1 and own[0]["name"] == "B"
+    assert own["total"] == 1 and own["items"][0]["name"] == "B"
     _clear()
 
 

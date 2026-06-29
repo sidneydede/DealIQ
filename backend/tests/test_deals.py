@@ -132,8 +132,8 @@ def test_pipeline_filters_and_rbac(client, db_session):
     _, iid = _interaction(client, db_session)
     _cabinet(db_session)
     client.post(f"/api/v1/interactions/{iid}/deal")
-    assert len(client.get("/api/v1/deals").json()) == 1
-    assert len(client.get("/api/v1/deals", params={"stage": "closing"}).json()) == 0
+    assert client.get("/api/v1/deals").json()["total"] == 1
+    assert client.get("/api/v1/deals", params={"stage": "closing"}).json()["total"] == 0
 
     # entrepreneur interdit
     _auth(_user(db_session, "e@dealiq.com"))

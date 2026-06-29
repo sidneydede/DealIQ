@@ -296,6 +296,7 @@ const fr = {
       inviteSent: "Invitation envoyée",
       inviteError: "Échec de l'invitation.",
       tempPassword: "Mot de passe temporaire",
+      searchPlaceholder: "Rechercher un investisseur…",
     },
     matching: {
       title: "Matching",
@@ -909,6 +910,7 @@ const en = {
       inviteSent: "Invitation sent",
       inviteError: "Invitation failed.",
       tempPassword: "Temporary password",
+      searchPlaceholder: "Search an investor…",
     },
     matching: {
       title: "Matching",

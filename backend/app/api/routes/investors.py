@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user, require_cabinet
+from app.api.pagination import Page, Pagination, pagination
 from app.database import get_db
 from app.models.investor import Investor
 from app.models.user import User
@@ -42,11 +43,15 @@ def create_investor(
     return svc.create_investor(db, payload)
 
 
-@router.get("", response_model=list[InvestorOut])
+@router.get("", response_model=Page[InvestorOut])
 def list_investors(
-    db: Session = Depends(get_db), user: User = Depends(get_current_user)
-) -> list[Investor]:
-    return svc.list_for_user(db, user)
+    q: str | None = None,
+    page: Pagination = Depends(pagination),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+) -> Page[InvestorOut]:
+    items, total = svc.paginate_for_user(db, user, q=q, limit=page.limit, offset=page.offset)
+    return Page.build(items, total, page)
 
 
 @router.get("/me", response_model=InvestorOut)

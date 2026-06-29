@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { deals } from "../api/dealiq";
+import Pager from "../components/Pager";
 import type { Deal, DealDetail } from "../api/types";
 
 const STAGES = [
@@ -13,17 +14,23 @@ const STAGES = [
   "closing",
   "abandonne",
 ];
+const LIMIT = 25;
 
 export default function Pipeline() {
   const { t } = useTranslation();
   const [list, setList] = useState<Deal[]>([]);
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
   const [openId, setOpenId] = useState<string | null>(null);
   const [detail, setDetail] = useState<DealDetail | null>(null);
   const [note, setNote] = useState("");
 
   const reload = useCallback(() => {
-    void deals.list().then(setList);
-  }, []);
+    void deals.list({ limit: LIMIT, offset }).then((p) => {
+      setList(p.items);
+      setTotal(p.total);
+    });
+  }, [offset]);
   useEffect(() => reload(), [reload]);
 
   async function openDeal(id: string) {
@@ -118,6 +125,8 @@ export default function Pipeline() {
           )}
         </div>
       ))}
+
+      <Pager total={total} limit={LIMIT} offset={offset} onChange={setOffset} />
     </>
   );
 }

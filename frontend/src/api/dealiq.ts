@@ -151,8 +151,14 @@ export const security = {
 };
 
 export const notifications = {
-  list: (unread = false) =>
-    api.get<NotificationItem[]>(`/notifications${unread ? "?unread=true" : ""}`),
+  list: (params: { unread?: boolean; limit?: number; offset?: number } = {}) => {
+    const clean: Record<string, string> = {};
+    if (params.unread) clean.unread = "true";
+    if (params.limit !== undefined) clean.limit = String(params.limit);
+    if (params.offset !== undefined) clean.offset = String(params.offset);
+    const qs = new URLSearchParams(clean).toString();
+    return api.get<Page<NotificationItem>>(`/notifications${qs ? `?${qs}` : ""}`);
+  },
   unreadCount: () => api.get<{ count: number }>("/notifications/unread-count"),
   markRead: (id: string) => api.post<NotificationItem>(`/notifications/${id}/read`),
   markAllRead: () => api.post<{ count: number }>("/notifications/read-all"),
@@ -168,7 +174,13 @@ export const users = {
 };
 
 export const investors = {
-  list: () => api.get<Investor[]>("/investors"),
+  list: (params: { q?: string; limit?: number; offset?: number } = {}) => {
+    const clean = Object.fromEntries(
+      Object.entries(params).filter(([, v]) => v !== undefined && v !== ""),
+    ) as Record<string, string>;
+    const qs = new URLSearchParams(clean).toString();
+    return api.get<Page<Investor>>(`/investors${qs ? `?${qs}` : ""}`);
+  },
   me: () => api.get<Investor>("/investors/me"),
   create: (body: { name: string; type: string; user_email?: string }) =>
     api.post<Investor>("/investors", body),
@@ -276,9 +288,12 @@ export const dd = {
 };
 
 export const deals = {
-  list: (params: { stage?: string; deal_type?: string } = {}) => {
-    const qs = new URLSearchParams(params as Record<string, string>).toString();
-    return api.get<Deal[]>(`/deals${qs ? `?${qs}` : ""}`);
+  list: (params: { stage?: string; deal_type?: string; limit?: number; offset?: number } = {}) => {
+    const clean = Object.fromEntries(
+      Object.entries(params).filter(([, v]) => v !== undefined && v !== ""),
+    ) as Record<string, string>;
+    const qs = new URLSearchParams(clean).toString();
+    return api.get<Page<Deal>>(`/deals${qs ? `?${qs}` : ""}`);
   },
   get: (id: string) => api.get<DealDetail>(`/deals/${id}`),
   createFromInteraction: (interactionId: string) =>
