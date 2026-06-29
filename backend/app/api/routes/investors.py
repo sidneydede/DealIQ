@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_current_user, require_cabinet
 from app.api.pagination import Page, Pagination, pagination
 from app.database import get_db
+from app.domain.enums import InvestorQualifStatus, InvestorType
 from app.models.investor import Investor
 from app.models.user import User
 from app.schemas.investor import (
@@ -56,21 +57,31 @@ def create_investor(
 @router.get("", response_model=Page[InvestorOut])
 def list_investors(
     q: str | None = None,
+    type_filter: InvestorType | None = None,
+    qualif_status: InvestorQualifStatus | None = None,
     page: Pagination = Depends(pagination),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ) -> Page[InvestorOut]:
-    items, total = svc.paginate_for_user(db, user, q=q, limit=page.limit, offset=page.offset)
+    items, total = svc.paginate_for_user(
+        db, user, q=q, type_filter=type_filter, qualif_status=qualif_status,
+        limit=page.limit, offset=page.offset,
+    )
     return Page.build(items, total, page)
 
 
 @router.get("/export.csv")
 def export_investors_csv(
     q: str | None = None,
+    type_filter: InvestorType | None = None,
+    qualif_status: InvestorQualifStatus | None = None,
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ) -> Response:
-    items, _total = svc.paginate_for_user(db, user, q=q, limit=100000, offset=0)
+    items, _total = svc.paginate_for_user(
+        db, user, q=q, type_filter=type_filter, qualif_status=qualif_status,
+        limit=100000, offset=0,
+    )
     rows = [
         {
             "name": inv.name,

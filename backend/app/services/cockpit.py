@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 
 from sqlalchemy.orm import Session
 
-from app.domain.enums import CompanyStatus, DealTypeCode, ReadinessCategory
+from app.domain.enums import CompanyStatus, Country, DealTypeCode, ReadinessCategory
 from app.models.company import Company
 from app.models.quote import QuoteRequest
 
@@ -25,6 +25,7 @@ def cockpit_items(
     *,
     status: CompanyStatus | None = None,
     deal_type: DealTypeCode | None = None,
+    country: Country | None = None,
     only: str | None = None,
     q: str | None = None,
     limit: int | None = None,
@@ -55,6 +56,8 @@ def cockpit_items(
         if status and c.status != status:
             continue
         if deal_type and dtype != deal_type:
+            continue
+        if country and c.country != country:
             continue
         if only == "a_traiter" and c.status != CompanyStatus.brouillon:
             continue

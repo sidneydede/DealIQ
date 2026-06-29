@@ -74,6 +74,12 @@ def test_cockpit_enriched_and_filters(client, db_session):
     search = client.get("/api/v1/cockpit/companies", params={"q": "equity"}).json()
     assert search["total"] == 1 and search["items"][0]["name"] == "Equity Co"
 
+    # filtre avancé par pays (les deux dossiers sont en CI)
+    ci = client.get("/api/v1/cockpit/companies", params={"country": "CI"}).json()
+    assert ci["total"] == 2
+    sn = client.get("/api/v1/cockpit/companies", params={"country": "SN"}).json()
+    assert sn["total"] == 0
+
     # pagination
     paged = client.get("/api/v1/cockpit/companies", params={"limit": 1, "offset": 0}).json()
     assert paged["total"] == 2 and len(paged["items"]) == 1 and paged["limit"] == 1

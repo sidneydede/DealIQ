@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from app.api.deps import require_cabinet
 from app.api.pagination import Page, Pagination, pagination
 from app.database import get_db
-from app.domain.enums import CompanyStatus, DealTypeCode
+from app.domain.enums import CompanyStatus, Country, DealTypeCode
 from app.models.quote import QuoteRequest
 from app.models.user import User
 from app.schemas.cockpit import CockpitItem, QuoteStatusUpdate
@@ -37,6 +37,7 @@ _COCKPIT_CSV_COLUMNS = [
 def cockpit_companies(
     status_filter: CompanyStatus | None = None,
     deal_type: DealTypeCode | None = None,
+    country: Country | None = None,
     only: str | None = None,
     q: str | None = None,
     page: Pagination = Depends(pagination),
@@ -44,7 +45,7 @@ def cockpit_companies(
     _: User = Depends(require_cabinet),
 ) -> Page[CockpitItem]:
     items, total = svc.cockpit_items(
-        db, status=status_filter, deal_type=deal_type, only=only,
+        db, status=status_filter, deal_type=deal_type, country=country, only=only,
         q=q, limit=page.limit, offset=page.offset,
     )
     return Page.build(items, total, page)
@@ -54,6 +55,7 @@ def cockpit_companies(
 def cockpit_companies_csv(
     status_filter: CompanyStatus | None = None,
     deal_type: DealTypeCode | None = None,
+    country: Country | None = None,
     only: str | None = None,
     q: str | None = None,
     db: Session = Depends(get_db),
@@ -61,7 +63,7 @@ def cockpit_companies_csv(
 ) -> Response:
     # Export complet (mêmes filtres que la liste, sans pagination).
     items, _total = svc.cockpit_items(
-        db, status=status_filter, deal_type=deal_type, only=only, q=q, limit=None
+        db, status=status_filter, deal_type=deal_type, country=country, only=only, q=q, limit=None
     )
     content = csv_export.to_csv(items, _COCKPIT_CSV_COLUMNS)
     return Response(

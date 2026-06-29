@@ -3,9 +3,18 @@ import { useTranslation } from "react-i18next";
 
 import { cockpit, meta } from "../api/dealiq";
 import Pager from "../components/Pager";
-import type { CockpitItem } from "../api/types";
+import type { CockpitItem, CountryMeta } from "../api/types";
 
 const FILTERS = ["all", "a_traiter", "investor_ready", "sla"] as const;
+const STATUSES = [
+  "brouillon",
+  "qualifie",
+  "en_preparation",
+  "investor_ready",
+  "en_deal",
+  "clos",
+  "archive",
+];
 const LIMIT = 25;
 
 export default function Cockpit() {
@@ -14,7 +23,11 @@ export default function Cockpit() {
   const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
   const [labels, setLabels] = useState<Record<string, string>>({});
+  const [countries, setCountries] = useState<CountryMeta[]>([]);
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("all");
+  const [country, setCountry] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [dealType, setDealType] = useState("");
   const [query, setQuery] = useState(""); // saisie
   const [search, setSearch] = useState(""); // terme appliqué (debounce)
 
@@ -22,6 +35,7 @@ export default function Cockpit() {
     void meta.dealTypes().then((d) =>
       setLabels(Object.fromEntries(d.map((x) => [x.code, x.label]))),
     );
+    void meta.countries().then(setCountries);
   }, []);
 
   // Debounce de la recherche (300 ms) ; tout changement de filtre/recherche revient page 1.
@@ -32,21 +46,25 @@ export default function Cockpit() {
 
   useEffect(() => {
     setOffset(0);
-  }, [filter, search]);
+  }, [filter, search, country, statusFilter, dealType]);
+
+  const filterParams = {
+    only: filter === "all" ? undefined : filter,
+    q: search || undefined,
+    country: country || undefined,
+    status_filter: statusFilter || undefined,
+    deal_type: dealType || undefined,
+  };
 
   useEffect(() => {
     void cockpit
-      .companies({
-        only: filter === "all" ? undefined : filter,
-        q: search || undefined,
-        limit: LIMIT,
-        offset,
-      })
+      .companies({ ...filterParams, limit: LIMIT, offset })
       .then((p) => {
         setItems(p.items);
         setTotal(p.total);
       });
-  }, [filter, search, offset]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter, search, country, statusFilter, dealType, offset]);
 
   return (
     <>
@@ -77,15 +95,52 @@ export default function Cockpit() {
         />
         <button
           className="btn btn--ghost"
-          onClick={() =>
-            void cockpit.exportCsv({
-              only: filter === "all" ? undefined : filter,
-              q: search || undefined,
-            })
-          }
+          onClick={() => void cockpit.exportCsv(filterParams)}
         >
           {t("cockpit.exportCsv")}
         </button>
+      </div>
+
+      <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+        <select
+          value={country}
+          onChange={(e) => setCountry(e.target.value)}
+          aria-label={t("cockpit.cols.company")}
+          style={{ padding: 8, borderRadius: 8, border: "1px solid var(--c-border)" }}
+        >
+          <option value="">{t("cockpit.allCountries")}</option>
+          {countries.map((c) => (
+            <option key={c.code} value={c.code}>
+              {c.label}
+            </option>
+          ))}
+        </select>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          aria-label={t("cockpit.cols.status")}
+          style={{ padding: 8, borderRadius: 8, border: "1px solid var(--c-border)" }}
+        >
+          <option value="">{t("cockpit.allStatuses")}</option>
+          {STATUSES.map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
+          ))}
+        </select>
+        <select
+          value={dealType}
+          onChange={(e) => setDealType(e.target.value)}
+          aria-label={t("cockpit.cols.dealType")}
+          style={{ padding: 8, borderRadius: 8, border: "1px solid var(--c-border)" }}
+        >
+          <option value="">{t("cockpit.allDealTypes")}</option>
+          {Object.entries(labels).map(([code, label]) => (
+            <option key={code} value={code}>
+              {label}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="card" style={{ padding: 0, overflowX: "auto" }}>

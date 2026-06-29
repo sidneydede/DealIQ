@@ -66,6 +66,10 @@ def test_investor_only_sees_own(client, db_session):
     search = client.get("/api/v1/investors", params={"q": "B"}).json()
     assert search["total"] == 1 and search["items"][0]["name"] == "B"
 
+    # filtre avancé par type (A = banque, B = equity_pe_vc)
+    by_type = client.get("/api/v1/investors", params={"type_filter": "banque"}).json()
+    assert by_type["total"] == 1 and by_type["items"][0]["name"] == "A"
+
     _auth(inv_user)
     own = client.get("/api/v1/investors").json()
     assert own["total"] == 1 and own["items"][0]["name"] == "B"

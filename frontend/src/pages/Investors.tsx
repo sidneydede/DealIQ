@@ -73,12 +73,21 @@ export default function Investors() {
   const [email, setEmail] = useState("");
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
+  const [qualifFilter, setQualifFilter] = useState("");
+
+  const filterParams = {
+    q: search || undefined,
+    type_filter: typeFilter || undefined,
+    qualif_status: qualifFilter || undefined,
+  };
 
   const reload = useCallback(async () => {
-    const p = await investors.list({ q: search || undefined, limit: LIMIT, offset });
+    const p = await investors.list({ ...filterParams, limit: LIMIT, offset });
     setList(p.items);
     setTotal(p.total);
-  }, [search, offset]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search, typeFilter, qualifFilter, offset]);
 
   useEffect(() => {
     const id = setTimeout(() => setSearch(query.trim()), 300);
@@ -87,7 +96,7 @@ export default function Investors() {
 
   useEffect(() => {
     setOffset(0);
-  }, [search]);
+  }, [search, typeFilter, qualifFilter]);
 
   useEffect(() => {
     void reload();
@@ -134,7 +143,15 @@ export default function Investors() {
         </button>
       </form>
 
-      <div style={{ display: "flex", gap: 8, alignItems: "center", margin: "8px 0 4px" }}>
+      <div
+        style={{
+          display: "flex",
+          gap: 8,
+          alignItems: "center",
+          flexWrap: "wrap",
+          margin: "8px 0 4px",
+        }}
+      >
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -142,16 +159,40 @@ export default function Investors() {
           aria-label={t("investors.searchPlaceholder")}
           style={{
             flex: 1,
+            minWidth: 200,
             maxWidth: 360,
             padding: "8px 10px",
             borderRadius: 8,
             border: "1px solid var(--c-border)",
           }}
         />
-        <button
-          className="btn btn--ghost"
-          onClick={() => void investors.exportCsv(search || undefined)}
+        <select
+          value={typeFilter}
+          onChange={(e) => setTypeFilter(e.target.value)}
+          aria-label={t("investors.type")}
+          style={{ padding: 8, borderRadius: 8, border: "1px solid var(--c-border)" }}
         >
+          <option value="">{t("investors.allTypes")}</option>
+          {TYPES.map((ty) => (
+            <option key={ty} value={ty}>
+              {ty}
+            </option>
+          ))}
+        </select>
+        <select
+          value={qualifFilter}
+          onChange={(e) => setQualifFilter(e.target.value)}
+          aria-label={t("investors.qualifStatus")}
+          style={{ padding: 8, borderRadius: 8, border: "1px solid var(--c-border)" }}
+        >
+          <option value="">{t("investors.allStatuses")}</option>
+          {["prospect", "qualifie", "actif", "inactif"].map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
+          ))}
+        </select>
+        <button className="btn btn--ghost" onClick={() => void investors.exportCsv(filterParams)}>
           {t("investors.exportCsv")}
         </button>
       </div>

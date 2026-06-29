@@ -198,6 +198,9 @@ const fr = {
       empty: "Aucun dossier.",
       searchPlaceholder: "Rechercher (nom, secteur)…",
       exportCsv: "Exporter CSV",
+      allCountries: "Tous les pays",
+      allStatuses: "Tous les statuts",
+      allDealTypes: "Tous les types",
     },
     pager: {
       range: "{{from}}–{{to}} sur {{total}}",
@@ -299,6 +302,9 @@ const fr = {
       tempPassword: "Mot de passe temporaire",
       searchPlaceholder: "Rechercher un investisseur…",
       exportCsv: "Exporter CSV",
+      qualifStatus: "Statut de qualification",
+      allTypes: "Tous les types",
+      allStatuses: "Tous les statuts",
     },
     matching: {
       title: "Matching",
@@ -843,6 +849,9 @@ const en = {
       empty: "No file.",
       searchPlaceholder: "Search (name, industry)…",
       exportCsv: "Export CSV",
+      allCountries: "All countries",
+      allStatuses: "All statuses",
+      allDealTypes: "All types",
     },
     reporting: {
       title: "Dashboard",
@@ -916,6 +925,9 @@ const en = {
       tempPassword: "Temporary password",
       searchPlaceholder: "Search an investor…",
       exportCsv: "Export CSV",
+      qualifStatus: "Qualification status",
+      allTypes: "All types",
+      allStatuses: "All statuses",
     },
     matching: {
       title: "Matching",

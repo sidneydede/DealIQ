@@ -6,7 +6,13 @@ import secrets
 from sqlalchemy.orm import Session
 
 from app.core.security import hash_password
-from app.domain.enums import AuditAction, NotificationType, Role
+from app.domain.enums import (
+    AuditAction,
+    InvestorQualifStatus,
+    InvestorType,
+    NotificationType,
+    Role,
+)
 from app.models.investor import InvestmentCriteria, Investor
 from app.models.user import User
 from app.services import audit
@@ -141,11 +147,22 @@ def list_for_user(db: Session, user: User) -> list[Investor]:
 
 
 def paginate_for_user(
-    db: Session, user: User, *, q: str | None = None, limit: int, offset: int = 0
+    db: Session,
+    user: User,
+    *,
+    q: str | None = None,
+    type_filter: InvestorType | None = None,
+    qualif_status: InvestorQualifStatus | None = None,
+    limit: int,
+    offset: int = 0,
 ) -> tuple[list[Investor], int]:
     query = _list_query(db, user)
     if q:
         query = query.filter(Investor.name.ilike(f"%{q.strip()}%"))
+    if type_filter:
+        query = query.filter(Investor.type == type_filter)
+    if qualif_status:
+        query = query.filter(Investor.qualif_status == qualif_status)
     total = query.count()
     items = query.offset(offset).limit(limit).all()
     return items, total
