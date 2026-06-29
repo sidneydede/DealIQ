@@ -6,12 +6,15 @@ import type {
   Company,
   CompanyCreateResult,
   CountryMeta,
+  Criteria,
   DashboardData,
   DealTypeHistoryEntry,
   DealTypeMeta,
   DocumentOut,
   FinancingNeed,
   GatingResult,
+  Investor,
+  MatchResult,
   OffersResponse,
   OnboardingSession,
   Question,
@@ -83,6 +86,22 @@ export const admin = {
     const qs = new URLSearchParams(params as Record<string, string>).toString();
     return api.get<AuditLogEntry[]>(`/audit${qs ? `?${qs}` : ""}`);
   },
+};
+
+export const investors = {
+  list: () => api.get<Investor[]>("/investors"),
+  me: () => api.get<Investor>("/investors/me"),
+  create: (body: { name: string; type: string; user_email?: string }) =>
+    api.post<Investor>("/investors", body),
+  setCriteria: (id: string, body: Criteria) =>
+    api.put<Criteria>(`/investors/${id}/criteria`, body),
+};
+
+export const matching = {
+  forCompany: (companyId: string, includeNonEligible = false) =>
+    api.get<MatchResult[]>(
+      `/companies/${companyId}/matches${includeNonEligible ? "?include_non_eligible=true" : ""}`,
+    ),
 };
 
 export interface CompanyCreateInput {

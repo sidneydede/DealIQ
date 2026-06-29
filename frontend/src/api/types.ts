@@ -178,6 +178,39 @@ export interface AuditLogEntry {
   created_at: string;
 }
 
+export interface Criteria {
+  countries: string[];
+  sectors: string[];
+  instruments: string[];
+  deal_types: string[];
+  stages: string[];
+  exclusions: string[];
+  ticket_min: number | null;
+  ticket_max: number | null;
+  ticket_currency: string;
+  esg_required: boolean;
+}
+
+export interface Investor {
+  id: string;
+  name: string;
+  type: string;
+  jurisdiction: string | null;
+  team: string | null;
+  qualif_status: string;
+  user_id: string | null;
+  criteria: Criteria | null;
+}
+
+export interface MatchResult {
+  investor_id: string;
+  investor_name: string;
+  investor_type: string;
+  passes_hard_filters: boolean;
+  fit_score: number;
+  reasons: string[];
+}
+
 export interface DealTypeHistoryEntry {
   id: string;
   old_primary: string | null;

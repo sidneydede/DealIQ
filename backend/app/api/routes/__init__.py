@@ -8,6 +8,8 @@ from app.api.routes import (
     companies,
     documents,
     health,
+    investors,
+    matching,
     meta,
     offers,
     onboarding,
@@ -31,3 +33,5 @@ api_router.include_router(offers.router, tags=["offers"])
 api_router.include_router(cockpit.router, tags=["cockpit"])
 api_router.include_router(reporting.router, tags=["reporting"])
 api_router.include_router(admin.router, tags=["admin"])
+api_router.include_router(investors.router, prefix="/investors", tags=["investors"])
+api_router.include_router(matching.router, tags=["matching"])

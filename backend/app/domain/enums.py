@@ -120,6 +120,33 @@ class DataReliability(str, Enum):
     inference = "inference"
 
 
+class InvestorType(str, Enum):
+    """Typologie financeur (RG-M9-01)."""
+
+    equity_pe_vc = "equity_pe_vc"
+    dette_mezzanine = "dette_mezzanine"
+    dfi = "dfi"
+    family_office = "family_office"
+    corporate = "corporate"
+    banque = "banque"
+
+
+class InvestorQualifStatus(str, Enum):
+    prospect = "prospect"
+    qualifie = "qualifie"
+    actif = "actif"
+    inactif = "inactif"
+
+
+class InteractionStatus(str, Enum):
+    """Statut d'un intérêt investisseur / mise en relation (M12, amorce)."""
+
+    interesse = "interesse"
+    ecarte = "ecarte"
+    nda_envoye = "nda_envoye"
+    nda_signe = "nda_signe"
+
+
 class DealTypeChangeSource(str, Enum):
     """Origine d'un changement de type de deal (historisation M24)."""
 
